@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Atlantis Wallpaper</string>
+    <string name="service_name">Atlantis</string>
+    <string name="description">Boidsアルゴリズムを使った3D水族館 live Wallpaper</string>
+    <string name="author">株式会社QSDN</string>
+</resources>
