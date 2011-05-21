@@ -73,9 +73,9 @@ public class AtlantisService extends WallpaperService {
           eglDisplay = egl10.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
           int[] version = new int[2];
           egl10.eglInitialize(eglDisplay, version);
-          int[] configSpec = { EGL10.EGL_RED_SIZE, 8,
-                               EGL10.EGL_GREEN_SIZE, 8,
-                               EGL10.EGL_BLUE_SIZE,8,
+          int[] configSpec = { EGL10.EGL_RED_SIZE, 4,
+                               EGL10.EGL_GREEN_SIZE, 4,
+                               EGL10.EGL_BLUE_SIZE,4,
                                EGL10.EGL_DEPTH_SIZE, 16,
                                EGL10.EGL_NONE };
 

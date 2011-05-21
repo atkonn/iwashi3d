@@ -1,0 +1,10 @@
+Input file     : ./models/iwashi14.obj
+Output file    : ./models/iwashi14.h
+Object name    : iwashi14
+Center         : <-0.185271816326531, 0.344428326530612, -0.00509786734693878>
+Scale by       : 0.1035156288414
+----------------
+Vertices       : 98
+Faces          : 163
+Texture Coords : 167
+Normals        : 163
