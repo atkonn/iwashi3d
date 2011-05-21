@@ -23,6 +23,32 @@ public class Iwashi {
   private float scale = 0.1035156288414f;
   private float center_xyz[] = {-0.185271816326531f, 0.344428326530612f, -0.00509786734693878f };
 
+  /*=========================================================================*/
+  /* 現在位置                                                                */
+  /*=========================================================================*/
+  // メモ 1.0f >= z >= -50.0fまで
+  // zが0.0fのときy=1.0fが限界
+  // zが0.0fのときy=-1.0fは半分土に埋まっている
+  // zが-20.0fのとき、x=-5.0f, x=5.0fで半分切れる
+  //
+  // 水槽の大きさ（案）
+  // 10.0f >= x  >= -10.0f
+  // 8.0f >= y >= 0.0f
+  // -50.0f > z >= 0.0f
+  private float x = 0.0f;
+  private float y = 8.0f;
+  private float z = -20.0f;
+  /*=========================================================================*/
+  /* 向き                                                                    */
+  /*=========================================================================*/
+  private float d_x = -1.0f;
+  private float d_y = 0.0f;
+  private float d_z = 0.0f;
+  /*=========================================================================*/
+  /* スピード                                                                */
+  /*=========================================================================*/
+  private float speed = 1.0f;
+
   public Iwashi() {
 
     ByteBuffer nbb = ByteBuffer.allocateDirect(IwashiData.normals.length * 4);
@@ -964,18 +990,20 @@ public class Iwashi {
 
   }
 
-  int angle = 0;
   public void draw(GL10 gl10) {
     gl10.glPushMatrix();
 
+    think();
+    move();
     animate();
 
     // forDebug
     //gl10.glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-    gl10.glRotatef(45.0f, 1.0f, 0.0f, 0.0f);
+    //gl10.glRotatef(45.0f, 1.0f, 0.0f, 0.0f);
     //gl10.glRotatef((float)(angle % 360), 0.0f, 0.0f, 1.0f);
     //angle += 10;
     //gl10.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+    gl10.glTranslatef(getX(),getY(),getZ());
 
     gl10.glColor4f(1,1,1,1);
     gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, mVertexBuffer);
@@ -985,5 +1013,67 @@ public class Iwashi {
     gl10.glTexCoordPointer(2, GL10.GL_FLOAT, 0, mTextureBuffer);
     gl10.glDrawArrays(GL10.GL_TRIANGLES, 0, IwashiData.iwashiNumVerts);
     gl10.glPopMatrix();
+  }
+
+  public void think() {
+  }
+
+  public void move() {
+  }
+  
+  public float getX() {
+    return x;
+  }
+  
+  public void setX(float x) {
+    this.x = x;
+  }
+  
+  public float getY() {
+    return y;
+  }
+  
+  public void setY(float y) {
+    this.y = y;
+  }
+  
+  public float getZ() {
+    return z;
+  }
+  
+  public void setZ(float z) {
+    this.z = z;
+  }
+  
+  public float getD_x() {
+    return d_x;
+  }
+  
+  public void setD_x(float d_x) {
+    this.d_x = d_x;
+  }
+  
+  public float getD_y() {
+    return d_y;
+  }
+  
+  public void setD_y(float d_y) {
+    this.d_y = d_y;
+  }
+  
+  public float getD_z() {
+    return d_z;
+  }
+  
+  public void setD_z(float d_z) {
+    this.d_z = d_z;
+  }
+  
+  public float getSpeed() {
+    return speed;
+  }
+  
+  public void setSpeed(float speed) {
+    this.speed = speed;
   }
 }
