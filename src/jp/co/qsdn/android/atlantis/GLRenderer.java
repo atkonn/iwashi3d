@@ -56,7 +56,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
   float count = 0;
 
   public void onDrawFrame(GL10 gl10) {
-    Log.d(TAG, "start onDrawFrame()");
+    //Log.d(TAG, "start onDrawFrame()");
     // 画面をクリアする
     gl10.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
@@ -74,6 +74,6 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
 
 
-    Log.d(TAG, "end onDrawFrame()");
+    //Log.d(TAG, "end onDrawFrame()");
   }
 }
