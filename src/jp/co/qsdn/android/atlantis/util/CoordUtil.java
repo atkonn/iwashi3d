@@ -41,6 +41,7 @@ public class CoordUtil {
   
   public void setMatrixRotateZ(float angle) {
     initMatrix();
+    angle *= -1f;
     matrix[0][0] = (float)Math.cos((double)convertDegreeToRadian(angle));
     matrix[1][0] = (float)-Math.sin((double)convertDegreeToRadian(angle));
     matrix[0][1] = (float)Math.sin((double)convertDegreeToRadian(angle));
@@ -86,5 +87,12 @@ public class CoordUtil {
           matrix[2][2] * z +
           matrix[3][2] * 1f;
     return ret;
+  }
+
+  public double convertDegree(double x,double y) {
+    double s;
+    s=Math.acos(x/Math.sqrt(x*x+y*y));
+    s=(s/Math.PI)*180.0d;
+    return s;
   }
 }

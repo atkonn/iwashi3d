@@ -17,7 +17,8 @@ public class GLRenderer implements GLSurfaceView.Renderer {
   private final Context context;
   private final Background background = new Background();
   private final Ground ground = new Ground();
-  private final Iwashi iwashi = new Iwashi();
+  private Iwashi[] iwashi = null;
+  private int iwashi_count = 1;
 
   GLRenderer(Context context) {
     this.context = context;
@@ -34,6 +35,20 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     Background.loadTexture(gl10, context, R.drawable.background);
     Ground.loadTexture(gl10, context, R.drawable.sand);
     Iwashi.loadTexture(gl10, context, R.drawable.iwashi);
+    iwashi = new Iwashi[iwashi_count];
+    for (int ii=0; ii<iwashi_count; ii++) {
+      iwashi[ii] = new Iwashi();
+    }
+    for (int ii=0; ii<iwashi_count; ii++) {
+      iwashi[ii].setSpecies(iwashi);
+    }
+
+    /* for Debug */
+    for (int ii=0; ii<iwashi_count; ii++) {
+      iwashi[ii].setX(0);
+      iwashi[ii].setY(0);
+      iwashi[ii].setZ(0);
+    }
     Log.d(TAG, "end onSurfaceCreated()");
   }
 
@@ -70,7 +85,9 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     ground.draw(gl10);
     
     // model
-    iwashi.draw(gl10);
+    for (int ii=0; ii<iwashi_count; ii++) {
+      iwashi[ii].draw(gl10);
+    }
 
 
 
