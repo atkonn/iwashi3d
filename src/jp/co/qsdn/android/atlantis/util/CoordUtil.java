@@ -68,12 +68,7 @@ public class CoordUtil {
     matrix[3][3] = 1f;
   }
   
-  // 座標変換（アフィン変換実行）
-  public float[] affine(
-      float x,
-      float y,
-      float z)
-  {
+  public float[] affine(float x, float y, float z) {
     float[] ret = new float[3];
     ret[0] = 
           matrix[0][0] * x +
