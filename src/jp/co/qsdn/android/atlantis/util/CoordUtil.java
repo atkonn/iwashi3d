@@ -89,11 +89,20 @@ public class CoordUtil {
     return ret;
   }
 
-  public double convertDegree(double x,double y) {
+  public double convertDegreeXZ(double x,double y) {
     double s;
     s=Math.acos(x/Math.sqrt(x*x+y*y));
     s=(s/Math.PI)*180.0d;
-    if (x < 0.0d || y < 0.0d) {
+    if (y < 0.0d) {
+      return 360.0d - s;
+    }
+    return s;
+  }
+  public double convertDegreeXY(double x,double y) {
+    double s;
+    s=Math.acos(x/Math.sqrt(x*x+y*y));
+    s=(s/Math.PI)*180.0d;
+    if (y < 0.0d || x < 0.0d) {
       return 360.0d - s;
     }
     return s;

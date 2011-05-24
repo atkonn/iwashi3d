@@ -92,19 +92,25 @@ public class a {
     double s;
     s=Math.acos(x/Math.sqrt(x*x+y*y));
     s=(s/Math.PI)*180.0d;
+    if (y < 0.0d) {
+      return 360.0d - s;
+    }
     return s;
   }
   public static void main(String[] argv) {
     float x_angle = -45f;
     float y_angle = 220f;
 
+    int z = -1;
+    int x = -1;
+
     a _a = new a();
-    for (y_angle = 0f; y_angle <= 360; y_angle += 10) {
-      _a.setMatrixRotateY(y_angle);
-      float[] ret = _a.affine(-1.0f,0.0f,0.0f);
-      System.out.println("angle:[" + y_angle + "] x:[" + ret[0] + "]:"
-        + "y:[" + ret[1] + "]:"
-        + "z:[" + ret[2] + "]:");
+    for (z = -1; z <= 1; z++) {
+      for (x = -1; x <= 1; x++) {
+        double ret = _a.convertDegree((float)x, (float)z); 
+        System.out.println("x:[" + x + "]: z:[" + z + "]:"
+          + "ret:[" + ret + "]");
+      }
     }
   }
 }

@@ -1306,9 +1306,9 @@ public class Iwashi {
      + " z:[" + v_z + "]:");
 
     /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-    float angle_x = (float)coordUtil.convertDegree((double)v_x, (double)v_y);
+    float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
     /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-    float angle_y = (float)coordUtil.convertDegree((double)v_x * -1d, (double)v_z);
+    float angle_y = (float)coordUtil.convertDegreeXZ((double)v_x * -1d, (double)v_z);
     if (angle_x > 180f) {
       angle_x = angle_x - 360f;
     }
@@ -1372,9 +1372,9 @@ public class Iwashi {
 
 
     /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-    float angle_x = (float)coordUtil.convertDegree((double)v_x, (double)v_y);
+    float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
     /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-    float angle_y = (float)coordUtil.convertDegree((double)v_x * -1d, (double)v_z);
+    float angle_y = (float)coordUtil.convertDegreeXZ((double)v_x * -1d, (double)v_z);
     if (angle_x > 180f) {
       angle_x = angle_x - 360f;
     }
@@ -1424,9 +1424,9 @@ public class Iwashi {
      + " z:[" + v_z + "]:");
 
     /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-    float angle_x = (float)coordUtil.convertDegree((double)v_x, (double)v_y);
+    float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
     /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-    float angle_y = (float)coordUtil.convertDegree((double)v_x * -1d, (double)v_z);
+    float angle_y = (float)coordUtil.convertDegreeXZ((double)v_x * -1d, (double)v_z);
     if (angle_x > 180f) {
       angle_x = angle_x - 360f;
     }
@@ -1469,9 +1469,9 @@ public class Iwashi {
     }
 
     /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-    float angle_x = (float)coordUtil.convertDegree((double)v_x, (double)v_y);
+    float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
     /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-    float angle_y = (float)coordUtil.convertDegree((double)v_x * -1d, (double)v_z);
+    float angle_y = (float)coordUtil.convertDegreeXZ((double)v_x * -1d, (double)v_z);
     if (angle_x > 180f) {
       angle_x = angle_x - 360f;
     }

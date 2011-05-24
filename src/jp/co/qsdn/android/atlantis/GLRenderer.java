@@ -24,7 +24,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
   //private final Ground ground = new Ground();
   private final Aquarium aquarium = new Aquarium();
   private Iwashi[] iwashi = null;
-  private int iwashi_count = 5;
+  private int iwashi_count = 1;
   /* カメラの位置 */
   private float[] camera = {0f,0f,0f};
 
