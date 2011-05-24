@@ -1108,12 +1108,11 @@ public class Iwashi {
   }
   public boolean doSchoolCenter() {
     java.util.Random rand = new java.util.Random(System.currentTimeMillis());
-    if (rand.nextInt(100) <= 95) {
+    if (rand.nextInt(100) <= 97f) {
       // 変更なし
       return false;
     }
-    aimSchoolCenter();
-    return true;
+    return aimSchoolCenter();
   }
 
   public void update_speed() {
@@ -1455,7 +1454,7 @@ public class Iwashi {
       + "y:[" + direction[1] + "]:"
       + "z:[" + direction[2] + "]:");
   }
-  public void aimSchoolCenter() {
+  public boolean aimSchoolCenter() {
     Log.d(TAG, "start aimSchoolCenter ");
     float v_x = (schoolCenter[0] - getX());
     float v_y = (schoolCenter[1] - getY());
@@ -1464,6 +1463,10 @@ public class Iwashi {
      + " x:[" + v_x + "]:"
      + " y:[" + v_y + "]:"
      + " z:[" + v_z + "]:");
+    if (v_x == 0.0f && v_y == 0.0f && v_z == 0.0f) {
+      /* 現在値は一緒 */
+      return false;
+    }
 
     /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
     float angle_x = (float)coordUtil.convertDegree((double)v_x, (double)v_y);
@@ -1495,6 +1498,7 @@ public class Iwashi {
       + "x:[" + direction[0] + "]:"
       + "y:[" + direction[1] + "]:"
       + "z:[" + direction[2] + "]:");
+    return true;
   }
   public void move() {
     position[0] = position[0] + direction[0] * speed;

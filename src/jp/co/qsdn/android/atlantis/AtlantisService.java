@@ -124,7 +124,7 @@ public class AtlantisService extends WallpaperService {
 
     @Override
     public void onSurfaceDestroyed(final SurfaceHolder holder) {
-      Log.d(TAG, "start onSurfaceCreated()");
+      Log.d(TAG, "start onSurfaceDestroyed()");
       Runnable surfaceDestroyedCommand = new Runnable() {
         public void run() {
           egl10.eglMakeCurrent(eglDisplay, EGL10.EGL_NO_SURFACE,
@@ -137,7 +137,7 @@ public class AtlantisService extends WallpaperService {
       };
       executor.execute(surfaceDestroyedCommand);
       super.onSurfaceDestroyed(holder);
-      Log.d(TAG, "end onSurfaceCreated()");
+      Log.d(TAG, "end onSurfaceDestroyed()");
     }
 
     @Override
