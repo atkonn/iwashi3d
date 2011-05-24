@@ -83,9 +83,9 @@ public class Iwashi {
     // 8.0f >= y >= 0.0f
     // -50.0f > z >= 0.0f
     java.util.Random rand = new java.util.Random(System.currentTimeMillis());
-    position[0] = rand.nextFloat() * (Aquarium.max_x - Aquarium.min_x) + Aquarium.min_x;
-    position[1] = rand.nextFloat() * (Aquarium.max_y - Aquarium.min_y) + Aquarium.min_y;
-    position[2] = rand.nextFloat() * (Aquarium.max_z - Aquarium.min_z) + Aquarium.min_z;
+    position[0] = rand.nextFloat() * 8f - 4f;
+    position[1] = rand.nextFloat() * 8f - 4f;
+    position[2] = rand.nextFloat() * 4f - 2f;
   }
 
   public static void loadTexture(GL10 gl10, Context context, int resource) {

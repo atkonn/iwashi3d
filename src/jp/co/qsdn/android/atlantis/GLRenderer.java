@@ -22,8 +22,11 @@ public class GLRenderer implements GLSurfaceView.Renderer {
   private final Background background = new Background();
   //private final Front front = new Front();
   //private final Ground ground = new Ground();
+  private final Aquarium aquarium = new Aquarium();
   private Iwashi[] iwashi = null;
-  private int iwashi_count = 1;
+  private int iwashi_count = 5;
+  /* カメラの位置 */
+  private float[] camera = {0f,0f,0f};
 
   GLRenderer(Context context) { 
     this.context = context;
@@ -48,13 +51,17 @@ public class GLRenderer implements GLSurfaceView.Renderer {
       iwashi[ii].setSpecies(iwashi);
     }
 
+    camera[0] = 0f;
+    camera[1] = 0f;
+    camera[2] = Aquarium.max_z + 0.5f;
+
     /* for Debug */
-    for (int ii=0; ii<iwashi_count; ii++) {
-      iwashi[ii].setX(0);
-      iwashi[ii].setY(0);
-      iwashi[ii].setZ(0);
-    }
 /*
+    for (int ii=0; ii<iwashi_count; ii++) {
+      iwashi[ii].setX(0f);
+      iwashi[ii].setY(0f);
+      iwashi[ii].setZ(0f);
+    }
 */
     Log.d(TAG, "end onSurfaceCreated()");
   }
@@ -67,10 +74,6 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     gl10.glLoadIdentity();
     float ratio = (float) width / height;
     GLU.gluPerspective(gl10, 45.0f, ratio, 1, 100f);
-    // カメラの位置を決める
-    //gl10.glMatrixMode(GL10.GL_MODELVIEW);
-    //gl10.glLoadIdentity();
-    //GLU.gluLookAt(gl10, 0.0f, 0.0f, 2.0f, 0, 0.0f, -8.0f, 0, 1f, 0f);
 
     Log.d(TAG, "end onSurfaceChanged()"); 
   }
@@ -87,12 +90,16 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     // モデルの位置を決める
     gl10.glMatrixMode(GL10.GL_MODELVIEW);
     gl10.glLoadIdentity();
-    GLU.gluLookAt(gl10,0,0,3,0,0,0,0,1,0);
+    GLU.gluLookAt(gl10,
+                  camera[0],camera[1],camera[2] + 10f,
+                  camera[0],camera[1],-100f,
+                  0,1,0);
 
     // 背景描画
     background.draw(gl10);
     //front.draw(gl10);
 //    ground.draw(gl10);
+//    aquarium.draw(gl10);
     
     // model
     /* 群れの中心算出 */
