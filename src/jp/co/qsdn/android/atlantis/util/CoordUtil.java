@@ -93,6 +93,9 @@ public class CoordUtil {
     double s;
     s=Math.acos(x/Math.sqrt(x*x+y*y));
     s=(s/Math.PI)*180.0d;
+    if (x < 0.0d || y < 0.0d) {
+      return 360.0d - s;
+    }
     return s;
   }
 }

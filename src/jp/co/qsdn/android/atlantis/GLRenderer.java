@@ -18,7 +18,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
   private final Background background = new Background();
   private final Ground ground = new Ground();
   private Iwashi[] iwashi = null;
-  private int iwashi_count = 1;
+  private int iwashi_count = 10;
 
   GLRenderer(Context context) {
     this.context = context;
@@ -44,11 +44,13 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     }
 
     /* for Debug */
+/*
     for (int ii=0; ii<iwashi_count; ii++) {
       iwashi[ii].setX(0);
       iwashi[ii].setY(0);
       iwashi[ii].setZ(0);
     }
+*/
     Log.d(TAG, "end onSurfaceCreated()");
   }
 
@@ -85,7 +87,18 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     ground.draw(gl10);
     
     // model
+    /* 群れの中心算出 */
+    float[] schoolCenter = {0f,0f,0f};
     for (int ii=0; ii<iwashi_count; ii++) {
+      schoolCenter[0] += iwashi[ii].getX();;
+      schoolCenter[1] += iwashi[ii].getY();;
+      schoolCenter[2] += iwashi[ii].getZ();;
+    }
+    schoolCenter[0] /= iwashi_count;
+    schoolCenter[1] /= iwashi_count;
+    schoolCenter[2] /= iwashi_count;
+    for (int ii=0; ii<iwashi_count; ii++) {
+      iwashi[ii].setSchoolCenter(schoolCenter);
       iwashi[ii].draw(gl10);
     }
 

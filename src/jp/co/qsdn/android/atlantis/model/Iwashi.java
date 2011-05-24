@@ -32,6 +32,7 @@ public class Iwashi {
   private double separate_dist  = 10d * scale;
   private double alignment_dist = 15d * scale;
   private double cohesion_dist  = 30d * scale;
+  private float[] schoolCenter = {0f,0f,0f};
 
 
   /*=========================================================================*/
@@ -59,9 +60,9 @@ public class Iwashi {
   /*=========================================================================*/
   /* スピード                                                                */
   /*=========================================================================*/
-  private float speed = 0.10f;
+  private float speed = 0.020f;
   private float speed_unit = speed / 5f;
-  private float speed_max = 0.20f;
+  private float speed_max = 0.050f;
 
   public Iwashi() {
 
@@ -82,9 +83,9 @@ public class Iwashi {
     // 8.0f >= y >= 0.0f
     // -50.0f > z >= 0.0f
     java.util.Random rand = new java.util.Random(System.currentTimeMillis());
-    position[0] = rand.nextFloat() * 20f - 10f;
-    position[1] = rand.nextFloat() * 8f;
-    position[2] = rand.nextFloat() * -50f;
+    position[0] = rand.nextFloat() * (Aquarium.max_x - Aquarium.min_x) + Aquarium.min_x;
+    position[1] = rand.nextFloat() * (Aquarium.max_y - Aquarium.min_y) + Aquarium.min_y;
+    position[2] = rand.nextFloat() * (Aquarium.max_z - Aquarium.min_z) + Aquarium.min_z;
   }
 
   public static void loadTexture(GL10 gl10, Context context, int resource) {
@@ -1021,14 +1022,9 @@ public class Iwashi {
     animate();
 
     // forDebug
-    //gl10.glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-    //gl10.glRotatef(45.0f, 1.0f, 0.0f, 0.0f);
-    //gl10.glRotatef((float)(angle % 360), 0.0f, 0.0f, 1.0f);
-    //angle += 10;
-    //gl10.glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
     gl10.glTranslatef(getX(),getY(),getZ());
-    gl10.glRotatef(x_angle * -1f, 1.0f, 0.0f, 0.0f);
     gl10.glRotatef(y_angle, 0.0f, 1.0f, 0.0f);
+    gl10.glRotatef(x_angle * -1f, 0.0f, 0.0f, 1.0f);
 
     gl10.glColor4f(1,1,1,1);
     gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, mVertexBuffer);
@@ -1110,6 +1106,15 @@ public class Iwashi {
     }
     return false;
   }
+  public boolean doSchoolCenter() {
+    java.util.Random rand = new java.util.Random(System.currentTimeMillis());
+    if (rand.nextInt(100) <= 95) {
+      // 変更なし
+      return false;
+    }
+    aimSchoolCenter();
+    return true;
+  }
 
   public void update_speed() {
     java.util.Random rand = new java.util.Random(System.currentTimeMillis());
@@ -1161,6 +1166,10 @@ public class Iwashi {
       update_speed();
       return;
     }
+    if (doSchoolCenter()) {
+      update_speed();
+      return;
+    }
 
     java.util.Random rand = new java.util.Random(System.currentTimeMillis());
     if (rand.nextInt(100) <= 95) {
@@ -1208,46 +1217,56 @@ public class Iwashi {
   }
   public void aimTargetDegree(float angle_x, float angle_y) {
     java.util.Random rand = new java.util.Random(System.currentTimeMillis());
-    float newAngleX = rand.nextFloat() * 45f - 22.5f;
-    float newAngleY = rand.nextFloat() * 45f - 22.5f;
-    {
-      if (x_angle < angle_x) {
-        x_angle += rand.nextFloat() * 22.5f;
-        if (x_angle > 45f) {
-          x_angle = 45f;
-        }
-      }
-      else if (x_angle > angle_x) {
-        x_angle -= rand.nextFloat() * 22.5f;
-        if (x_angle < -45f) {
-          x_angle = -45f;
-        }
-      }
-    }
-    {
-      float tmp_y1 = Math.abs(angle_y - y_angle);
-      if (tmp_y1 >= 180f) {
-        float tmp_y2 = 360 - tmp_y1;
-        if (tmp_y2 < 22.5f) {
-          y_angle -= tmp_y2;
-        }
-        else {
-          y_angle -= rand.nextFloat() * 22.5f;
-        }
-        if (y_angle < 0.0f) {
-          y_angle = 360f - y_angle;
-        }
+    float newAngle = rand.nextFloat() * 22.5f;
+    float xx = angle_x - x_angle;
+    if (xx < 0.0f) {
+      if (xx > -22.5f) {
+        x_angle += xx;
       }
       else {
-        if (tmp_y1 < 22.5f) {
-          y_angle += tmp_y1;
-        }
-        else {
-          y_angle += rand.nextFloat() * 22.5f;
-        }
+        x_angle += -newAngle;
       }
-      y_angle = y_angle % 360f;
     }
+    else {
+      if (xx < 22.5f) {
+        x_angle += xx;
+      }
+      else {
+        x_angle += newAngle;
+      }
+    }
+    if (x_angle > 45.0f) {
+      x_angle = 45.0f;
+    }
+    if (x_angle < -45.0f) {
+      x_angle = -45.0f;
+    }
+
+    float yy = angle_y - y_angle;
+    if (yy > 180.0f) {
+      yy = 360f - yy;
+    }
+    else if (yy < -180.0f) {
+      yy = 360f - yy;
+    }
+
+    if (yy < 0.0f) {
+      if (yy > -22.5f) {
+        y_angle += yy;
+      }
+      else {
+        y_angle += -newAngle;
+      }
+    }
+    else {
+      if (yy < 22.5f) {
+        y_angle += yy;
+      }
+      else {
+        y_angle += newAngle;
+      }
+    }
+    y_angle = y_angle % 360f;
   }
   public void aimTargetSpeed(float t_speed) {
     java.util.Random rand = new java.util.Random(System.currentTimeMillis());
@@ -1288,13 +1307,14 @@ public class Iwashi {
      + " z:[" + v_z + "]:");
 
     /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-    float angle_x = (float)coordUtil.convertDegree((double)v_x - 1d, (double)v_y);
+    float angle_x = (float)coordUtil.convertDegree((double)v_x, (double)v_y);
     /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-    float angle_y = (float)coordUtil.convertDegree((double)v_x - 1d, (double)v_z);
-
-    if (new Float(angle_y).compareTo(new Float(0.0f)) < 0) {
-      angle_y = 360f + angle_y;
-      angle_y = angle_y % 360f;
+    float angle_y = (float)coordUtil.convertDegree((double)v_x * -1d, (double)v_z);
+    if (angle_x > 180f) {
+      angle_x = angle_x - 360f;
+    }
+    if ((angle_x < 0.0f && v_y > 0.0f) || (angle_x > 0.0f && v_y < 0.0f)) {
+      angle_x *= -1f;
     }
     Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
     Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
@@ -1351,14 +1371,16 @@ public class Iwashi {
      + " y:[" + v_y + "]:"
      + " z:[" + v_z + "]:");
 
-    /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-    float angle_x = (float)coordUtil.convertDegree((double)v_x - 1d, (double)v_y);
-    /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-    float angle_y = (float)coordUtil.convertDegree((double)v_x - 1d, (double)v_z);
 
-    if (new Float(angle_y).compareTo(new Float(0.0f)) < 0) {
-      angle_y = 360f + angle_y;
-      angle_y = angle_y % 360f;
+    /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
+    float angle_x = (float)coordUtil.convertDegree((double)v_x, (double)v_y);
+    /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
+    float angle_y = (float)coordUtil.convertDegree((double)v_x * -1d, (double)v_z);
+    if (angle_x > 180f) {
+      angle_x = angle_x - 360f;
+    }
+    if ((angle_x < 0.0f && v_y > 0.0f) || (angle_x > 0.0f && v_y < 0.0f)) {
+      angle_x *= -1f;
     }
     Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
     Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
@@ -1403,14 +1425,16 @@ public class Iwashi {
      + " z:[" + v_z + "]:");
 
     /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-    float angle_x = (float)coordUtil.convertDegree((double)v_x - 1d, (double)v_y);
+    float angle_x = (float)coordUtil.convertDegree((double)v_x, (double)v_y);
     /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-    float angle_y = (float)coordUtil.convertDegree((double)v_x - 1d, (double)v_z);
-
-    if (new Float(angle_y).compareTo(new Float(0.0f)) < 0) {
-      angle_y = 360f + angle_y;
-      angle_y = angle_y % 360f;
+    float angle_y = (float)coordUtil.convertDegree((double)v_x * -1d, (double)v_z);
+    if (angle_x > 180f) {
+      angle_x = angle_x - 360f;
     }
+    if ((angle_x < 0.0f && v_y > 0.0f) || (angle_x > 0.0f && v_y < 0.0f)) {
+      angle_x *= -1f;
+    }
+
     Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
     Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
 
@@ -1427,6 +1451,47 @@ public class Iwashi {
     direction[1] = rety[1];
     direction[2] = rety[2];
     Log.d(TAG, "end aimAquariumCenter "
+      + "x:[" + direction[0] + "]:"
+      + "y:[" + direction[1] + "]:"
+      + "z:[" + direction[2] + "]:");
+  }
+  public void aimSchoolCenter() {
+    Log.d(TAG, "start aimSchoolCenter ");
+    float v_x = (schoolCenter[0] - getX());
+    float v_y = (schoolCenter[1] - getY());
+    float v_z = (schoolCenter[2] - getZ());
+    Log.d(TAG, "向かいたい方向"
+     + " x:[" + v_x + "]:"
+     + " y:[" + v_y + "]:"
+     + " z:[" + v_z + "]:");
+
+    /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
+    float angle_x = (float)coordUtil.convertDegree((double)v_x, (double)v_y);
+    /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
+    float angle_y = (float)coordUtil.convertDegree((double)v_x * -1d, (double)v_z);
+    if (angle_x > 180f) {
+      angle_x = angle_x - 360f;
+    }
+    if ((angle_x < 0.0f && v_y > 0.0f) || (angle_x > 0.0f && v_y < 0.0f)) {
+      angle_x *= -1f;
+    }
+
+    Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
+    Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
+
+    /* その角度へ近づける */
+    aimTargetDegree(angle_x, angle_y);
+    Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
+    Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
+
+    coordUtil.setMatrixRotateZ(x_angle);
+    float[] retx = coordUtil.affine(-1.0f,0.0f, 0.0f);
+    coordUtil.setMatrixRotateY(y_angle);
+    float[] rety = coordUtil.affine(retx[0],retx[1], retx[2]);
+    direction[0] = rety[0];
+    direction[1] = rety[1];
+    direction[2] = rety[2];
+    Log.d(TAG, "end aimSchoolCenter "
       + "x:[" + direction[0] + "]:"
       + "y:[" + direction[1] + "]:"
       + "z:[" + direction[2] + "]:");
@@ -1580,5 +1645,46 @@ public class Iwashi {
   public void setY_angle(float y_angle)
   {
       this.y_angle = y_angle;
+  }
+  
+  /**
+   * Get schoolCenter.
+   *
+   * @return schoolCenter as float[].
+   */
+  public float[] getSchoolCenter()
+  {
+      return schoolCenter;
+  }
+  
+  /**
+   * Get schoolCenter element at specified index.
+   *
+   * @param index the index.
+   * @return schoolCenter at index as float.
+   */
+  public float getSchoolCenter(int index)
+  {
+      return schoolCenter[index];
+  }
+  
+  /**
+   * Set schoolCenter.
+   *
+   * @param schoolCenter the value to set.
+   */
+  public void setSchoolCenter(float[] schoolCenter) {
+      this.schoolCenter = schoolCenter;
+  }
+  
+  /**
+   * Set schoolCenter at the specified index.
+   *
+   * @param schoolCenter the value to set.
+   * @param index the index.
+   */
+  public void setSchoolCenter(float schoolCenter, int index)
+  {
+      this.schoolCenter[index] = schoolCenter;
   }
 }
