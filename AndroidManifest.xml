@@ -14,5 +14,14 @@
         android:resource="@xml/wallpaper" />
     </service>
     <user-sdk android:minSdkVersion="7" android:targetSdkVersion="9" />
+    <activity
+      android:name="jp.co.qsdn.android.atlantis.SettingActivity"
+      android:label="@string/setting_title">
+      <intent-filter>
+        <action
+          android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.DEFAULT" />
+      </intent-filter>
+    </activity>
   </application>
 </manifest> 

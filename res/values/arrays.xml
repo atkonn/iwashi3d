@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <array name="entries_iwashi_count">
+    <item>@string/entries_iwashi_count1</item>
+    <item>@string/entries_iwashi_count2</item>
+    <item>@string/entries_iwashi_count4</item>
+    <item>@string/entries_iwashi_count8</item>
+    <item>@string/entries_iwashi_count16</item>
+    <item>@string/entries_iwashi_count32</item>
+    <item>@string/entries_iwashi_count64</item>
+  </array>
+  <array name="entryvalues_iwashi_count">
+    <item>@string/entryvalues_iwashi_count1</item>
+    <item>@string/entryvalues_iwashi_count2</item>
+    <item>@string/entryvalues_iwashi_count4</item>
+    <item>@string/entryvalues_iwashi_count8</item>
+    <item>@string/entryvalues_iwashi_count16</item>
+    <item>@string/entryvalues_iwashi_count32</item>
+    <item>@string/entryvalues_iwashi_count64</item>
+  </array>
+</resources>

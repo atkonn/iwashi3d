@@ -43,6 +43,9 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     Background.loadTexture(gl10, context, R.drawable.background);
     //Ground.loadTexture(gl10, context, R.drawable.sand);
     Iwashi.loadTexture(gl10, context, R.drawable.iwashi);
+
+    iwashi_count = SettingActivity.getIwashiCount(context);
+
     iwashi = new Iwashi[iwashi_count];
     for (int ii=0; ii<iwashi_count; ii++) {
       iwashi[ii] = new Iwashi();

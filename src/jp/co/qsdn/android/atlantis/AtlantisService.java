@@ -177,6 +177,10 @@ public class AtlantisService extends WallpaperService {
         + "xPixelOffset:[" + xPixelOffset + "]:"
         + "yPixelOffset:[" + yPixelOffset + "]:");
       super.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
+      if (xOffsetStep == 0.0f && yOffsetStep == 0.0f) {
+        Log.d(TAG, "end onOffsetChanged() no execute");
+        return;
+      }
       Runnable offsetsChangedCommand = new Runnable() {
         public void run() {
           glRenderer.onOffsetsChanged(gl10, xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
