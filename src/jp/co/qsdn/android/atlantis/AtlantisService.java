@@ -168,8 +168,21 @@ public class AtlantisService extends WallpaperService {
     public void onOffsetsChanged(final float xOffset, final float yOffset,
                                  final float xOffsetStep, final float yOffsetStep,
                                  final int xPixelOffset, final int yPixelOffset) {
-      Log.d(TAG, "start onOffsetChanged()");
+      Log.d(TAG, "start onOffsetsChanged()");
+      Log.d(TAG, 
+          "xOffset:[" + xOffset + "]:"
+        + "yOffset:[" + yOffset + "]:"
+        + "xOffsetStep:[" + xOffsetStep + "]:"
+        + "yOffsetStep:[" + yOffsetStep + "]:"
+        + "xPixelOffset:[" + xPixelOffset + "]:"
+        + "yPixelOffset:[" + yPixelOffset + "]:");
       super.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
+      Runnable offsetsChangedCommand = new Runnable() {
+        public void run() {
+          glRenderer.onOffsetsChanged(gl10, xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
+        };
+      };
+      executor.execute(offsetsChangedCommand);
       Log.d(TAG, "end onOffsetChanged()");
     }
   }

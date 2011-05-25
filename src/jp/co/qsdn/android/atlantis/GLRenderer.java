@@ -77,8 +77,22 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
     Log.d(TAG, "end onSurfaceChanged()"); 
   }
+  public void onOffsetsChanged(GL10 gl10, float xOffset, float yOffset,
+                               float xOffsetStep, float yOffsetStep,
+                               int xPixelOffset, int yPixelOffset) {
+    Log.d(TAG, "start onOffsetsChanged()");
+    Log.d(TAG,
+        "xOffset:[" + xOffset + "]:"
+      + "yOffset:[" + yOffset + "]:"
+      + "xOffsetStep:[" + xOffsetStep + "]:"
+      + "yOffsetStep:[" + yOffsetStep + "]:"
+      + "xPixelOffset:[" + xPixelOffset + "]:"
+      + "yPixelOffset:[" + yPixelOffset + "]:");
+    float newCamera_x = xOffset - 0.5f;
+    camera[0] = camera[0] + newCamera_x;
+    Log.d(TAG, "end onOffsetsChanged()");
+  }
 
-  float count = 0;
 
   public void onDrawFrame(GL10 gl10) {
     //Log.d(TAG, "start onDrawFrame()");

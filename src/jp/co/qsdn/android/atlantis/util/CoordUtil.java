@@ -91,6 +91,9 @@ public class CoordUtil {
 
   public double convertDegreeXZ(double x,double y) {
     double s;
+    if (x == 0.0d && y == 0.0d) {
+      return 0.0d;
+    }
     s=Math.acos(x/Math.sqrt(x*x+y*y));
     s=(s/Math.PI)*180.0d;
     if (y < 0.0d) {
@@ -100,6 +103,9 @@ public class CoordUtil {
   }
   public double convertDegreeXY(double x,double y) {
     double s;
+    if (x == 0.0d && y == 0.0d) {
+      return 0.0d;
+    }
     s=Math.acos(x/Math.sqrt(x*x+y*y));
     s=(s/Math.PI)*180.0d;
     if (y < 0.0d || x < 0.0d) {
