@@ -1108,11 +1108,14 @@ public class Iwashi {
   }
   public boolean doSchoolCenter() {
     java.util.Random rand = new java.util.Random(System.currentTimeMillis());
-    if (rand.nextInt(100) <= 97f) {
+    if (rand.nextInt(100) <= 97) {
       // 変更なし
       return false;
     }
-    return aimSchoolCenter();
+    if (species.length > 1) {
+      return aimSchoolCenter();
+    }
+    return false;
   }
 
   public void update_speed() {
