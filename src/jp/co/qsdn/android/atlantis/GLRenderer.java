@@ -28,6 +28,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
   private float iwashi_speed = 0.03f;
   /* カメラの位置 */
   private float[] camera = {0f,0f,0f};
+  private float[] org_camera = {0f,0f,0f};
 
   GLRenderer(Context context) { 
     this.context = context;
@@ -66,9 +67,9 @@ public class GLRenderer implements GLSurfaceView.Renderer {
       iwashi[ii].setSpeed(iwashi_speed);
     }
 
-    camera[0] = 0f;
-    camera[1] = 0f;
-    camera[2] = Aquarium.max_z + 5.0f;
+    org_camera[0] = camera[0] = 0f;
+    org_camera[1] = camera[1] = 0f;
+    org_camera[2] = camera[2] = Aquarium.max_z + 5.0f;
 
     /* for Debug */
 /*
@@ -261,7 +262,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     synchronized(this) {
       if (xOffset >= 0.0f && xOffset <= 1.0f) {
         float newCamera_x = xOffset - 0.5f;
-        camera[0] = camera[0] + newCamera_x;
+        camera[0] = org_camera[0] + (newCamera_x * 3f);
       }
     }
     Log.d(TAG, "end onOffsetsChanged()");

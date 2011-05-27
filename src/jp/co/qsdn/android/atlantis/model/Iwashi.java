@@ -25,6 +25,7 @@ public class Iwashi {
   private float scale = 0.1035156288414f;
   private float center_xyz[] = {-0.185271816326531f, 0.344428326530612f, -0.00509786734693878f };
   private CoordUtil coordUtil = new CoordUtil();
+  private long seed = 0;
   /*
    * 仲間、同種
    */
@@ -82,7 +83,8 @@ public class Iwashi {
     // 10.0f >= x  >= -10.0f
     // 8.0f >= y >= 0.0f
     // -50.0f > z >= 0.0f
-    java.util.Random rand = new java.util.Random(System.currentTimeMillis() + ii);
+    java.util.Random rand = new java.util.Random(System.nanoTime() + (ii * 500));
+    this.seed = (long)(rand.nextFloat() * 5000f);
     position[0] = rand.nextFloat() * 8f - 4f;
     position[1] = rand.nextFloat() * 8f - 4f;
     position[2] = rand.nextFloat() * 4f - 2f;
@@ -109,7 +111,7 @@ public class Iwashi {
   }
 
   private void animate() {
-    long current = System.currentTimeMillis();
+    long current = System.currentTimeMillis() + this.seed;
     float nf = (float)((current / 200) % 10000);
     long ni = (long)Math.floor(nf);
     float w = 2f*((float)Math.PI)*(nf - (float)ni);
