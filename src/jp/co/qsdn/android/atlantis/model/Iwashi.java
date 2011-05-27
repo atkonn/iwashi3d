@@ -29,8 +29,8 @@ public class Iwashi {
    * 仲間、同種
    */
   private Iwashi[] species;
-  private double separate_dist  = 10d * scale;
-  private double alignment_dist = 30d * scale;
+  private double separate_dist  = 5.0d * scale;
+  private double alignment_dist = 15.0d * scale;
   private double cohesion_dist  = 50d * scale;
   private float[] schoolCenter = {0f,0f,0f};
 
@@ -1521,17 +1521,41 @@ public class Iwashi {
     return true;
   }
   public void move() {
-    position[0] = position[0] + direction[0] * speed;
-    position[1] = position[1] + direction[1] * speed;
-    position[2] = position[2] + direction[2] * speed;
+    if (getX() + getDirectionX() * getSpeed() >= Aquarium.max_x) {
+      setX(Aquarium.max_x);
+    }
+    else if (getX() + getDirectionX() * getSpeed() <= Aquarium.min_x) {
+      setX(Aquarium.min_x);
+    }
+    else {
+      setX(getX() + getDirectionX() * getSpeed());
+    }
+    if (getY() + getDirectionY() * getSpeed() >= Aquarium.max_y) {
+      setY(Aquarium.max_y);
+    }
+    else if (getY() + getDirectionY() * getSpeed() <= Aquarium.min_y) {
+      setY(Aquarium.min_y);
+    }
+    else {
+      setY(getY() + getDirectionY() * getSpeed());
+    }
+    if (getZ() + getDirectionZ() * getSpeed() >= Aquarium.max_z) {
+      setZ(Aquarium.max_z);
+    }
+    else if (getZ() + getDirectionZ() * getSpeed() <= Aquarium.min_z) {
+      setZ(Aquarium.min_z);
+    }
+    else {
+      setZ(getZ() + getDirectionZ() * getSpeed());
+    }
     Log.d(TAG, "end move "
-      + "dx:[" + direction[0] + "]:"
-      + "dy:[" + direction[1] + "]:"
-      + "dz:[" + direction[2] + "]:"
-      + "speed:[" + speed + "]:"
-      + "x:[" + position[0] + "]:"
-      + "y:[" + position[1] + "]:"
-      + "z:[" + position[2] + "]:"
+      + "dx:[" + getDirectionX() + "]:"
+      + "dy:[" + getDirectionY() + "]:"
+      + "dz:[" + getDirectionZ() + "]:"
+      + "speed:[" + getSpeed() + "]:"
+      + "x:[" + getX() + "]:"
+      + "y:[" + getY() + "]:"
+      + "z:[" + getZ() + "]:"
       + "x_angle:[" + x_angle + "]:"
       + "y_angle:[" + y_angle + "]:"
       );
@@ -1567,6 +1591,25 @@ public class Iwashi {
   
   public void setZ(float z) {
     this.position[2] = z;
+  }
+
+  public float getDirectionX() {
+    return direction[0];
+  }
+  public float getDirectionY() {
+    return direction[1];
+  }
+  public float getDirectionZ() {
+    return direction[2];
+  }
+  public void setDirectionX(float x) {
+    this.direction[0] = x;
+  }
+  public void setDirectionY(float y) {
+    this.direction[1] = y;
+  }
+  public void setDirectionZ(float z) {
+    this.direction[2] = z;
   }
   
   public float getSpeed() {
