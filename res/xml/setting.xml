@@ -9,5 +9,12 @@
       android:entries="@array/entries_iwashi_count"   
       android:entryValues="@array/entryvalues_iwashi_count"  
       android:dialogTitle="@string/dialog_title_iwashi_count" />  
+    <ListPreference   
+      android:key="@string/key_preference_iwashi_speed"  
+      android:title="@string/title_preference_iwashi_speed"   
+      android:summaryOn="@string/summary_preference_iwashi_speed"  
+      android:entries="@array/entries_iwashi_speed"   
+      android:entryValues="@array/entryvalues_iwashi_speed"  
+      android:dialogTitle="@string/dialog_title_iwashi_speed" />  
   </PreferenceCategory>
 </PreferenceScreen>

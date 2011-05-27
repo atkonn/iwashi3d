@@ -45,19 +45,25 @@ public class AtlantisService extends WallpaperService {
         public void run() {
           glRenderer.onDrawFrame(gl10);
           egl10.eglSwapBuffers(eglDisplay, eglSurface);
-          if (isVisible() && egl10.eglGetError() != EGL11.EGL_CONTEXT_LOST) {
+          if (!executor.isShutdown() && isVisible() && egl10.eglGetError() != EGL11.EGL_CONTEXT_LOST) {
             executor.execute(drawCommand);
           }
         }
       };
+      if (! isPreview()) {
+        AtlantisNotification.putNotice(AtlantisService.this);
+      }
       Log.d(TAG, "end onCreate()");
     }
 
     @Override
     public void onDestroy() {
       Log.d(TAG, "start onDestroy()");
-      executor.shutdownNow();
+      if (! isPreview()) {
+        AtlantisNotification.removeNotice(AtlantisService.this);
+      }
       super.onDestroy();
+      executor.shutdownNow();
       Log.d(TAG, "end onDestroy()");
     }
 
@@ -159,6 +165,10 @@ public class AtlantisService extends WallpaperService {
       super.onVisibilityChanged(visible);
       /* サーフェスが見えるようになったよ！ */
       if (visible && drawCommand != null) {
+        /* 設定変更のタイミング */
+        if (glRenderer != null) {
+          glRenderer.updateSetting();
+        }
         executor.execute(drawCommand);
       }
       Log.d(TAG, "end onVisibilityChanged()");

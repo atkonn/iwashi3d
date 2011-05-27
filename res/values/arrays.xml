@@ -18,4 +18,15 @@
     <item>@string/entryvalues_iwashi_count32</item>
     <item>@string/entryvalues_iwashi_count64</item>
   </array>
+
+  <array name="entries_iwashi_speed">
+    <item>@string/entries_iwashi_speed1</item>
+    <item>@string/entries_iwashi_speed2</item>
+    <item>@string/entries_iwashi_speed3</item>
+  </array>
+  <array name="entryvalues_iwashi_speed">
+    <item>@string/entryvalues_iwashi_speed1</item>
+    <item>@string/entryvalues_iwashi_speed2</item>
+    <item>@string/entryvalues_iwashi_speed3</item>
+  </array>
 </resources>

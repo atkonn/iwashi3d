@@ -6,7 +6,8 @@
   <application android:label="@string/app_name">
     <service android:name=".AtlantisService"
       android:label="@string/service_name"
-      android:permission="android.permission.BIND_WALLPAPER">
+      android:permission="android.permission.BIND_WALLPAPER"
+      android:launchMode="singleTask">
       <intent-filter>
         <action android:name="android.service.wallpaper.WallpaperService" />
       </intent-filter>
@@ -16,12 +17,19 @@
     <user-sdk android:minSdkVersion="7" android:targetSdkVersion="9" />
     <activity
       android:name="jp.co.qsdn.android.atlantis.SettingActivity"
-      android:label="@string/setting_title">
+      android:label="@string/setting_title"
+      android:launchMode="singleTask">
       <intent-filter>
         <action
           android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.DEFAULT" />
       </intent-filter>
     </activity>
+    <receiver android:name="AtlantisBroadcastReceiver">
+      <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED"/>
+      </intent-filter>
+    </receiver>
   </application>
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 </manifest> 

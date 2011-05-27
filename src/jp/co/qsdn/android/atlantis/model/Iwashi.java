@@ -30,8 +30,8 @@ public class Iwashi {
    */
   private Iwashi[] species;
   private double separate_dist  = 10d * scale;
-  private double alignment_dist = 15d * scale;
-  private double cohesion_dist  = 30d * scale;
+  private double alignment_dist = 30d * scale;
+  private double cohesion_dist  = 50d * scale;
   private float[] schoolCenter = {0f,0f,0f};
 
 
@@ -64,7 +64,7 @@ public class Iwashi {
   private float speed_unit = speed / 5f;
   private float speed_max = 0.050f;
 
-  public Iwashi() {
+  public Iwashi(int ii) {
 
     ByteBuffer nbb = ByteBuffer.allocateDirect(IwashiData.normals.length * 4);
     nbb.order(ByteOrder.nativeOrder());
@@ -82,7 +82,7 @@ public class Iwashi {
     // 10.0f >= x  >= -10.0f
     // 8.0f >= y >= 0.0f
     // -50.0f > z >= 0.0f
-    java.util.Random rand = new java.util.Random(System.currentTimeMillis());
+    java.util.Random rand = new java.util.Random(System.currentTimeMillis() + ii);
     position[0] = rand.nextFloat() * 8f - 4f;
     position[1] = rand.nextFloat() * 8f - 4f;
     position[2] = rand.nextFloat() * 4f - 2f;
@@ -1014,12 +1014,15 @@ public class Iwashi {
 
   }
 
+
   public void draw(GL10 gl10) {
     gl10.glPushMatrix();
 
-    think(THINK_TYPE.NORMAL);
-    move();
-    animate();
+    synchronized (this) {
+      think(THINK_TYPE.NORMAL);
+      move();
+      animate();
+    }
 
     // forDebug
     gl10.glTranslatef(getX(),getY(),getZ());
@@ -1352,6 +1355,20 @@ public class Iwashi {
     aimTargetDegree(angle_x, angle_y);
     Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
     Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
+
+    /* direction設定 */
+    coordUtil.setMatrixRotateZ(x_angle);
+    float[] retx = coordUtil.affine(-1.0f,0.0f, 0.0f);
+    coordUtil.setMatrixRotateY(y_angle);
+    float[] rety = coordUtil.affine(retx[0],retx[1], retx[2]);
+    direction[0] = rety[0];
+    direction[1] = rety[1];
+    direction[2] = rety[2];
+    Log.d(TAG, "結果的に向かう方向"
+     + " x:[" + direction[0] + "]:"
+     + " y:[" + direction[1] + "]:"
+     + " z:[" + direction[2] + "]:");
+
     /* スピードも合わせる */
     aimTargetSpeed(target.getSpeed());
 
@@ -1558,6 +1575,8 @@ public class Iwashi {
   
   public void setSpeed(float speed) {
     this.speed = speed;
+    this.speed_unit = speed / 5f;
+    this.speed_max = speed + 0.03f;
   }
   
   public float[] getDirection() {

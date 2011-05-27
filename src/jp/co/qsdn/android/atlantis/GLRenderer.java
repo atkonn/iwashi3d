@@ -25,6 +25,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
   private final Aquarium aquarium = new Aquarium();
   private Iwashi[] iwashi = null;
   private int iwashi_count = 1;
+  private float iwashi_speed = 0.03f;
   /* カメラの位置 */
   private float[] camera = {0f,0f,0f};
 
@@ -39,19 +40,29 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     gl10.glDepthFunc(GL10.GL_LEQUAL);
     gl10.glEnableClientState(GL10.GL_VERTEX_ARRAY);
     gl10.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
+    /*=======================================================================*/
+    /* カリングの有効化                                                      */
+    /*=======================================================================*/
+    gl10.glEnable(GL10.GL_CULL_FACE);
+
+    /*=======================================================================*/
+    /* テクスチャ                                                            */
+    /*=======================================================================*/
     gl10.glEnable(GL10.GL_TEXTURE_2D);
     Background.loadTexture(gl10, context, R.drawable.background);
     //Ground.loadTexture(gl10, context, R.drawable.sand);
     Iwashi.loadTexture(gl10, context, R.drawable.iwashi);
 
     iwashi_count = SettingActivity.getIwashiCount(context);
+    iwashi_speed = SettingActivity.getIwashiSpeed(context);
 
     iwashi = new Iwashi[iwashi_count];
     for (int ii=0; ii<iwashi_count; ii++) {
-      iwashi[ii] = new Iwashi();
+      iwashi[ii] = new Iwashi(ii);
     }
     for (int ii=0; ii<iwashi_count; ii++) {
       iwashi[ii].setSpecies(iwashi);
+      iwashi[ii].setSpeed(iwashi_speed);
     }
 
     camera[0] = 0f;
@@ -66,7 +77,111 @@ public class GLRenderer implements GLSurfaceView.Renderer {
       iwashi[ii].setZ(0f);
     }
 */
+    /*=======================================================================*/
+    /* 光のセットアップ                                                      */
+    /*=======================================================================*/
+    setupLighting1(gl10);
     Log.d(TAG, "end onSurfaceCreated()");
+  }
+
+  /**
+   * 光のセットアップ
+   */
+  public void setupLighting1(GL10 gl10) {
+    gl10.glEnable(GL10.GL_LIGHTING);
+    gl10.glEnable(GL10.GL_LIGHT0);
+    /*=======================================================================*/
+    /* 環境光の材質色設定                                                    */
+    /*=======================================================================*/
+    float[] mat_amb = { 
+      0.7f, 
+      0.7f, 
+      1.0f,
+      1.0f,
+     };
+    gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, mat_amb, 0);
+    /*=======================================================================*/
+    /* 拡散反射光の色設定                                                    */
+    /*=======================================================================*/
+    float[] mat_diff = { 
+      1.0f * 0.8f, 
+      1.0f * 0.8f, 
+      1.0f * 0.8f, 
+      1.0f,
+     };
+    gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, mat_diff, 0);
+    /*=======================================================================*/
+    /* 鏡面反射光の色設定                                                    */
+    /*=======================================================================*/
+    float[] mat_spec = { 0.1f* 0.2f, 0.1f * 0.2f, 0.1f * 0.8f, 0.8f };
+    gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, mat_spec, 0);
+    gl10.glMaterialf(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, 64f);
+  }
+  public void setupLighting2(GL10 gl10) {
+    /*=======================================================================*/
+    /* 環境光の色設定                                                        */
+    /*=======================================================================*/
+    float[] amb = { 1.0f, 1.0f, 1.0f, 1.0f };
+    gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_AMBIENT, amb, 0);
+    /*=======================================================================*/
+    /* 拡散反射光の色設定                                                    */
+    /*=======================================================================*/
+    float[] diff = { 1.0f, 1.0f, 1.0f, 1.0f };
+    gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, diff, 0);
+    /*=======================================================================*/
+    /* 鏡面反射光の位置設定                                                  */
+    /*=======================================================================*/
+    float[] spec = { 1.0f, 1.0f, 1.0f, 1.0f };
+    gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_SPECULAR, spec, 0);
+    /*=======================================================================*/
+    /* そもそもの光の位置設定                                                */
+    /*=======================================================================*/
+    float[] pos = { 0.0f, 8.0f, 1.0f, 0.0f };
+    gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, pos, 0);
+    /*=======================================================================*/
+    /* そもそもの光の向き設定                                                */
+    /*=======================================================================*/
+    float[] dir = { 0.0f, -1.0f, 0.0f };
+    gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_SPOT_DIRECTION, dir, 0);
+    gl10.glLightf(GL10.GL_LIGHT0, GL10.GL_SPOT_CUTOFF, 180);
+  }
+
+  public void updateSetting() {
+    if (iwashi == null) {
+      return;
+    }
+    int _iwashi_count = SettingActivity.getIwashiCount(context);
+    float _iwashi_speed = SettingActivity.getIwashiSpeed(context);
+    if (_iwashi_count != iwashi_count) {
+      synchronized (this) {
+        Iwashi[] newIwashi = new Iwashi[_iwashi_count];
+        for (int ii=0; ii<_iwashi_count; ii++) {
+          if (ii < iwashi_count) {
+            newIwashi[ii] = iwashi[ii];
+          }
+          else {
+            newIwashi[ii] = new Iwashi(ii);
+          }
+        }
+        for (int ii=0; ii<iwashi_count; ii++) {
+          iwashi[ii] = null;
+        }
+        iwashi = null;
+        iwashi_count = _iwashi_count;
+        iwashi = newIwashi;
+        for (int ii=0; ii<iwashi_count; ii++) {
+          iwashi[ii].setSpecies(iwashi);
+        }
+      }
+    }
+    if (_iwashi_speed != iwashi_speed) {
+      synchronized (this) {
+        for (int ii=0; ii<iwashi_count; ii++) {
+          iwashi[ii].setSpeed(_iwashi_speed);
+          iwashi_speed = _iwashi_speed;
+        }
+      }
+    }
   }
 
   public void onSurfaceChanged(GL10 gl10, int width, int height) {
@@ -91,8 +206,12 @@ public class GLRenderer implements GLSurfaceView.Renderer {
       + "yOffsetStep:[" + yOffsetStep + "]:"
       + "xPixelOffset:[" + xPixelOffset + "]:"
       + "yPixelOffset:[" + yPixelOffset + "]:");
-    float newCamera_x = xOffset - 0.5f;
-    camera[0] = camera[0] + newCamera_x;
+    synchronized(this) {
+      float newCamera_x = xOffset - 0.5f;
+      if (newCamera_x >= 0.0f && newCamera_x <= 1.0f) {
+        camera[0] = camera[0] + newCamera_x;
+      }
+    }
     Log.d(TAG, "end onOffsetsChanged()");
   }
 
@@ -107,10 +226,13 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     // モデルの位置を決める
     gl10.glMatrixMode(GL10.GL_MODELVIEW);
     gl10.glLoadIdentity();
+    // カメラ
     GLU.gluLookAt(gl10,
                   camera[0],camera[1],camera[2] + 10f,
                   camera[0],camera[1],-100f,
                   0,1,0);
+    // ライト
+    setupLighting2(gl10);
 
     // 背景描画
     background.draw(gl10);
@@ -129,9 +251,11 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     schoolCenter[0] /= iwashi_count;
     schoolCenter[1] /= iwashi_count;
     schoolCenter[2] /= iwashi_count;
-    for (int ii=0; ii<iwashi_count; ii++) {
-      iwashi[ii].setSchoolCenter(schoolCenter);
-      iwashi[ii].draw(gl10);
+    synchronized (this) {
+      for (int ii=0; ii<iwashi_count; ii++) {
+          iwashi[ii].setSchoolCenter(schoolCenter);
+          iwashi[ii].draw(gl10);
+      }
     }
     gl10.glPopMatrix(); 
             
