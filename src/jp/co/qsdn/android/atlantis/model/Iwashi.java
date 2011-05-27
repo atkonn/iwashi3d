@@ -1024,8 +1024,42 @@ public class Iwashi {
       animate();
     }
 
-    // forDebug
+    gl10.glPushMatrix();
+    {
+      /*=======================================================================*/
+      /* 環境光の材質色設定                                                    */
+      /*=======================================================================*/
+      float[] mat_amb = { 
+        0.1f, 
+        0.1f, 
+        0.1f,
+        1.0f,
+       };
+      gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, mat_amb, 0);
+      /*=======================================================================*/
+      /* 拡散反射光の色設定                                                    */
+      /*=======================================================================*/
+      float[] mat_diff = { 
+        0.2f, 
+        0.2f, 
+        0.2f, 
+        1.0f,
+       };
+      gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, mat_diff, 0);
+      /*=======================================================================*/
+      /* 鏡面反射光の質感色設定                                                */
+      /*=======================================================================*/
+      float[] mat_spec = { 
+        1.0f, 
+        1.0f, 
+        1.0f, 
+        1.0f,
+      };
+      gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, mat_spec, 0);
+      gl10.glMaterialf(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, 64f);
+    }
     gl10.glTranslatef(getX(),getY(),getZ());
+
     gl10.glRotatef(y_angle, 0.0f, 1.0f, 0.0f);
     gl10.glRotatef(x_angle * -1f, 0.0f, 0.0f, 1.0f);
 
@@ -1036,6 +1070,10 @@ public class Iwashi {
     gl10.glBindTexture(GL10.GL_TEXTURE_2D, texid);
     gl10.glTexCoordPointer(2, GL10.GL_FLOAT, 0, mTextureBuffer);
     gl10.glDrawArrays(GL10.GL_TRIANGLES, 0, IwashiData.iwashiNumVerts);
+
+
+
+    gl10.glPopMatrix();
     gl10.glPopMatrix();
   }
 
@@ -1140,9 +1178,9 @@ public class Iwashi {
    * どの方向に進むか考える
    */
   public void thinkDirection() {
-    if (  (Aquarium.min_x.compareTo(new Float(position[0])) > 0 || Aquarium.max_x.compareTo(new Float(position[0])) < 0)
-      ||  (Aquarium.min_y.compareTo(new Float(position[1])) > 0 || Aquarium.max_y.compareTo(new Float(position[1])) < 0)
-      ||  (Aquarium.min_z.compareTo(new Float(position[2])) > 0 || Aquarium.max_z.compareTo(new Float(position[2])) < 0)) {
+    if (  (Aquarium.min_x.compareTo(new Float(position[0])) >= 0 || Aquarium.max_x.compareTo(new Float(position[0])) <= 0)
+      ||  (Aquarium.min_y.compareTo(new Float(position[1])) >= 0 || Aquarium.max_y.compareTo(new Float(position[1])) <= 0)
+      ||  (Aquarium.min_z.compareTo(new Float(position[2])) >= 0 || Aquarium.max_z.compareTo(new Float(position[2])) <= 0)) {
       /*=====================================================================*/
       /* 水槽からはみ出てる                                                  */
       /*=====================================================================*/

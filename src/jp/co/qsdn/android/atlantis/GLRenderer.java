@@ -39,6 +39,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     gl10.glEnable(GL10.GL_DEPTH_TEST);
     gl10.glDepthFunc(GL10.GL_LEQUAL);
     gl10.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+    gl10.glEnableClientState(GL10.GL_NORMAL_ARRAY);
     gl10.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
     /*=======================================================================*/
     /* カリングの有効化                                                      */
@@ -67,20 +68,26 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
     camera[0] = 0f;
     camera[1] = 0f;
-    camera[2] = Aquarium.max_z + 0.5f;
+    camera[2] = Aquarium.max_z + 5.0f;
 
     /* for Debug */
 /*
     for (int ii=0; ii<iwashi_count; ii++) {
       iwashi[ii].setX(0f);
       iwashi[ii].setY(0f);
-      iwashi[ii].setZ(0f);
+      iwashi[ii].setZ(5f);
     }
 */
     /*=======================================================================*/
-    /* 光のセットアップ                                                      */
+    /* フォグのセットアップ                                                  */
     /*=======================================================================*/
-    setupLighting1(gl10);
+    setupFog(gl10);
+
+    gl10.glEnable(GL10.GL_NORMALIZE) ;
+    gl10.glEnable(GL10.GL_RESCALE_NORMAL);
+    gl10.glShadeModel(GL10.GL_SMOOTH);
+
+
     Log.d(TAG, "end onSurfaceCreated()");
   }
 
@@ -90,60 +97,105 @@ public class GLRenderer implements GLSurfaceView.Renderer {
   public void setupLighting1(GL10 gl10) {
     gl10.glEnable(GL10.GL_LIGHTING);
     gl10.glEnable(GL10.GL_LIGHT0);
-    /*=======================================================================*/
-    /* 環境光の材質色設定                                                    */
-    /*=======================================================================*/
-    float[] mat_amb = { 
-      0.7f, 
-      0.7f, 
-      1.0f,
-      1.0f,
-     };
-    gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, mat_amb, 0);
-    /*=======================================================================*/
-    /* 拡散反射光の色設定                                                    */
-    /*=======================================================================*/
-    float[] mat_diff = { 
-      1.0f * 0.8f, 
-      1.0f * 0.8f, 
-      1.0f * 0.8f, 
-      1.0f,
-     };
-    gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, mat_diff, 0);
-    /*=======================================================================*/
-    /* 鏡面反射光の色設定                                                    */
-    /*=======================================================================*/
-    float[] mat_spec = { 0.1f* 0.2f, 0.1f * 0.2f, 0.1f * 0.8f, 0.8f };
-    gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, mat_spec, 0);
-    gl10.glMaterialf(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, 64f);
+    gl10.glEnable(GL10.GL_LIGHT1);
   }
   public void setupLighting2(GL10 gl10) {
-    /*=======================================================================*/
-    /* 環境光の色設定                                                        */
-    /*=======================================================================*/
-    float[] amb = { 1.0f, 1.0f, 1.0f, 1.0f };
-    gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_AMBIENT, amb, 0);
-    /*=======================================================================*/
-    /* 拡散反射光の色設定                                                    */
-    /*=======================================================================*/
-    float[] diff = { 1.0f, 1.0f, 1.0f, 1.0f };
-    gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, diff, 0);
-    /*=======================================================================*/
-    /* 鏡面反射光の位置設定                                                  */
-    /*=======================================================================*/
-    float[] spec = { 1.0f, 1.0f, 1.0f, 1.0f };
-    gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_SPECULAR, spec, 0);
-    /*=======================================================================*/
-    /* そもそもの光の位置設定                                                */
-    /*=======================================================================*/
-    float[] pos = { 0.0f, 8.0f, 1.0f, 0.0f };
-    gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, pos, 0);
-    /*=======================================================================*/
-    /* そもそもの光の向き設定                                                */
-    /*=======================================================================*/
-    float[] dir = { 0.0f, -1.0f, 0.0f };
-    gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_SPOT_DIRECTION, dir, 0);
-    gl10.glLightf(GL10.GL_LIGHT0, GL10.GL_SPOT_CUTOFF, 180);
+    gl10.glMatrixMode(GL10.GL_MODELVIEW);  // ModelView行列をクリア
+    gl10.glPushMatrix();
+    gl10.glLoadIdentity();
+    gl10.glMatrixMode(GL10.GL_PROJECTION); // Projection行列をクリア
+    gl10.glPushMatrix();
+    gl10.glLoadIdentity();
+    {
+      /*=======================================================================*/
+      /* 環境光の色設定                                                        */
+      /*=======================================================================*/
+      float[] amb = { 1.0f, 1.0f, 1.0f, 1.0f };
+      gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_AMBIENT, amb, 0);
+      /*=======================================================================*/
+      /* 拡散反射光の色設定                                                    */
+      /*=======================================================================*/
+      float[] diff = { 1.0f, 1.0f, 1.0f, 1.0f };
+      gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, diff, 0);
+      /*=======================================================================*/
+      /* 鏡面反射光の色設定                                                    */
+      /*=======================================================================*/
+      float[] spec = { 1.0f, 1.0f, 1.0f, 1.0f };
+      gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_SPECULAR, spec, 0);
+      /*=======================================================================*/
+      /* そもそもの光の位置設定                                                */
+      /*=======================================================================*/
+      float[] pos1 = { 0.0f, 10.0f, 0.0f, 1.0f };
+      gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, pos1, 0);
+      /*=======================================================================*/
+      /* そもそもの光の向き設定                                                */
+      /*=======================================================================*/
+      float[] dir = { 0.0f, -1.0f, 0.0f };
+      gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_SPOT_DIRECTION, dir, 0);
+      gl10.glLightf(GL10.GL_LIGHT0, GL10.GL_SPOT_CUTOFF, 90);
+      gl10.glLightf(GL10.GL_LIGHT0, GL10.GL_SPOT_EXPONENT, 0);
+      /*=======================================================================*/
+      /* 減衰ほとんどなしに設定                                                */
+      /*=======================================================================*/
+      gl10.glLightf(GL10.GL_LIGHT0, GL10.GL_CONSTANT_ATTENUATION, 0.2f);
+      gl10.glLightf(GL10.GL_LIGHT0, GL10.GL_LINEAR_ATTENUATION, 0.002f);
+      gl10.glLightf(GL10.GL_LIGHT0, GL10.GL_QUADRATIC_ATTENUATION, 0.0f);
+    }
+    {
+      /*=======================================================================*/
+      /* 環境光の色設定                                                        */
+      /*=======================================================================*/
+      float[] amb = { 0.019f, 0.9606f, 1.0f, 1.0f };
+      gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_AMBIENT, amb, 0);
+      /*=======================================================================*/
+      /* 拡散反射光の色設定                                                    */
+      /*=======================================================================*/
+      float[] diff = { 0.019f, 0.9606f, 1.0f, 1.0f };
+      gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_DIFFUSE, diff, 0);
+      /*=======================================================================*/
+      /* 鏡面反射光の色設定                                                    */
+      /*=======================================================================*/
+      float[] spec = { 0.019f, 0.9606f, 1.0f, 1.0f };
+      gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_SPECULAR, spec, 0);
+      /*=======================================================================*/
+      /* そもそもの光の位置設定                                                */
+      /*=======================================================================*/
+      float[] pos = { 0.0f, -10.0f, 0.0f, 1.0f };
+      gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_POSITION, pos, 0);
+      /*=======================================================================*/
+      /* そもそもの光の向き設定                                                */
+      /*=======================================================================*/
+      float[] dir = { 0.0f, 1.0f, 0.0f };
+      gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_SPOT_DIRECTION, dir, 0);
+      gl10.glLightf(GL10.GL_LIGHT1, GL10.GL_SPOT_CUTOFF, 90);
+      gl10.glLightf(GL10.GL_LIGHT1, GL10.GL_SPOT_EXPONENT, 0);
+      /*=======================================================================*/
+      /* 減衰ほとんどなしに設定                                                */
+      /*=======================================================================*/
+      gl10.glLightf(GL10.GL_LIGHT1, GL10.GL_CONSTANT_ATTENUATION, 0.2f);
+      gl10.glLightf(GL10.GL_LIGHT1, GL10.GL_LINEAR_ATTENUATION, 0.002f);
+      gl10.glLightf(GL10.GL_LIGHT1, GL10.GL_QUADRATIC_ATTENUATION, 0.0f);
+    }
+
+    gl10.glMatrixMode(GL10.GL_PROJECTION); // Projection行列を元に戻す
+    gl10.glPopMatrix();
+    gl10.glMatrixMode(GL10.GL_MODELVIEW);  // ModelView行列を元に戻す
+    gl10.glPopMatrix();
+  }
+
+  /**
+   * フォグのセットアップ
+   */
+  public void setupFog(GL10 gl10) {
+    gl10.glEnable(GL10.GL_FOG);
+    gl10.glFogf(GL10.GL_FOG_MODE, GL10.GL_LINEAR);
+    gl10.glFogf(GL10.GL_FOG_START, 7f);
+    gl10.glFogf(GL10.GL_FOG_END, 21.0f);
+
+    float[] color = {
+      0.011f, 0.4218f, 0.6445f, 1.0f,
+    };
+    gl10.glFogfv(GL10.GL_FOG_COLOR, color, 0);
   }
 
   public void updateSetting() {
@@ -207,8 +259,8 @@ public class GLRenderer implements GLSurfaceView.Renderer {
       + "xPixelOffset:[" + xPixelOffset + "]:"
       + "yPixelOffset:[" + yPixelOffset + "]:");
     synchronized(this) {
-      float newCamera_x = xOffset - 0.5f;
-      if (newCamera_x >= 0.0f && newCamera_x <= 1.0f) {
+      if (xOffset >= 0.0f && xOffset <= 1.0f) {
+        float newCamera_x = xOffset - 0.5f;
         camera[0] = camera[0] + newCamera_x;
       }
     }
@@ -226,13 +278,20 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     // モデルの位置を決める
     gl10.glMatrixMode(GL10.GL_MODELVIEW);
     gl10.glLoadIdentity();
+
+
     // カメラ
     GLU.gluLookAt(gl10,
-                  camera[0],camera[1],camera[2] + 10f,
+                  camera[0],camera[1],camera[2],
                   camera[0],camera[1],-100f,
                   0,1,0);
-    // ライト
+
+
+    /*=======================================================================*/
+    /* 光のセットアップ                                                      */
+    /*=======================================================================*/
     setupLighting2(gl10);
+    setupLighting1(gl10);
 
     // 背景描画
     background.draw(gl10);
