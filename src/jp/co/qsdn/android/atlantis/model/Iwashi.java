@@ -1,5 +1,14 @@
 package jp.co.qsdn.android.atlantis.model;
 
+import android.content.Context;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
+import android.opengl.GLUtils;
+
+import android.util.Log;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -7,15 +16,12 @@ import java.nio.IntBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.opengl.GLUtils;
-import android.util.Log;
-import jp.co.qsdn.android.atlantis.util.CoordUtil;
 import jp.co.qsdn.android.atlantis.Aquarium;
+import jp.co.qsdn.android.atlantis.BaitManager;
+import jp.co.qsdn.android.atlantis.util.CoordUtil;
 
 public class Iwashi {
+  private static final boolean debug = false;
   private static final String TAG = Iwashi.class.getName();
   private FloatBuffer mVertexBuffer;
   private final FloatBuffer mTextureBuffer;  
@@ -26,13 +32,14 @@ public class Iwashi {
   private float center_xyz[] = {-0.185271816326531f, 0.344428326530612f, -0.00509786734693878f };
   private CoordUtil coordUtil = new CoordUtil();
   private long seed = 0;
+  private BaitManager baitManager;
   /*
    * 仲間、同種
    */
   private Iwashi[] species;
-  private double separate_dist  = 5.0d * scale;
-  private double alignment_dist = 15.0d * scale;
-  private double cohesion_dist  = 50d * scale;
+  private double separate_dist  = 2.0d * scale;
+  private double alignment_dist = 5.0d * scale;
+  private double cohesion_dist  = 50.0d * scale;
   private float[] schoolCenter = {0f,0f,0f};
 
 
@@ -1032,9 +1039,9 @@ public class Iwashi {
       /* 環境光の材質色設定                                                    */
       /*=======================================================================*/
       float[] mat_amb = { 
-        0.1f, 
-        0.1f, 
-        0.1f,
+        0.05f, 
+        0.05f, 
+        0.05f,
         1.0f,
        };
       gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, mat_amb, 0);
@@ -1042,9 +1049,9 @@ public class Iwashi {
       /* 拡散反射光の色設定                                                    */
       /*=======================================================================*/
       float[] mat_diff = { 
-        0.2f, 
-        0.2f, 
-        0.2f, 
+        0.12f, 
+        0.12f, 
+        0.12f, 
         1.0f,
        };
       gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, mat_diff, 0);
@@ -1106,6 +1113,10 @@ public class Iwashi {
     return false;
   }
   public boolean doAlignment() {
+    java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
+    if (rand.nextInt(100) <= 20) {
+      return false;
+    }
     for (int ii=0; ii<species.length; ii++) {
       if (species[ii].equals(this)) {
         /*===================================================================*/
@@ -1128,6 +1139,10 @@ public class Iwashi {
     return false;
   }
   public boolean doCohesion() {
+    java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
+    if (rand.nextInt(100) <= 20) {
+      return false;
+    }
     for (int ii=0; ii<species.length; ii++) {
       if (species[ii].equals(this)) {
         /*===================================================================*/
@@ -1150,8 +1165,8 @@ public class Iwashi {
     return false;
   }
   public boolean doSchoolCenter() {
-    java.util.Random rand = new java.util.Random(System.currentTimeMillis());
-    if (rand.nextInt(100) <= 97) {
+    java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
+    if (rand.nextInt(100) <= 40) {
       // 変更なし
       return false;
     }
@@ -1162,8 +1177,8 @@ public class Iwashi {
   }
 
   public void update_speed() {
-    java.util.Random rand = new java.util.Random(System.currentTimeMillis());
-    if (rand.nextInt(100) <= 95) {
+    java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
+    if (rand.nextInt(100) <= 80) {
       // 変更なし
       return;
     }
@@ -1331,7 +1346,9 @@ public class Iwashi {
     }
   }
   public void turnSeparation(Iwashi target) {
-    Log.d(TAG, "start turnSeparate");
+    if (debug) {
+      Log.d(TAG, "start turnSeparate");
+    }
     /*=======================================================================*/
     /* ターゲットのいる方向とは逆の方向を算出                                */
     /*=======================================================================*/
@@ -1346,10 +1363,12 @@ public class Iwashi {
       v_y = target.getDirection()[1] * -1;
       v_z = target.getDirection()[2] * -1;
     }
-    Log.d(TAG, "向かいたい方向"
-     + " x:[" + v_x + "]:"
-     + " y:[" + v_y + "]:"
-     + " z:[" + v_z + "]:");
+    if (debug) {
+      Log.d(TAG, "向かいたい方向"
+       + " x:[" + v_x + "]:"
+       + " y:[" + v_y + "]:"
+       + " z:[" + v_z + "]:");
+    }
 
     /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
     float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
@@ -1361,13 +1380,17 @@ public class Iwashi {
     if ((angle_x < 0.0f && v_y > 0.0f) || (angle_x > 0.0f && v_y < 0.0f)) {
       angle_x *= -1f;
     }
-    Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
-    Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
+    if (debug) {
+      Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
+      Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
+    }
 
     /* その角度へ近づける */
     aimTargetDegree(angle_x, angle_y);
-    Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
-    Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
+    if (debug) {
+      Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
+      Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
+    }
 
     /* direction設定 */
     coordUtil.setMatrixRotateZ(x_angle);
@@ -1377,24 +1400,32 @@ public class Iwashi {
     direction[0] = rety[0];
     direction[1] = rety[1];
     direction[2] = rety[2];
-    Log.d(TAG, "結果的に向かう方向"
-     + " x:[" + direction[0] + "]:"
-     + " y:[" + direction[1] + "]:"
-     + " z:[" + direction[2] + "]:");
-    Log.d(TAG, "end turnSeparate");
+    if (debug) {
+      Log.d(TAG, "結果的に向かう方向"
+       + " x:[" + direction[0] + "]:"
+       + " y:[" + direction[1] + "]:"
+       + " z:[" + direction[2] + "]:");
+      Log.d(TAG, "end turnSeparate");
+    }
   }
   public void turnAlignment(Iwashi target) {
-    Log.d(TAG, "start turnAlignment");
+    if (debug) {
+      Log.d(TAG, "start turnAlignment");
+    }
     /* ターゲットの角度 */
     float angle_x = target.getX_angle();
     float angle_y = target.getY_angle();
-    Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
-    Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
+    if (debug) {
+      Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
+      Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
+    }
 
     /* その角度へ近づける */
     aimTargetDegree(angle_x, angle_y);
-    Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
-    Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
+    if (debug) {
+      Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
+      Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
+    }
 
     /* direction設定 */
     coordUtil.setMatrixRotateZ(x_angle);
@@ -1404,18 +1435,24 @@ public class Iwashi {
     direction[0] = rety[0];
     direction[1] = rety[1];
     direction[2] = rety[2];
-    Log.d(TAG, "結果的に向かう方向"
-     + " x:[" + direction[0] + "]:"
-     + " y:[" + direction[1] + "]:"
-     + " z:[" + direction[2] + "]:");
+    if (debug) {
+      Log.d(TAG, "結果的に向かう方向"
+       + " x:[" + direction[0] + "]:"
+       + " y:[" + direction[1] + "]:"
+       + " z:[" + direction[2] + "]:");
+    }
 
     /* スピードも合わせる */
     aimTargetSpeed(target.getSpeed());
 
-    Log.d(TAG, "end turnAlignment");
+    if (debug) {
+      Log.d(TAG, "end turnAlignment");
+    }
   }
   public void turnCohesion(Iwashi target) {
-    Log.d(TAG, "start turnCohesion");
+    if (debug) {
+      Log.d(TAG, "start turnCohesion");
+    }
     /* 順方向へのベクトルを算出 */
     float v_x = (target.getX() - getX());
     float v_y = (target.getY() - getY());
@@ -1425,10 +1462,12 @@ public class Iwashi {
       v_y = target.getDirection()[1];
       v_z = target.getDirection()[2];
     }
-    Log.d(TAG, "向かいたい方向"
-     + " x:[" + v_x + "]:"
-     + " y:[" + v_y + "]:"
-     + " z:[" + v_z + "]:");
+    if (debug) {
+      Log.d(TAG, "向かいたい方向"
+       + " x:[" + v_x + "]:"
+       + " y:[" + v_y + "]:"
+       + " z:[" + v_z + "]:");
+    }
 
 
     /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
@@ -1441,13 +1480,17 @@ public class Iwashi {
     if ((angle_x < 0.0f && v_y > 0.0f) || (angle_x > 0.0f && v_y < 0.0f)) {
       angle_x *= -1f;
     }
-    Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
-    Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
+    if (debug) {
+      Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
+      Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
+    }
 
     /* その角度へ近づける */
     aimTargetDegree(angle_x, angle_y);
-    Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
-    Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
+    if (debug) {
+      Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
+      Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
+    }
 
     /* direction設定 */
     coordUtil.setMatrixRotateZ(x_angle);
@@ -1457,11 +1500,13 @@ public class Iwashi {
     direction[0] = rety[0];
     direction[1] = rety[1];
     direction[2] = rety[2];
-    Log.d(TAG, "結果的に向かう方向"
-     + " x:[" + direction[0] + "]:"
-     + " y:[" + direction[1] + "]:"
-     + " z:[" + direction[2] + "]:");
-    Log.d(TAG, "end turnCohesion");
+    if (debug) {
+      Log.d(TAG, "結果的に向かう方向"
+       + " x:[" + direction[0] + "]:"
+       + " y:[" + direction[1] + "]:"
+       + " z:[" + direction[2] + "]:");
+      Log.d(TAG, "end turnCohesion");
+    }
   }
 
   public void think(THINK_TYPE thinkType) {
@@ -1474,14 +1519,18 @@ public class Iwashi {
    * 強制的に水槽の中心へ徐々に向ける
    */
   public void aimAquariumCenter() {
-    Log.d(TAG, "start aimAquariumCenter ");
+    if (debug) {
+      Log.d(TAG, "start aimAquariumCenter ");
+    }
     float v_x = (Aquarium.center[0] - getX());
     float v_y = (Aquarium.center[1] - getY());
     float v_z = (Aquarium.center[2] - getZ());
-    Log.d(TAG, "向かいたい方向"
-     + " x:[" + v_x + "]:"
-     + " y:[" + v_y + "]:"
-     + " z:[" + v_z + "]:");
+    if (debug) {
+      Log.d(TAG, "向かいたい方向"
+       + " x:[" + v_x + "]:"
+       + " y:[" + v_y + "]:"
+       + " z:[" + v_z + "]:");
+    }
 
     /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
     float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
@@ -1493,14 +1542,17 @@ public class Iwashi {
     if ((angle_x < 0.0f && v_y > 0.0f) || (angle_x > 0.0f && v_y < 0.0f)) {
       angle_x *= -1f;
     }
-
-    Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
-    Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
+    if (debug) {
+      Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
+      Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
+    }
 
     /* その角度へ近づける */
     aimTargetDegree(angle_x, angle_y);
-    Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
-    Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
+    if (debug) {
+      Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
+      Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
+    }
 
     coordUtil.setMatrixRotateZ(x_angle);
     float[] retx = coordUtil.affine(-1.0f,0.0f, 0.0f);
@@ -1509,20 +1561,26 @@ public class Iwashi {
     direction[0] = rety[0];
     direction[1] = rety[1];
     direction[2] = rety[2];
-    Log.d(TAG, "end aimAquariumCenter "
-      + "x:[" + direction[0] + "]:"
-      + "y:[" + direction[1] + "]:"
-      + "z:[" + direction[2] + "]:");
+    if (debug) {
+      Log.d(TAG, "end aimAquariumCenter "
+        + "x:[" + direction[0] + "]:"
+        + "y:[" + direction[1] + "]:"
+        + "z:[" + direction[2] + "]:");
+    }
   }
   public boolean aimSchoolCenter() {
-    Log.d(TAG, "start aimSchoolCenter ");
+    if (debug) {
+      Log.d(TAG, "start aimSchoolCenter ");
+    }
     float v_x = (schoolCenter[0] - getX());
     float v_y = (schoolCenter[1] - getY());
     float v_z = (schoolCenter[2] - getZ());
-    Log.d(TAG, "向かいたい方向"
-     + " x:[" + v_x + "]:"
-     + " y:[" + v_y + "]:"
-     + " z:[" + v_z + "]:");
+    if (debug) {
+      Log.d(TAG, "向かいたい方向"
+       + " x:[" + v_x + "]:"
+       + " y:[" + v_y + "]:"
+       + " z:[" + v_z + "]:");
+    }
     if (v_x == 0.0f && v_y == 0.0f && v_z == 0.0f) {
       /* 現在値は一緒 */
       return false;
@@ -1539,13 +1597,17 @@ public class Iwashi {
       angle_x *= -1f;
     }
 
-    Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
-    Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
+    if (debug) {
+      Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
+      Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
+    }
 
     /* その角度へ近づける */
     aimTargetDegree(angle_x, angle_y);
-    Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
-    Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
+    if (debug) {
+      Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
+      Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
+    }
 
     coordUtil.setMatrixRotateZ(x_angle);
     float[] retx = coordUtil.affine(-1.0f,0.0f, 0.0f);
@@ -1554,10 +1616,12 @@ public class Iwashi {
     direction[0] = rety[0];
     direction[1] = rety[1];
     direction[2] = rety[2];
-    Log.d(TAG, "end aimSchoolCenter "
-      + "x:[" + direction[0] + "]:"
-      + "y:[" + direction[1] + "]:"
-      + "z:[" + direction[2] + "]:");
+    if (debug) {
+      Log.d(TAG, "end aimSchoolCenter "
+        + "x:[" + direction[0] + "]:"
+        + "y:[" + direction[1] + "]:"
+        + "z:[" + direction[2] + "]:");
+    }
     return true;
   }
   public void move() {
@@ -1588,17 +1652,19 @@ public class Iwashi {
     else {
       setZ(getZ() + getDirectionZ() * getSpeed());
     }
-    Log.d(TAG, "end move "
-      + "dx:[" + getDirectionX() + "]:"
-      + "dy:[" + getDirectionY() + "]:"
-      + "dz:[" + getDirectionZ() + "]:"
-      + "speed:[" + getSpeed() + "]:"
-      + "x:[" + getX() + "]:"
-      + "y:[" + getY() + "]:"
-      + "z:[" + getZ() + "]:"
-      + "x_angle:[" + x_angle + "]:"
-      + "y_angle:[" + y_angle + "]:"
-      );
+    if (debug) {
+      Log.d(TAG, "end move "
+        + "dx:[" + getDirectionX() + "]:"
+        + "dy:[" + getDirectionY() + "]:"
+        + "dz:[" + getDirectionZ() + "]:"
+        + "speed:[" + getSpeed() + "]:"
+        + "x:[" + getX() + "]:"
+        + "y:[" + getY() + "]:"
+        + "z:[" + getZ() + "]:"
+        + "x_angle:[" + x_angle + "]:"
+        + "y_angle:[" + y_angle + "]:"
+        );
+    }
   }
 
 
@@ -1795,5 +1861,25 @@ public class Iwashi {
   public void setSchoolCenter(float schoolCenter, int index)
   {
       this.schoolCenter[index] = schoolCenter;
+  }
+  
+  /**
+   * Get baitManager.
+   *
+   * @return baitManager as BaitManager.
+   */
+  public BaitManager getBaitManager()
+  {
+      return baitManager;
+  }
+  
+  /**
+   * Set baitManager.
+   *
+   * @param baitManager the value to set.
+   */
+  public void setBaitManager(BaitManager baitManager)
+  {
+      this.baitManager = baitManager;
   }
 }

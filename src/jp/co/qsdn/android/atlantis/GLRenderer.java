@@ -7,20 +7,27 @@ import android.graphics.Paint;
 
 import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
+import android.opengl.Matrix;
 
 import android.util.Log;
+import android.os.Bundle;
 
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+import javax.microedition.khronos.opengles.GL11;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
 
 import jp.co.qsdn.android.atlantis.model.Iwashi;
+import jp.co.qsdn.android.atlantis.util.CoordUtil;
 
 public class GLRenderer implements GLSurfaceView.Renderer {
   private static final String TAG = GLRenderer.class.getName();
   private final Context context;
   private final Background background = new Background();
-  //private final Front front = new Front();
   //private final Ground ground = new Ground();
   private final Aquarium aquarium = new Aquarium();
   private Iwashi[] iwashi = null;
@@ -29,6 +36,8 @@ public class GLRenderer implements GLSurfaceView.Renderer {
   /* カメラの位置 */
   private float[] camera = {0f,0f,0f};
   private float[] org_camera = {0f,0f,0f};
+
+  private BaitManager baitManager = new BaitManager();
 
   GLRenderer(Context context) { 
     this.context = context;
@@ -65,6 +74,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     for (int ii=0; ii<iwashi_count; ii++) {
       iwashi[ii].setSpecies(iwashi);
       iwashi[ii].setSpeed(iwashi_speed);
+      //iwashi[ii].setBaitManager(baitManager);
     }
 
     org_camera[0] = camera[0] = 0f;
@@ -101,12 +111,6 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     gl10.glEnable(GL10.GL_LIGHT1);
   }
   public void setupLighting2(GL10 gl10) {
-    gl10.glMatrixMode(GL10.GL_MODELVIEW);  // ModelView行列をクリア
-    gl10.glPushMatrix();
-    gl10.glLoadIdentity();
-    gl10.glMatrixMode(GL10.GL_PROJECTION); // Projection行列をクリア
-    gl10.glPushMatrix();
-    gl10.glLoadIdentity();
     {
       /*=======================================================================*/
       /* 環境光の色設定                                                        */
@@ -178,10 +182,6 @@ public class GLRenderer implements GLSurfaceView.Renderer {
       gl10.glLightf(GL10.GL_LIGHT1, GL10.GL_QUADRATIC_ATTENUATION, 0.0f);
     }
 
-    gl10.glMatrixMode(GL10.GL_PROJECTION); // Projection行列を元に戻す
-    gl10.glPopMatrix();
-    gl10.glMatrixMode(GL10.GL_MODELVIEW);  // ModelView行列を元に戻す
-    gl10.glPopMatrix();
   }
 
   /**
@@ -224,6 +224,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         iwashi = newIwashi;
         for (int ii=0; ii<iwashi_count; ii++) {
           iwashi[ii].setSpecies(iwashi);
+          //iwashi[ii].setBait(bait);
         }
       }
     }
@@ -237,6 +238,9 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     }
   }
 
+
+  private int screen_width =0;
+  private int screen_height = 0;
   public void onSurfaceChanged(GL10 gl10, int width, int height) {
     Log.d(TAG, "start onSurfaceChanged()");
     // ビューフラスタムを定義
@@ -244,7 +248,12 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     gl10.glMatrixMode(GL10.GL_PROJECTION);
     gl10.glLoadIdentity();
     float ratio = (float) width / height;
-    GLU.gluPerspective(gl10, 45.0f, ratio, 1, 100f);
+    //GLU.gluPerspective(gl10, 45.0f, ratio, 1f, 30f);
+    //GLU.gluPerspective(gl10, 45.0f, ratio, 1f, 30f);
+    CoordUtil.perspective(gl10,45.0f, ratio, 1f, 30f);
+    //gl10.glFrustumf(-(float)(width/2),((float)(width/2)),-(float)(height/2), (float)(height/2),1f, 30f);
+    this.screen_width = width;
+    this.screen_height = height;
 
     Log.d(TAG, "end onSurfaceChanged()"); 
   }
@@ -268,9 +277,204 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     Log.d(TAG, "end onOffsetsChanged()");
   }
 
+  public void onCommand(GL10 gl10, String action, int x, int y, int z, Bundle extras, boolean resultRequested) {
+    Log.d(TAG, "start onCommand");
+    /*=======================================================================*/
+    /* タッチされたら寄ってくる                                              */
+    /* 餌はiwashi_count分                                                    */
+    /*=======================================================================*/
 
-  public void onDrawFrame(GL10 gl10) {
+    /*=======================================================================*/
+    /* スクリーン座標ー＞ワールド座標変換                                    */
+    /*=======================================================================*/
+    float[] modelview = new float[16];
+    ((GL11)gl10).glGetFloatv(GL10.GL_MODELVIEW, modelview, 0);
+if (false) {
+    Log.d(TAG,"MODEL VIEW");
+    Log.d(TAG,"[" + modelview[0] + "][" + modelview[4] + "][" + modelview[8] + "][" + modelview[12] + "]");
+    Log.d(TAG,"[" + modelview[1] + "][" + modelview[5] + "][" + modelview[9] + "][" + modelview[13] + "]");
+    Log.d(TAG,"[" + modelview[2] + "][" + modelview[6] + "][" + modelview[10] + "][" + modelview[14] + "]");
+    Log.d(TAG,"[" + modelview[3] + "][" + modelview[7] + "][" + modelview[11] + "][" + modelview[15] + "]");
+}
+
+    float[] projection = new float[16];
+    ((GL11)gl10).glGetFloatv(GL10.GL_PROJECTION, projection, 0);
+if (false) {
+    Log.d(TAG,"PROJECTION");
+    Log.d(TAG,"[" + projection[0] + "][" + projection[4] + "][" + projection[8] + "][" + projection[12] + "]");
+    Log.d(TAG,"[" + projection[1] + "][" + projection[5] + "][" + projection[9] + "][" + projection[13] + "]");
+    Log.d(TAG,"[" + projection[2] + "][" + projection[6] + "][" + projection[10] + "][" + projection[14] + "]");
+    Log.d(TAG,"[" + projection[3] + "][" + projection[7] + "][" + projection[11] + "][" + projection[15] + "]");
+}
+
+    float[] viewport = new float[16];
+    ((GL11)gl10).glGetFloatv(GL11.GL_VIEWPORT, viewport, 0);
+if (false) {
+    Log.d(TAG,"VIEWPORT");
+    Log.d(TAG,"[" + viewport[0] + "][" + viewport[4] + "][" + viewport[8] + "][" + viewport[12] + "]");
+    Log.d(TAG,"[" + viewport[1] + "][" + viewport[5] + "][" + viewport[9] + "][" + viewport[13] + "]");
+    Log.d(TAG,"[" + viewport[2] + "][" + viewport[6] + "][" + viewport[10] + "][" + viewport[14] + "]");
+    Log.d(TAG,"[" + viewport[3] + "][" + viewport[7] + "][" + viewport[11] + "][" + viewport[15] + "]");
+}
+
+    float[] view = new float[16];
+    System.arraycopy(CoordUtil.viewMatrix, 0, view, 0, 16);
+if (false) {
+    Log.d(TAG,"VIEW行列");
+    Log.d(TAG,"[" + view[0] + "][" + view[4] + "][" + view[8] + "][" + view[12] + "]");
+    Log.d(TAG,"[" + view[1] + "][" + view[5] + "][" + view[9] + "][" + view[13] + "]");
+    Log.d(TAG,"[" + view[2] + "][" + view[6] + "][" + view[10] + "][" + view[14] + "]");
+    Log.d(TAG,"[" + view[3] + "][" + view[7] + "][" + view[11] + "][" + view[15] + "]");
+}
+    float nx = 0f;
+    float ny = 0f;
+    float nz = 0f;
+    {
+      float[] ret = new float[4];
+      GLU.gluUnProject((float)x, (float)y, 0.1f, view, 0, projection, 0, new int[]{0, 0, screen_width, screen_height}, 0, ret, 0);
+      Log.d(TAG,"変換結果(UnProject):[" + ret[0] + "][" + ret[1] + "][" + ret[2] + "][" + ret[3] + "]");
+      Log.d(TAG,"変換結果(UnProject):[" + (ret[0]/ret[3]) + "][" + (ret[1]/ret[3]) + "][" + (ret[2]/ret[3]) + "][" + ret[3] + "]");
+      nx = (ret[0] / ret[3]);
+      ny = (ret[1] / ret[3]) * -1f;
+      nz = (ret[2] / ret[3]);
+      Log.d(TAG,"変換結果"
+       + "x:[" + nx + "] "
+       + "y:[" + ny + "] "
+       + "z:[" + nz + "] "
+      );
+    }
+    
+
+if (false) {
+    
+/*
+    float[] ret = new float[4];
+    ret[0] = ret[1] = ret[2] = 0.0f;ret[3] = 0.0f;
+    GLU.gluUnProject((float)x, (float)y, 1f, modelview, 0, projection, 0, new int[]{0, 0, screen_width, screen_height}, 0, ret, 0);
+    [スクリーン座標][ビューポート行列]-1[射影行列]-1[ビュー行列]-1[ワールド行列]-1
+*/
+    float[] screen = new float[4];
+    screen[0] = (float)x;
+    screen[1] = (float)y;
+    screen[2] = (float)0f;
+    screen[3] = (float)1f;
+
+    {
+      float[] scratch = new float[16];
+      android.opengl.Matrix.invertM(scratch,0,viewport,0);
+      System.arraycopy(scratch, 0, viewport, 0, 16);
+      Log.d(TAG,"VIEWPORTの逆行列");
+      Log.d(TAG,"[" + viewport[0] + "][" + viewport[4] + "][" + viewport[8] + "][" + viewport[12] + "]");
+      Log.d(TAG,"[" + viewport[1] + "][" + viewport[5] + "][" + viewport[9] + "][" + viewport[13] + "]");
+      Log.d(TAG,"[" + viewport[2] + "][" + viewport[6] + "][" + viewport[10] + "][" + viewport[14] + "]");
+      Log.d(TAG,"[" + viewport[3] + "][" + viewport[7] + "][" + viewport[11] + "][" + viewport[15] + "]");
+      android.opengl.Matrix.invertM(scratch,0,projection,0);
+      System.arraycopy(scratch, 0, projection, 0, 16);
+      Log.d(TAG,"PROJECTIONの逆行列");
+      Log.d(TAG,"[" + projection[0] + "][" + projection[4] + "][" + projection[8] + "][" + projection[12] + "]");
+      Log.d(TAG,"[" + projection[1] + "][" + projection[5] + "][" + projection[9] + "][" + projection[13] + "]");
+      Log.d(TAG,"[" + projection[2] + "][" + projection[6] + "][" + projection[10] + "][" + projection[14] + "]");
+      Log.d(TAG,"[" + projection[3] + "][" + projection[7] + "][" + projection[11] + "][" + projection[15] + "]");
+      android.opengl.Matrix.invertM(scratch,0,modelview,0);
+      System.arraycopy(scratch, 0, modelview, 0, 16);
+      Log.d(TAG,"MODEL VIEWの逆行列");
+      Log.d(TAG,"[" + modelview[0] + "][" + modelview[4] + "][" + modelview[8] + "][" + modelview[12] + "]");
+      Log.d(TAG,"[" + modelview[1] + "][" + modelview[5] + "][" + modelview[9] + "][" + modelview[13] + "]");
+      Log.d(TAG,"[" + modelview[2] + "][" + modelview[6] + "][" + modelview[10] + "][" + modelview[14] + "]");
+      Log.d(TAG,"[" + modelview[3] + "][" + modelview[7] + "][" + modelview[11] + "][" + modelview[15] + "]");
+      android.opengl.Matrix.invertM(scratch, 0, view, 0);
+      System.arraycopy(scratch, 0, view, 0, 16);
+      Log.d(TAG,"VIEW行列(LookAt行列の逆行列)");
+      Log.d(TAG,"[" + view[0] + "][" + view[4] + "][" + view[8] + "][" + view[12] + "]");
+      Log.d(TAG,"[" + view[1] + "][" + view[5] + "][" + view[9] + "][" + view[13] + "]");
+      Log.d(TAG,"[" + view[2] + "][" + view[6] + "][" + view[10] + "][" + view[14] + "]");
+      Log.d(TAG,"[" + view[3] + "][" + view[7] + "][" + view[11] + "][" + view[15] + "]");
+    }
+
+    /* ワールド変換 → ビュー変換 → 射影変換 → ビューポート変換 の逆 */
+    {
+      float[] scratch = new float[4];
+      android.opengl.Matrix.multiplyMV (scratch, 0, viewport, 0, screen, 0);
+      System.arraycopy(scratch, 0, screen, 0, 4);
+      Log.d(TAG,"変換中(ビューポート)[" + screen[0] + "][" + screen[1] + "][" + screen[2] + "][" + screen[3] + "]");
+      android.opengl.Matrix.multiplyMV (scratch, 0, projection, 0, screen, 0);
+      System.arraycopy(scratch, 0, screen, 0, 4);
+      Log.d(TAG,"変換中(射影)[" + screen[0] + "][" + screen[1] + "][" + screen[2] + "][" + screen[3] + "]");
+      android.opengl.Matrix.multiplyMV (scratch, 0, view, 0, screen, 0);
+      System.arraycopy(scratch, 0, screen, 0, 4);
+      Log.d(TAG,"変換中(ビュー)[" + screen[0] + "][" + screen[1] + "][" + screen[2] + "][" + screen[3] + "]");
+      android.opengl.Matrix.multiplyMV (scratch, 0, modelview, 0, screen, 0);
+      System.arraycopy(scratch, 0, screen, 0, 4);
+      Log.d(TAG,"変換中(モデル)[" + screen[0] + "][" + screen[1] + "][" + screen[2] + "][" + screen[3] + "]");
+      Log.d(TAG,"モデル座標行列");
+      Log.d(TAG,"[" + screen[0] + "][" + screen[1] + "][" + screen[2] + "][" + screen[3] + "]");
+    }
+    float nnx = 0f;
+    float nny = 0f;
+    float nnz = 0f;
+    nnx = screen[0] / screen[3];
+    nny = screen[1] / screen[3];
+    nnz = screen[2] / screen[3];
+    
+    Log.d(TAG,"変換結果:[" + nx + "][" + ny + "][" + nz + "]");
+    
+
+    Log.d(TAG,"================================================");
+    Log.d(TAG,"");
+    Log.d(TAG,"以下検証");
+    Log.d(TAG,"================================================");
+
+    /* 以下検証 */
+    ((GL11)gl10).glGetFloatv(GL10.GL_MODELVIEW, modelview, 0);
+    Log.d(TAG,"MODEL VIEW");
+    Log.d(TAG,"[" + modelview[0] + "][" + modelview[4] + "][" + modelview[8] + "][" + modelview[12] + "]");
+    Log.d(TAG,"[" + modelview[1] + "][" + modelview[5] + "][" + modelview[9] + "][" + modelview[13] + "]");
+    Log.d(TAG,"[" + modelview[2] + "][" + modelview[6] + "][" + modelview[10] + "][" + modelview[14] + "]");
+    Log.d(TAG,"[" + modelview[3] + "][" + modelview[7] + "][" + modelview[11] + "][" + modelview[15] + "]");
+
+    projection = new float[16];
+    ((GL11)gl10).glGetFloatv(GL10.GL_PROJECTION, projection, 0);
+    Log.d(TAG,"PROJECTION");
+    Log.d(TAG,"[" + projection[0] + "][" + projection[4] + "][" + projection[8] + "][" + projection[12] + "]");
+    Log.d(TAG,"[" + projection[1] + "][" + projection[5] + "][" + projection[9] + "][" + projection[13] + "]");
+    Log.d(TAG,"[" + projection[2] + "][" + projection[6] + "][" + projection[10] + "][" + projection[14] + "]");
+    Log.d(TAG,"[" + projection[3] + "][" + projection[7] + "][" + projection[11] + "][" + projection[15] + "]");
+
+    viewport = new float[16];
+    ((GL11)gl10).glGetFloatv(GL11.GL_VIEWPORT, viewport, 0);
+    Log.d(TAG,"VIEWPORT");
+    Log.d(TAG,"[" + viewport[0] + "][" + viewport[4] + "][" + viewport[8] + "][" + viewport[12] + "]");
+    Log.d(TAG,"[" + viewport[1] + "][" + viewport[5] + "][" + viewport[9] + "][" + viewport[13] + "]");
+    Log.d(TAG,"[" + viewport[2] + "][" + viewport[6] + "][" + viewport[10] + "][" + viewport[14] + "]");
+    Log.d(TAG,"[" + viewport[3] + "][" + viewport[7] + "][" + viewport[11] + "][" + viewport[15] + "]");
+
+    view = new float[16];
+    System.arraycopy(CoordUtil.viewMatrix, 0, view, 0, 16);
+    Log.d(TAG,"VIEW行列");
+    Log.d(TAG,"[" + view[0] + "][" + view[4] + "][" + view[8] + "][" + view[12] + "]");
+    Log.d(TAG,"[" + view[1] + "][" + view[5] + "][" + view[9] + "][" + view[13] + "]");
+    Log.d(TAG,"[" + view[2] + "][" + view[6] + "][" + view[10] + "][" + view[14] + "]");
+    Log.d(TAG,"[" + view[3] + "][" + view[7] + "][" + view[11] + "][" + view[15] + "]");
+
+    android.opengl.Matrix.multiplyMV (screen, 0, modelview, 0, screen, 0);
+    android.opengl.Matrix.multiplyMV (screen, 0, view, 0, screen, 0);
+    android.opengl.Matrix.multiplyMV (screen, 0, projection, 0, screen, 0);
+    android.opengl.Matrix.multiplyMV (screen, 0, viewport, 0, screen, 0);
+
+    Log.d(TAG,"検証結果:モデル座標行列");
+    Log.d(TAG,"[" + screen[0] + "][" + screen[1] + "][" + screen[2] + "][" + screen[3] + "]");
+/*
+*/
+
+    //baitManager.addBait(iwashi_count, wx, wy);
+}
+    Log.d(TAG, "end onCommand");
+  }
+
+
+  public synchronized void onDrawFrame(GL10 gl10) {
     //Log.d(TAG, "start onDrawFrame()");
+    gl10.glMatrixMode(GL10.GL_MODELVIEW);
     gl10.glPushMatrix(); 
 
     // 画面をクリアする
@@ -282,10 +486,16 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
 
     // カメラ
+    CoordUtil.lookAt(gl10,
+                  camera[0],camera[1],camera[2],
+                  camera[0],camera[1],-10f,
+                  0,1,0);
+    /*
     GLU.gluLookAt(gl10,
                   camera[0],camera[1],camera[2],
                   camera[0],camera[1],-100f,
                   0,1,0);
+    */
 
 
     /*=======================================================================*/
@@ -296,7 +506,6 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
     // 背景描画
     background.draw(gl10);
-    //front.draw(gl10);
 //    ground.draw(gl10);
 //    aquarium.draw(gl10);
     

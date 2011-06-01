@@ -1,5 +1,7 @@
 package jp.co.qsdn.android.atlantis;
 
+import android.os.Bundle;
+
 import android.service.wallpaper.WallpaperService;
 
 import android.util.Log;
@@ -18,6 +20,7 @@ import javax.microedition.khronos.egl.EGLSurface;
 import javax.microedition.khronos.opengles.GL10;
 
 import jp.co.qsdn.android.atlantis.GLRenderer;
+import jp.co.qsdn.android.MatrixTrackingGL;
 
 
 
@@ -26,21 +29,37 @@ public class AtlantisService extends WallpaperService {
   private static final String TAG = AtlantisService.class.getName();
   private class AtlantisEngine extends Engine {
     private GLRenderer glRenderer;
-    private GL10 gl10;
+    //private GL10 gl10;
+    private MatrixTrackingGL gl10;
     private EGL10 egl10;
     private EGLContext eglContext;
     private EGLDisplay eglDisplay;
     private EGLSurface eglSurface;
-    private ExecutorService executor;
+    private ExecutorService executor = null;
     private Runnable drawCommand = null;
+    private int width = 0;
+    private int height = 0;
+
+    private ExecutorService getExecutor() {
+      if (executor != null) {
+        return executor;
+      }
+      return Executors.newSingleThreadExecutor();
+    }
     
     @Override
     public void onCreate(final SurfaceHolder holder) {
       Log.d(TAG, "start onCreate()");
       super.onCreate(holder);
+      /*=====================================================================*/
+      /* 携帯電話として機能しなくなるので                                    */
+      /* タッチイベントは無効にしておく.                                     */
+      /* 画面の空いたところのタッチにだけ反応したいので                      */
+      /* Engine.onCommandで対応する                                          */
+      /*=====================================================================*/
+      setTouchEventsEnabled(false);
 
-      executor = Executors.newSingleThreadExecutor();
-
+      executor = getExecutor();
       drawCommand = new Runnable() {
         public void run() {
           glRenderer.onDrawFrame(gl10);
@@ -115,7 +134,7 @@ public class AtlantisService extends WallpaperService {
           /*-----------------------------------------------------------------*/
           egl10.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext);
 
-          gl10 = (GL10) (eglContext.getGL());
+          gl10 = new MatrixTrackingGL((GL10) (eglContext.getGL()));
  
           /*-----------------------------------------------------------------*/
           /* Rendererの初期化                                                */
@@ -150,6 +169,8 @@ public class AtlantisService extends WallpaperService {
     public void onSurfaceChanged(final SurfaceHolder holder, final int format, final int width, final int height) {
       Log.d(TAG, "start onSurfaceChanged()");
       super.onSurfaceChanged(holder, format, width, height);
+      this.width = width;
+      this.height = height;
       Runnable surfaceChangedCommand = new Runnable() {
         public void run() {
           glRenderer.onSurfaceChanged(gl10, width, height);
@@ -199,6 +220,32 @@ public class AtlantisService extends WallpaperService {
       executor.execute(offsetsChangedCommand);
       Log.d(TAG, "end onOffsetChanged()");
     }
+    
+    @Override  
+    public Bundle onCommand(final String action, final int x, final int y, final int z, final Bundle extras, final boolean resultRequested){
+      Log.d(TAG, "start onCommand "
+        + "x:[" + x + "]:"
+        + "y:[" + y + "]:"
+        + "z:[" + z + "]:"
+        + "extras:[" + extras + "]:"
+        + "resultRequested:[" + resultRequested + "]:"
+      );
+      /*=====================================================================*/
+      /* 画面の何もないところへのタッチにだけ反応するため                    */
+      /* actionがandroid.wallpaper.tapのときだけ処理する                     */
+      /*=====================================================================*/
+      if (action.equals("android.wallpaper.tap")) {
+         Runnable onCommandCommand = new Runnable() {
+           public void run() {
+             glRenderer.onCommand(gl10, action, x, y, z, extras, resultRequested);
+           }
+         };
+         executor.execute(onCommandCommand);
+      }  
+      Bundle ret = super.onCommand(action, x, y, z, extras, resultRequested);
+      Log.d(TAG, "end onCommand");
+      return ret;
+    }  
   }
   @Override
   public Engine onCreateEngine() {
