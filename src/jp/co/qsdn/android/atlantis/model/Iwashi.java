@@ -17,6 +17,7 @@ import java.nio.IntBuffer;
 import javax.microedition.khronos.opengles.GL10;
 
 import jp.co.qsdn.android.atlantis.Aquarium;
+import jp.co.qsdn.android.atlantis.Bait;
 import jp.co.qsdn.android.atlantis.BaitManager;
 import jp.co.qsdn.android.atlantis.util.CoordUtil;
 
@@ -118,7 +119,7 @@ public class Iwashi {
   }
 
   private void animate() {
-    long current = System.currentTimeMillis() + this.seed;
+    long current = System.nanoTime() + this.seed;
     float nf = (float)((current / 200) % 10000);
     long ni = (long)Math.floor(nf);
     float w = 2f*((float)Math.PI)*(nf - (float)ni);
@@ -1206,6 +1207,19 @@ public class Iwashi {
       return;
     }
     /**
+     * 餌ロジック
+     */
+    Bait bait = baitManager.getBait();
+    if (bait != null) {
+      java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
+      if (rand.nextInt(100) <= 55) {
+        if (aimBait(bait)) {
+          update_speed();
+          return;
+        }
+      }
+    }
+    /**
      * １　セパレーション（Separation）：分離
      *  　　→仲間に近づきすぎたら離れる
      * ２　アラインメント（Alignment）：整列
@@ -1231,7 +1245,7 @@ public class Iwashi {
       return;
     }
 
-    java.util.Random rand = new java.util.Random(System.currentTimeMillis());
+    java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
     if (rand.nextInt(100) <= 95) {
       // 変更なし
       return;
@@ -1252,7 +1266,7 @@ public class Iwashi {
     float old_angle_y = y_angle;
     x_angle = old_angle_x;
     y_angle = old_angle_y;
-    java.util.Random rand = new java.util.Random(System.currentTimeMillis());
+    java.util.Random rand = new java.util.Random(System.nanoTime());
     float newAngleX = rand.nextFloat() * 45f - 22.5f;
     float newAngleY = rand.nextFloat() * 45f - 22.5f;
     if (newAngleX + x_angle <= 45f && newAngleX + x_angle >= -45f) {
@@ -1276,7 +1290,7 @@ public class Iwashi {
     direction[2] = rety[2];
   }
   public void aimTargetDegree(float angle_x, float angle_y) {
-    java.util.Random rand = new java.util.Random(System.currentTimeMillis());
+    java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
     float newAngle = rand.nextFloat() * 22.5f;
     float xx = angle_x - x_angle;
     if (xx < 0.0f) {
@@ -1329,7 +1343,7 @@ public class Iwashi {
     y_angle = y_angle % 360f;
   }
   public void aimTargetSpeed(float t_speed) {
-    java.util.Random rand = new java.util.Random(System.currentTimeMillis());
+    java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
     if (t_speed < speed) {
       /* 自分のスピードよりも相手の方が遅い場合 */
       speed -= (rand.nextFloat() * speed_unit);
@@ -1567,6 +1581,65 @@ public class Iwashi {
         + "y:[" + direction[1] + "]:"
         + "z:[" + direction[2] + "]:");
     }
+  }
+  public boolean aimBait(Bait bait) {
+    if (debug) {
+      Log.d(TAG, "start aimBait ");
+    }
+    double dist = Math.sqrt(
+        Math.pow(position[0]-bait.getX(), 2)
+      + Math.pow(position[1]-bait.getY(), 2)
+      + Math.pow(position[2]-bait.getZ(), 2));
+    if (dist <= separate_dist) {
+      baitManager.eat(bait);
+      return false;
+    }
+    float v_x = (bait.getX() - getX());
+    float v_y = (bait.getY() - getY());
+    float v_z = (bait.getZ() - getZ());
+    if (debug) {
+      Log.d(TAG, "向かいたい方向"
+       + " x:[" + v_x + "]:"
+       + " y:[" + v_y + "]:"
+       + " z:[" + v_z + "]:");
+    }
+
+    /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
+    float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
+    /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
+    float angle_y = (float)coordUtil.convertDegreeXZ((double)v_x * -1d, (double)v_z);
+    if (angle_x > 180f) {
+      angle_x = angle_x - 360f;
+    }
+    if ((angle_x < 0.0f && v_y > 0.0f) || (angle_x > 0.0f && v_y < 0.0f)) {
+      angle_x *= -1f;
+    }
+    if (debug) {
+      Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
+      Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
+    }
+
+    /* その角度へ近づける */
+    aimTargetDegree(angle_x, angle_y);
+    if (debug) {
+      Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
+      Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
+    }
+
+    coordUtil.setMatrixRotateZ(x_angle);
+    float[] retx = coordUtil.affine(-1.0f,0.0f, 0.0f);
+    coordUtil.setMatrixRotateY(y_angle);
+    float[] rety = coordUtil.affine(retx[0],retx[1], retx[2]);
+    direction[0] = rety[0];
+    direction[1] = rety[1];
+    direction[2] = rety[2];
+    if (debug) {
+      Log.d(TAG, "end aimBait "
+        + "x:[" + direction[0] + "]:"
+        + "y:[" + direction[1] + "]:"
+        + "z:[" + direction[2] + "]:");
+    }
+    return true;
   }
   public boolean aimSchoolCenter() {
     if (debug) {
