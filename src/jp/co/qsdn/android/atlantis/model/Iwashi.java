@@ -28,6 +28,7 @@ public class Iwashi {
   private final FloatBuffer mTextureBuffer;  
   private final FloatBuffer mNormalBuffer;  
   private static int texid;
+  private long prevTime = 0;
   private long tick = 0;
   private float scale = 0.1035156288414f;
   private float center_xyz[] = {-0.185271816326531f, 0.344428326530612f, -0.00509786734693878f };
@@ -118,14 +119,12 @@ public class Iwashi {
     return xt * xt / 20.0f - 0.4f;
   }
 
+
   private void animate() {
-    long current = System.nanoTime() + this.seed;
-    float nf = (float)((current / 200) % 10000);
-    long ni = (long)Math.floor(nf);
-    float w = 2f*((float)Math.PI)*(nf - (float)ni);
+    long current = System.currentTimeMillis() + this.seed;
+    /* 大体１秒間に2回ヒレを動かす */
+    float nf = (float)((current / 100) % 10000);
     float s = (float)Math.sin((double)nf) * scale;
-    // z = a * ((x + p)^2)
-    // z = 1/3 * ((4.7 + 0)^2)
      
     //303 101 {4.725803, 1.603915, -0.000000}
     //309 103 {4.725803, 1.603915, -0.000000}
@@ -1029,7 +1028,7 @@ public class Iwashi {
     gl10.glPushMatrix();
 
     synchronized (this) {
-      think(THINK_TYPE.NORMAL);
+      think();
       move();
       animate();
     }
@@ -1087,10 +1086,6 @@ public class Iwashi {
     gl10.glPopMatrix();
   }
 
-  public enum THINK_TYPE {
-    NORMAL,
-  };
-
   public boolean doSeparation() {
     for (int ii=0; ii<species.length; ii++) {
       if (species[ii].equals(this)) {
@@ -1115,7 +1110,7 @@ public class Iwashi {
   }
   public boolean doAlignment() {
     java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
-    if (rand.nextInt(100) <= 20) {
+    if (rand.nextInt(100) <= 40) {
       return false;
     }
     for (int ii=0; ii<species.length; ii++) {
@@ -1141,7 +1136,7 @@ public class Iwashi {
   }
   public boolean doCohesion() {
     java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
-    if (rand.nextInt(100) <= 20) {
+    if (rand.nextInt(100) <= 30) {
       return false;
     }
     for (int ii=0; ii<species.length; ii++) {
@@ -1195,7 +1190,12 @@ public class Iwashi {
   /**
    * どの方向に進むか考える
    */
-  public void thinkDirection() {
+  public void think() {
+    long nowTime = System.nanoTime();
+    if (prevTime != 0) {
+      tick = nowTime - prevTime;
+    }
+    prevTime = nowTime;
     if (  (Aquarium.min_x.compareTo(new Float(position[0])) >= 0 || Aquarium.max_x.compareTo(new Float(position[0])) <= 0)
       ||  (Aquarium.min_y.compareTo(new Float(position[1])) >= 0 || Aquarium.max_y.compareTo(new Float(position[1])) <= 0)
       ||  (Aquarium.min_z.compareTo(new Float(position[2])) >= 0 || Aquarium.max_z.compareTo(new Float(position[2])) <= 0)) {
@@ -1523,12 +1523,6 @@ public class Iwashi {
     }
   }
 
-  public void think(THINK_TYPE thinkType) {
-    if (thinkType == THINK_TYPE.NORMAL) {
-      thinkDirection();
-    }
-  }
-
   /**
    * 強制的に水槽の中心へ徐々に向ける
    */
@@ -1697,33 +1691,39 @@ public class Iwashi {
     }
     return true;
   }
+  public static long BASE_TICK = 17852783L;
   public void move() {
-    if (getX() + getDirectionX() * getSpeed() >= Aquarium.max_x) {
+    /*=======================================================================*/
+    /* 処理速度を考慮した増分                                                */
+    /*=======================================================================*/
+    float moveWidth = getSpeed() * (float)(tick / BASE_TICK);
+
+    if (getX() + getDirectionX() * moveWidth >= Aquarium.max_x) {
       setX(Aquarium.max_x);
     }
-    else if (getX() + getDirectionX() * getSpeed() <= Aquarium.min_x) {
+    else if (getX() + getDirectionX() * moveWidth <= Aquarium.min_x) {
       setX(Aquarium.min_x);
     }
     else {
-      setX(getX() + getDirectionX() * getSpeed());
+      setX(getX() + getDirectionX() * moveWidth);
     }
-    if (getY() + getDirectionY() * getSpeed() >= Aquarium.max_y) {
+    if (getY() + getDirectionY() * moveWidth >= Aquarium.max_y) {
       setY(Aquarium.max_y);
     }
-    else if (getY() + getDirectionY() * getSpeed() <= Aquarium.min_y) {
+    else if (getY() + getDirectionY() * moveWidth <= Aquarium.min_y) {
       setY(Aquarium.min_y);
     }
     else {
-      setY(getY() + getDirectionY() * getSpeed());
+      setY(getY() + getDirectionY() * moveWidth);
     }
-    if (getZ() + getDirectionZ() * getSpeed() >= Aquarium.max_z) {
+    if (getZ() + getDirectionZ() * moveWidth >= Aquarium.max_z) {
       setZ(Aquarium.max_z);
     }
-    else if (getZ() + getDirectionZ() * getSpeed() <= Aquarium.min_z) {
+    else if (getZ() + getDirectionZ() * moveWidth <= Aquarium.min_z) {
       setZ(Aquarium.min_z);
     }
     else {
-      setZ(getZ() + getDirectionZ() * getSpeed());
+      setZ(getZ() + getDirectionZ() * moveWidth);
     }
     if (debug) {
       Log.d(TAG, "end move "
