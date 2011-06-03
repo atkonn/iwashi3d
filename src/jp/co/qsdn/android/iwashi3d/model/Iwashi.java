@@ -24,6 +24,7 @@ import jp.co.qsdn.android.iwashi3d.util.CoordUtil;
 public class Iwashi {
   private static final boolean debug = false;
   private static final String TAG = Iwashi.class.getName();
+  private static final long BASE_TICK = 17852783L;
   private FloatBuffer mVertexBuffer;
   private final FloatBuffer mTextureBuffer;  
   private final FloatBuffer mNormalBuffer;  
@@ -1183,18 +1184,6 @@ public class Iwashi {
     }
     return false;
   }
-  public boolean doSchoolCenter() {
-    java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
-    if (rand.nextInt(100) <= 40) {
-      // 変更なし
-      return false;
-    }
-    if (species.length > 1) {
-      return aimSchoolCenter();
-    }
-    return false;
-  }
-
   public void update_speed() {
     sv_speed = speed;
     if (getStatus() == STATUS.COHESION) {
@@ -1256,7 +1245,6 @@ public class Iwashi {
     }
 
 
-//    Log.d(TAG, "現在のBOIDS:[" + getEnableBoids() + "]");
     if (getEnableBoids()) {
       /**
        * １　セパレーション（Separation）：分離
@@ -1279,12 +1267,6 @@ public class Iwashi {
         update_speed();
         return;
       }
-if (false) {
-      if (doSchoolCenter()) {
-        update_speed();
-        return;
-      }
-}
     }
 
     java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
@@ -1678,63 +1660,6 @@ if (false) {
     }
     return true;
   }
-  public boolean aimSchoolCenter() {
-    if (debug) {
-      Log.d(TAG, "start aimSchoolCenter ");
-    }
-    float v_x = (schoolCenter[0] - getX());
-    float v_y = (schoolCenter[1] - getY());
-    float v_z = (schoolCenter[2] - getZ());
-    if (debug) {
-      Log.d(TAG, "向かいたい方向"
-       + " x:[" + v_x + "]:"
-       + " y:[" + v_y + "]:"
-       + " z:[" + v_z + "]:");
-    }
-    if (v_x == 0.0f && v_y == 0.0f && v_z == 0.0f) {
-      /* 現在値は一緒 */
-      return false;
-    }
-
-    /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-    float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
-    /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-    float angle_y = (float)coordUtil.convertDegreeXZ((double)v_x * -1d, (double)v_z);
-    if (angle_x > 180f) {
-      angle_x = angle_x - 360f;
-    }
-    if ((angle_x < 0.0f && v_y > 0.0f) || (angle_x > 0.0f && v_y < 0.0f)) {
-      angle_x *= -1f;
-    }
-
-    if (debug) {
-      Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
-      Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
-    }
-
-    /* その角度へ近づける */
-    aimTargetDegree(angle_x, angle_y);
-    if (debug) {
-      Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
-      Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
-    }
-
-    coordUtil.setMatrixRotateZ(x_angle);
-    float[] retx = coordUtil.affine(-1.0f,0.0f, 0.0f);
-    coordUtil.setMatrixRotateY(y_angle);
-    float[] rety = coordUtil.affine(retx[0],retx[1], retx[2]);
-    direction[0] = rety[0];
-    direction[1] = rety[1];
-    direction[2] = rety[2];
-    if (debug) {
-      Log.d(TAG, "end aimSchoolCenter "
-        + "x:[" + direction[0] + "]:"
-        + "y:[" + direction[1] + "]:"
-        + "z:[" + direction[2] + "]:");
-    }
-    return true;
-  }
-  public static long BASE_TICK = 17852783L;
   public void move() {
     /*=======================================================================*/
     /* 処理速度を考慮した増分                                                */
