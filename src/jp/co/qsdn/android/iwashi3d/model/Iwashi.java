@@ -35,14 +35,27 @@ public class Iwashi {
   private CoordUtil coordUtil = new CoordUtil();
   private long seed = 0;
   private BaitManager baitManager;
+  private boolean enableBoids = true;
   /*
    * 仲間、同種
    */
   private Iwashi[] species;
   private double separate_dist  = 2.0d * scale;
-  private double alignment_dist = 5.0d * scale;
+  private double alignment_dist = 4.0d * scale;
   private double cohesion_dist  = 50.0d * scale;
   private float[] schoolCenter = {0f,0f,0f};
+
+  private enum STATUS {
+    TO_CENTER, /* 画面の真ん中へ向かい中 */
+    TO_BAIT,   /* 餌へ向かっている最中   */
+    SEPARATE,  /* 近づき過ぎたので離れる */
+    ALIGNMENT, /* 整列中 */
+    COHESION,  /* 近づく */
+    NORMAL,    /* ランダム */
+  };
+
+  /** 現在の行動中の行動 */
+  private STATUS status = STATUS.NORMAL;
 
 
   /*=========================================================================*/
@@ -73,6 +86,8 @@ public class Iwashi {
   private float speed = 0.020f;
   private float speed_unit = speed / 5f;
   private float speed_max = 0.050f;
+  private float cohesion_speed = speed * 3f;
+  private float sv_speed = speed;
 
   public Iwashi(int ii) {
 
@@ -89,9 +104,6 @@ public class Iwashi {
     mTextureBuffer.position(0);
 
     // 初期配置
-    // 10.0f >= x  >= -10.0f
-    // 8.0f >= y >= 0.0f
-    // -50.0f > z >= 0.0f
     java.util.Random rand = new java.util.Random(System.nanoTime() + (ii * 500));
     this.seed = (long)(rand.nextFloat() * 5000f);
     position[0] = rand.nextFloat() * 8f - 4f;
@@ -1102,6 +1114,7 @@ public class Iwashi {
         /*===================================================================*/
         /* セパレーション領域にターゲットがいる場合                          */
         /*===================================================================*/
+        setStatus(STATUS.SEPARATE);
         turnSeparation(species[ii]);
         return true;
       }
@@ -1128,6 +1141,7 @@ public class Iwashi {
         /*===================================================================*/
         /* アラインメント領域にターゲットがいる場合                          */
         /*===================================================================*/
+        setStatus(STATUS.ALIGNMENT);
         turnAlignment(species[ii]);
         return true;
       }
@@ -1136,8 +1150,16 @@ public class Iwashi {
   }
   public boolean doCohesion() {
     java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
-    if (rand.nextInt(100) <= 30) {
-      return false;
+    if (getStatus() == STATUS.COHESION) {
+      if (rand.nextInt(100) <= 5) {
+        /* 前回COHESIONである場合今回もCOHESIONである可能性は高い */
+        return false;
+      }
+    }
+    else {
+      if (rand.nextInt(100) <= 30) {
+        return false;
+      }
     }
     for (int ii=0; ii<species.length; ii++) {
       if (species[ii].equals(this)) {
@@ -1154,6 +1176,7 @@ public class Iwashi {
         /*===================================================================*/
         /* コアージョン領域にターゲットがいる場合                            */
         /*===================================================================*/
+        setStatus(STATUS.COHESION);
         turnCohesion(species[ii]);
         return true;
       }
@@ -1173,12 +1196,18 @@ public class Iwashi {
   }
 
   public void update_speed() {
+    sv_speed = speed;
+    if (getStatus() == STATUS.COHESION) {
+      speed = cohesion_speed;
+      return;
+    }
+    speed = sv_speed;
+
     java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
     if (rand.nextInt(100) <= 80) {
       // 変更なし
       return;
     }
-
     speed += (rand.nextFloat() * (speed_unit * 2f) / 2f);
     if (speed <= 0.0f) {
       speed = speed_unit;
@@ -1195,6 +1224,10 @@ public class Iwashi {
     if (prevTime != 0) {
       tick = nowTime - prevTime;
     }
+    if (getStatus() == STATUS.COHESION) {
+      /* 元に戻す */
+      speed = sv_speed;
+    }
     prevTime = nowTime;
     if (  (Aquarium.min_x.compareTo(new Float(position[0])) >= 0 || Aquarium.max_x.compareTo(new Float(position[0])) <= 0)
       ||  (Aquarium.min_y.compareTo(new Float(position[1])) >= 0 || Aquarium.max_y.compareTo(new Float(position[1])) <= 0)
@@ -1202,6 +1235,7 @@ public class Iwashi {
       /*=====================================================================*/
       /* 水槽からはみ出てる                                                  */
       /*=====================================================================*/
+      setStatus(STATUS.TO_CENTER);
       aimAquariumCenter();
       update_speed();
       return;
@@ -1214,35 +1248,43 @@ public class Iwashi {
       java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
       if (rand.nextInt(100) <= 55) {
         if (aimBait(bait)) {
+          setStatus(STATUS.TO_BAIT);
           update_speed();
           return;
         }
       }
     }
-    /**
-     * １　セパレーション（Separation）：分離
-     *  　　→仲間に近づきすぎたら離れる
-     * ２　アラインメント（Alignment）：整列
-     *  　　→仲間と同じ方向に同じ速度で飛ぶ
-     * ３　コアージョン（Cohesion）：凝集
-     *  　　→仲間の中心方向に飛ぶ
-     */
-    // separation
-    if (doSeparation()) {
-      update_speed();
-      return;
-    }
-    // alignment
-    if (doAlignment()) {
-      return;
-    }
-    if (doCohesion()) {
-      update_speed();
-      return;
-    }
-    if (doSchoolCenter()) {
-      update_speed();
-      return;
+
+
+//    Log.d(TAG, "現在のBOIDS:[" + getEnableBoids() + "]");
+    if (getEnableBoids()) {
+      /**
+       * １　セパレーション（Separation）：分離
+       *  　　→仲間に近づきすぎたら離れる
+       * ２　アラインメント（Alignment）：整列
+       *  　　→仲間と同じ方向に同じ速度で飛ぶ
+       * ３　コアージョン（Cohesion）：凝集
+       *  　　→仲間の中心方向に飛ぶ
+       */
+      // separation
+      if (doSeparation()) {
+        update_speed();
+        return;
+      }
+      // alignment
+      if (doAlignment()) {
+        return;
+      }
+      if (doCohesion()) {
+        update_speed();
+        return;
+      }
+if (false) {
+      if (doSchoolCenter()) {
+        update_speed();
+        return;
+      }
+}
     }
 
     java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
@@ -1250,6 +1292,7 @@ public class Iwashi {
       // 変更なし
       return;
     }
+    setStatus(STATUS.NORMAL);
     turn();
     update_speed();
   }
@@ -1799,6 +1842,8 @@ public class Iwashi {
     this.speed = speed;
     this.speed_unit = speed / 5f;
     this.speed_max = speed + 0.03f;
+    this.cohesion_speed = speed * 3f;
+    this.sv_speed = speed;
   }
   
   public float[] getDirection() {
@@ -1954,5 +1999,44 @@ public class Iwashi {
   public void setBaitManager(BaitManager baitManager)
   {
       this.baitManager = baitManager;
+  }
+  
+  
+  /**
+   * Get enableBoids.
+   *
+   * @return enableBoids as boolean.
+   */
+  public boolean getEnableBoids()
+  {
+      return enableBoids;
+  }
+  
+  /**
+   * Set enableBoids.
+   *
+   * @param enableBoids the value to set.
+   */
+  public void setEnableBoids(boolean enableBoids)
+  {
+      this.enableBoids = enableBoids;
+  }
+  
+  /**
+   * Get status.
+   *
+   * @return status as STATUS.
+   */
+  public STATUS getStatus() {
+    return status;
+  }
+  
+  /**
+   * Set status.
+   *
+   * @param status the value to set.
+   */
+  public void setStatus(STATUS status) {
+    this.status = status;
   }
 }

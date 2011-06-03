@@ -39,13 +39,18 @@ public final class R {
         public static final int dialog_message_iwashi_speed=0x7f05000f;
         public static final int dialog_title_iwashi_count=0x7f050008;
         public static final int dialog_title_iwashi_speed=0x7f05000e;
+        public static final int key_preference_iwashi_boids=0x7f050013;
         public static final int key_preference_iwashi_count=0x7f050005;
         public static final int key_preference_iwashi_speed=0x7f05000b;
         public static final int service_name=0x7f050001;
         public static final int setting_title=0x7f050004;
+        public static final int summary_off_preference_iwashi_boids=0x7f050016;
+        public static final int summary_on_preference_iwashi_boids=0x7f050015;
         public static final int summary_preference_iwashi_count=0x7f050007;
         public static final int summary_preference_iwashi_speed=0x7f05000d;
+        public static final int summary_setting=0x7f050012;
         public static final int title_preference_iwashi=0x7f050011;
+        public static final int title_preference_iwashi_boids=0x7f050014;
         public static final int title_preference_iwashi_count=0x7f050006;
         public static final int title_preference_iwashi_speed=0x7f05000c;
     }

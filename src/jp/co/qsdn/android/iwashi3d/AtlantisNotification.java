@@ -28,11 +28,10 @@ public class AtlantisNotification {
         new Intent(context, SettingActivity.class),
         0                                              // Default flags
     );
-    CharSequence contentText = "Hello World!";
     notification.setLatestEventInfo(
         context,
         context.getString(R.string.app_name),
-        contentText,
+        context.getString(R.string.summary_setting),
         pi
     );
     /**

@@ -51,19 +51,16 @@ public class IwashiSpeedDialog
           // トラッキング開始時に呼び出されます
           @Override
           public void onStartTrackingTouch(SeekBar seekBar) {
-            Log.v("onStartTrackingTouch()", String.valueOf(seekBar.getProgress()));
             nowSpeedView.setText(label + seekBar.getProgress());
           }
           // トラッキング中に呼び出されます
           @Override
           public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
-            Log.v("onProgressChanged()", String.valueOf(progress) + ", " + String.valueOf(fromTouch));
             nowSpeedView.setText(label + seekBar.getProgress());
           }
           // トラッキング終了時に呼び出されます
           @Override
           public void onStopTrackingTouch(SeekBar seekBar) {
-            Log.v("onStopTrackingTouch()", String.valueOf(seekBar.getProgress()));
             nowSpeedView.setText(label + seekBar.getProgress());
           }
       });

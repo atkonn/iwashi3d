@@ -16,5 +16,12 @@
       android:dialogMessage="@string/dialog_message_iwashi_speed"
       android:dialogLayout="@layout/iwashi_speed_dialog"
     />
+    <CheckBoxPreference   
+      android:key="@string/key_preference_iwashi_boids"
+      android:title="@string/title_preference_iwashi_boids"
+      android:summaryOn="@string/summary_on_preference_iwashi_boids"  
+      android:summaryOff="@string/summary_off_preference_iwashi_boids"
+      android:defaultValue="true"
+    />
   </PreferenceCategory>
 </PreferenceScreen>

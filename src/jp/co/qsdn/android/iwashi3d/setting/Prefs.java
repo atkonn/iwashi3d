@@ -22,6 +22,9 @@ public class Prefs {
   private static final String KEY_IWASHI_SPEED = "iwashi_speed";
   private static final int DEFAULT_IWASHI_SPEED = 50;
 
+  private static final String KEY_IWASHI_BOIDS = "iwashi_boids";
+  private static final boolean DEFAULT_IWASHI_BOIDS = true;
+
   public static Prefs getInstance(Context context) {
     if (mPrefs == null) {
       mPrefs = new Prefs(context);
@@ -80,5 +83,18 @@ public class Prefs {
       }
     }
     return iwashiSpeed;
+  }
+
+
+  public void setIwashiBoids(boolean enableIwashiBoids) {
+    SharedPreferences sharedPreferences = mContext.getSharedPreferences(PACKAGE_NAME,Context.MODE_PRIVATE);  
+    sharedPreferences
+      .edit()
+      .putBoolean(KEY_IWASHI_BOIDS, enableIwashiBoids)
+      .commit();  
+  }
+  public boolean getIwashiBoids() {
+    SharedPreferences sharedPreferences = mContext.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);  
+    return  sharedPreferences.getBoolean(KEY_IWASHI_BOIDS, DEFAULT_IWASHI_BOIDS);
   }
 }

@@ -227,8 +227,9 @@ public class AtlantisService extends WallpaperService {
     
     @Override  
     public Bundle onCommand(final String action, final int x, final int y, final int z, final Bundle extras, final boolean resultRequested){
-      if (_debug) {
+      if (_debug || true) {
         Log.d(TAG, "start onCommand "
+          + "action:[" + action + "]:"
           + "x:[" + x + "]:"
           + "y:[" + y + "]:"
           + "z:[" + z + "]:"

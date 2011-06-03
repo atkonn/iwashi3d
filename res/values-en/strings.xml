@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">3D Sardines</string>
     <string name="service_name">3D Sardine</string>
-    <string name="description">Crowd 3D live wallpaper of sardines that used Boids algorithm</string>
+    <string name="description">3D live wallpaper of sardines that used BOIDS algorithm</string>
     <string name="author">QSDN,Inc.</string>
 
     <string name="setting_title">Settings</string>
@@ -21,4 +21,10 @@
     <string name="dialog_iwashi_speed_label">Speed of sardines:</string>
 
     <string name="title_preference_iwashi">Settings of sardines</string>
+    <string name="summary_setting">When number of sardines and movement speed are changed, please selects this. </string>
+
+    <string name="key_preference_iwashi_boids">iwashi_boids</string>
+    <string name="title_preference_iwashi_boids">"School of fish" function</string>
+    <string name="summary_on_preference_iwashi_boids">Disable to "school of fish" function.</string>
+    <string name="summary_off_preference_iwashi_boids">Enable to "school of fish" function.</string>
 </resources>

@@ -50,19 +50,16 @@ public class IwashiCountDialog
           // トラッキング開始時に呼び出されます
           @Override
           public void onStartTrackingTouch(SeekBar seekBar) {
-            Log.v("onStartTrackingTouch()", String.valueOf(seekBar.getProgress()));
             nowCountView.setText(label + seekBar.getProgress());
           }
           // トラッキング中に呼び出されます
           @Override
           public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
-            Log.v("onProgressChanged()", String.valueOf(progress) + ", " + String.valueOf(fromTouch));
             nowCountView.setText(label + seekBar.getProgress());
           }
           // トラッキング終了時に呼び出されます
           @Override
           public void onStopTrackingTouch(SeekBar seekBar) {
-            Log.v("onStopTrackingTouch()", String.valueOf(seekBar.getProgress()));
             nowCountView.setText(label + seekBar.getProgress());
           }
       });

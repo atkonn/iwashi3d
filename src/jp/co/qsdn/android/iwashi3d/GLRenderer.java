@@ -32,6 +32,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
   private final Background background = new Background();
   private Iwashi[] iwashi = null;
   private int iwashi_count = 1;
+  private boolean enableIwashiBoids = true;
   private float iwashi_speed = 0.03f;
   /* カメラの位置 */
   private float[] camera = {0f,0f,0f};
@@ -65,12 +66,15 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     iwashi_count = Prefs.getInstance(context).getIwashiCount();
     iwashi_speed = ((float)Prefs.getInstance(context).getIwashiSpeed() / 50f) * 0.04f;
     if (_debug) Log.d(TAG, "現在のスピード:[" + iwashi_speed + "]");
+    enableIwashiBoids = Prefs.getInstance(context).getIwashiBoids();
+    
 
     iwashi = new Iwashi[iwashi_count];
     for (int ii=0; ii<iwashi_count; ii++) {
       iwashi[ii] = new Iwashi(ii);
     }
     for (int ii=0; ii<iwashi_count; ii++) {
+      iwashi[ii].setEnableBoids(enableIwashiBoids);
       iwashi[ii].setSpecies(iwashi);
       iwashi[ii].setSpeed(iwashi_speed);
       iwashi[ii].setBaitManager(baitManager);
@@ -196,7 +200,11 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     }
     int _iwashi_count = Prefs.getInstance(context).getIwashiCount();
     float _iwashi_speed = ((float)Prefs.getInstance(context).getIwashiSpeed() / 50f) * 0.04f;
+    boolean _iwashi_boids = Prefs.getInstance(context).getIwashiBoids();
     if (_debug) Log.d(TAG, "現在のスピード:[" + _iwashi_speed + "]");
+
+    if (_debug) Log.d(TAG,"現在のBOIDS:[" + _iwashi_boids + "]");
+
     if (_iwashi_count != iwashi_count) {
       synchronized (this) {
         Iwashi[] newIwashi = new Iwashi[_iwashi_count];
@@ -215,6 +223,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
         iwashi_count = _iwashi_count;
         iwashi = newIwashi;
         for (int ii=0; ii<iwashi_count; ii++) {
+          iwashi[ii].setEnableBoids(enableIwashiBoids);
           iwashi[ii].setSpecies(iwashi);
           iwashi[ii].setBaitManager(baitManager);
         }
@@ -224,9 +233,15 @@ public class GLRenderer implements GLSurfaceView.Renderer {
       synchronized (this) {
         for (int ii=0; ii<iwashi_count; ii++) {
           iwashi[ii].setSpeed(_iwashi_speed);
-          iwashi_speed = _iwashi_speed;
         }
+        iwashi_speed = _iwashi_speed;
       }
+    }
+    if (_iwashi_boids != enableIwashiBoids) {
+      for (int ii=0; ii<iwashi_count; ii++) {
+        iwashi[ii].setEnableBoids(_iwashi_boids);
+      }
+      enableIwashiBoids = _iwashi_boids;
     }
   }
 

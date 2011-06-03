@@ -21,4 +21,11 @@
     <string name="dialog_iwashi_speed_label">鰯の数：</string>
 
     <string name="title_preference_iwashi">鰯設定</string>
+
+    <string name="summary_setting">鰯の数や移動スピードを変更する場合に選択します。</string>
+
+    <string name="key_preference_iwashi_boids">iwashi_boids</string>
+    <string name="title_preference_iwashi_boids">群れ機能</string>
+    <string name="summary_on_preference_iwashi_boids">群れ機能を無効にします。(現在有効）</string>
+    <string name="summary_off_preference_iwashi_boids">群れ機能を有効にします。(現在無効）</string>
 </resources>
