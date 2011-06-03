@@ -12,33 +12,10 @@
     <string name="dialog_title_iwashi_count" >鰯何匹？</string>
     <string name="dialog_message_iwashi_count" >表示する鰯の数を選択してください。</string>
 
-    <string name="entries_iwashi_count1">1匹</string>
-    <string name="entries_iwashi_count2">2匹</string>
-    <string name="entries_iwashi_count4">4匹</string>
-    <string name="entries_iwashi_count8">8匹</string>
-    <string name="entries_iwashi_count16">16匹</string>
-    <string name="entries_iwashi_count32">32匹</string>
-    <string name="entries_iwashi_count64">64匹</string>
-
-    <string name="entryvalues_iwashi_count1">1</string>
-    <string name="entryvalues_iwashi_count2">2</string>
-    <string name="entryvalues_iwashi_count4">4</string>
-    <string name="entryvalues_iwashi_count8">8</string>
-    <string name="entryvalues_iwashi_count16">16</string>
-    <string name="entryvalues_iwashi_count32">32</string>
-    <string name="entryvalues_iwashi_count64">64</string>
-
     <string name="key_preference_iwashi_speed">iwashi_speed</string>
     <string name="title_preference_iwashi_speed">鰯のスピード</string>
     <string name="summary_preference_iwashi_speed">鰯の基本となる移動速度を指定します</string>
     <string name="dialog_title_iwashi_speed" >鰯のスピード</string>
     <string name="dialog_message_iwashi_speed" >鰯の泳ぐ移動速度を選択してください。</string>
 
-    <string name="entries_iwashi_speed1">速い</string>
-    <string name="entries_iwashi_speed2">普通</string>
-    <string name="entries_iwashi_speed3">遅い</string>
-
-    <string name="entryvalues_iwashi_speed1">0.04</string>
-    <string name="entryvalues_iwashi_speed2">0.03</string>
-    <string name="entryvalues_iwashi_speed3">0.02</string>
 </resources>
