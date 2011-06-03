@@ -15,7 +15,7 @@
         android:resource="@xml/wallpaper" />
     </service>
     <activity
-      android:name="jp.co.qsdn.android.atlantis.SettingActivity"
+      android:name="jp.co.qsdn.android.iwashi3d.setting.SettingActivity"
       android:label="@string/setting_title"
       android:launchMode="singleTask">
       <intent-filter>

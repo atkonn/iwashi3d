@@ -1,8 +1,9 @@
-package jp.co.qsdn.android.iwashi3d;
+package jp.co.qsdn.android.iwashi3d.setting;
 
 import android.app.Dialog;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import android.preference.DialogPreference;
 import android.preference.PreferenceManager;
@@ -16,17 +17,20 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import jp.co.qsdn.android.iwashi3d.R;
 
-public class IwashiCountDialog 
+
+public class IwashiSpeedDialog 
   extends DialogPreference {
-  private static final String TAG = IwashiCountDialog.class.getName();
+  private static final boolean _debug = false;
+  private static final String TAG = IwashiSpeedDialog.class.getName();
   private static SeekBar seekBar = null;
 
-  public IwashiCountDialog(Context context, AttributeSet attrs) {
+  public IwashiSpeedDialog(Context context, AttributeSet attrs) {
     super(context, attrs);
   }
 
-  public IwashiCountDialog(Context context, AttributeSet attrs, int defStyle) {
+  public IwashiSpeedDialog(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
   }
 
@@ -35,28 +39,32 @@ public class IwashiCountDialog
     View view = super.onCreateDialogView();
     if (view != null) {
       seekBar = (SeekBar)view.findViewById(R.id.seek);
-      seekBar.setProgress(Prefs.getInstance(getContext()).getIwashiCount());
-      final TextView nowCountView = (TextView)view.findViewById(R.id.dialog_now_count);
-      nowCountView.setText("鰯の数:" + seekBar.getProgress());
+      seekBar.setProgress(Prefs.getInstance(getContext()).getIwashiSpeed());
+      final TextView nowSpeedView = (TextView)view.findViewById(R.id.dialog_now_speed);
+
+      Resources res = view.getResources();
+      final String label = res.getString(R.string.dialog_iwashi_speed_label);
+
+      nowSpeedView.setText(label + seekBar.getProgress());
       seekBar.setOnSeekBarChangeListener(
         new OnSeekBarChangeListener() {
           // トラッキング開始時に呼び出されます
           @Override
           public void onStartTrackingTouch(SeekBar seekBar) {
             Log.v("onStartTrackingTouch()", String.valueOf(seekBar.getProgress()));
-            nowCountView.setText("鰯の数:" + seekBar.getProgress());
+            nowSpeedView.setText(label + seekBar.getProgress());
           }
           // トラッキング中に呼び出されます
           @Override
           public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
             Log.v("onProgressChanged()", String.valueOf(progress) + ", " + String.valueOf(fromTouch));
-            nowCountView.setText("鰯の数:" + seekBar.getProgress());
+            nowSpeedView.setText(label + seekBar.getProgress());
           }
           // トラッキング終了時に呼び出されます
           @Override
           public void onStopTrackingTouch(SeekBar seekBar) {
             Log.v("onStopTrackingTouch()", String.valueOf(seekBar.getProgress()));
-            nowCountView.setText("鰯の数:" + seekBar.getProgress());
+            nowSpeedView.setText(label + seekBar.getProgress());
           }
       });
     }
@@ -65,16 +73,16 @@ public class IwashiCountDialog
 
   @Override
   protected void onDialogClosed (boolean positiveResult) {
-    Log.d(TAG, "start onDialogClosed(" + positiveResult + ")");
+    if (_debug) Log.d(TAG, "start onDialogClosed(" + positiveResult + ")");
     if (positiveResult) {
       if (seekBar != null) {
-        Log.d(TAG, "鰯数:[" + seekBar.getProgress() + "]");
-        Prefs.getInstance(getContext()).setIwashiCount(seekBar.getProgress());
+        if (_debug) Log.d(TAG, "スピード:[" + seekBar.getProgress() + "]");
+        Prefs.getInstance(getContext()).setIwashiSpeed(seekBar.getProgress());
         seekBar = null;
       }
     }
     super.onDialogClosed(positiveResult);
-    Log.d(TAG, "end onDialogClosed(" + positiveResult + ")");
+    if (_debug) Log.d(TAG, "end onDialogClosed(" + positiveResult + ")");
   }
 
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">3D Sardines</string>
+    <string name="service_name">3D Sardine</string>
+    <string name="description">Crowd 3D live wallpaper of sardines that used Boids algorithm</string>
+    <string name="author">QSDN,Inc.</string>
+
+    <string name="setting_title">Settings</string>
+    <string name="key_preference_iwashi_count">iwashi_count</string>
+    <string name="title_preference_iwashi_count">Number of sardines</string>
+    <string name="summary_preference_iwashi_count">The number of sardines that display it is specified. </string>
+    <string name="dialog_title_iwashi_count" >How many sardines?</string>
+    <string name="dialog_message_iwashi_count" >Please select the number of sardines that display it. </string>
+    <string name="dialog_iwashi_count_label">Number of sardines:</string>
+
+    <string name="key_preference_iwashi_speed">iwashi_speed</string>
+    <string name="title_preference_iwashi_speed">Speed of sardines</string>
+    <string name="summary_preference_iwashi_speed">The passing speed that is basic of the sardine is specified. </string>
+    <string name="dialog_title_iwashi_speed" >Speed of sardines</string>
+    <string name="dialog_message_iwashi_speed" >Please select the passing speed where the sardine swims. </string>
+    <string name="dialog_iwashi_speed_label">Speed of sardines:</string>
+
+    <string name="title_preference_iwashi">Settings of sardines</string>
+</resources>

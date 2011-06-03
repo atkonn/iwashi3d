@@ -9,19 +9,20 @@ import android.opengl.GLSurfaceView;
 import android.opengl.GLU;
 import android.opengl.Matrix;
 
-import android.util.Log;
 import android.os.Bundle;
 
-
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
-import javax.microedition.khronos.opengles.GL11;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+import javax.microedition.khronos.opengles.GL11;
+
 import jp.co.qsdn.android.iwashi3d.model.Iwashi;
+import jp.co.qsdn.android.iwashi3d.setting.Prefs;
 import jp.co.qsdn.android.iwashi3d.util.CoordUtil;
 
 public class GLRenderer implements GLSurfaceView.Renderer {

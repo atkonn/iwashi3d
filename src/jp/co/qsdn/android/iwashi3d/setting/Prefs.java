@@ -1,4 +1,4 @@
-package jp.co.qsdn.android.iwashi3d;
+package jp.co.qsdn.android.iwashi3d.setting;
 
 
 import android.content.Context;

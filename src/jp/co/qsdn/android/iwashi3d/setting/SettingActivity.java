@@ -1,4 +1,4 @@
-package jp.co.qsdn.android.iwashi3d;
+package jp.co.qsdn.android.iwashi3d.setting;
 
 import android.content.Context;
 
@@ -8,6 +8,8 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 
 import android.util.Log;
+
+import jp.co.qsdn.android.iwashi3d.R;
 
 public class SettingActivity extends PreferenceActivity {
   private static final String TAG = SettingActivity.class.getName();

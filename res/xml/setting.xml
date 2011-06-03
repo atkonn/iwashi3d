@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <PreferenceScreen 
   xmlns:android="http://schemas.android.com/apk/res/android">
-  <PreferenceCategory android:title="鰯設定">
-    <jp.co.qsdn.android.iwashi3d.IwashiCountDialog
+  <PreferenceCategory android:title="@string/title_preference_iwashi">
+    <jp.co.qsdn.android.iwashi3d.setting.IwashiCountDialog
       android:title="@string/title_preference_iwashi_count"
       android:summary="@string/summary_preference_iwashi_count"
       android:dialogTitle="@string/dialog_title_iwashi_count"
       android:dialogMessage="@string/dialog_message_iwashi_count"
       android:dialogLayout="@layout/iwashi_count_dialog"
     />
-    <jp.co.qsdn.android.iwashi3d.IwashiSpeedDialog
+    <jp.co.qsdn.android.iwashi3d.setting.IwashiSpeedDialog
       android:title="@string/title_preference_iwashi_speed"
       android:summary="@string/summary_preference_iwashi_speed"
       android:dialogTitle="@string/dialog_title_iwashi_speed"

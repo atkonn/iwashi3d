@@ -33,18 +33,21 @@ public final class R {
         public static final int app_name=0x7f050000;
         public static final int author=0x7f050003;
         public static final int description=0x7f050002;
+        public static final int dialog_iwashi_count_label=0x7f05000a;
+        public static final int dialog_iwashi_speed_label=0x7f050010;
         public static final int dialog_message_iwashi_count=0x7f050009;
-        public static final int dialog_message_iwashi_speed=0x7f05000e;
+        public static final int dialog_message_iwashi_speed=0x7f05000f;
         public static final int dialog_title_iwashi_count=0x7f050008;
-        public static final int dialog_title_iwashi_speed=0x7f05000d;
+        public static final int dialog_title_iwashi_speed=0x7f05000e;
         public static final int key_preference_iwashi_count=0x7f050005;
-        public static final int key_preference_iwashi_speed=0x7f05000a;
+        public static final int key_preference_iwashi_speed=0x7f05000b;
         public static final int service_name=0x7f050001;
         public static final int setting_title=0x7f050004;
         public static final int summary_preference_iwashi_count=0x7f050007;
-        public static final int summary_preference_iwashi_speed=0x7f05000c;
+        public static final int summary_preference_iwashi_speed=0x7f05000d;
+        public static final int title_preference_iwashi=0x7f050011;
         public static final int title_preference_iwashi_count=0x7f050006;
-        public static final int title_preference_iwashi_speed=0x7f05000b;
+        public static final int title_preference_iwashi_speed=0x7f05000c;
     }
     public static final class xml {
         public static final int setting=0x7f040000;
