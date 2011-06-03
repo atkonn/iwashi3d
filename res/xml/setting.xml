@@ -2,19 +2,19 @@
 <PreferenceScreen 
   xmlns:android="http://schemas.android.com/apk/res/android">
   <PreferenceCategory android:title="鰯設定">
-    <ListPreference   
-      android:key="@string/key_preference_iwashi_count"  
-      android:title="@string/title_preference_iwashi_count"   
-      android:summaryOn="@string/summary_preference_iwashi_count"  
-      android:entries="@array/entries_iwashi_count"   
-      android:entryValues="@array/entryvalues_iwashi_count"  
-      android:dialogTitle="@string/dialog_title_iwashi_count" />  
-    <ListPreference   
-      android:key="@string/key_preference_iwashi_speed"  
-      android:title="@string/title_preference_iwashi_speed"   
-      android:summaryOn="@string/summary_preference_iwashi_speed"  
-      android:entries="@array/entries_iwashi_speed"   
-      android:entryValues="@array/entryvalues_iwashi_speed"  
-      android:dialogTitle="@string/dialog_title_iwashi_speed" />  
+    <jp.co.qsdn.android.atlantis.IwashiCountDialog
+      android:title="@string/title_preference_iwashi_count"
+      android:summary="@string/summary_preference_iwashi_count"
+      android:dialogTitle="@string/dialog_title_iwashi_count"
+      android:dialogMessage="@string/dialog_message_iwashi_count"
+      android:dialogLayout="@layout/iwashi_count_dialog"
+    />
+    <jp.co.qsdn.android.atlantis.IwashiSpeedDialog
+      android:title="@string/title_preference_iwashi_speed"
+      android:summary="@string/summary_preference_iwashi_speed"
+      android:dialogTitle="@string/dialog_title_iwashi_speed"
+      android:dialogMessage="@string/dialog_message_iwashi_speed"
+      android:dialogLayout="@layout/iwashi_speed_dialog"
+    />
   </PreferenceCategory>
 </PreferenceScreen>

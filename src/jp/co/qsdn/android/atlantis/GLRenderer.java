@@ -64,8 +64,9 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     //Ground.loadTexture(gl10, context, R.drawable.sand);
     Iwashi.loadTexture(gl10, context, R.drawable.iwashi);
 
-    iwashi_count = SettingActivity.getIwashiCount(context);
-    iwashi_speed = SettingActivity.getIwashiSpeed(context);
+    iwashi_count = Prefs.getInstance(context).getIwashiCount();
+    iwashi_speed = ((float)Prefs.getInstance(context).getIwashiSpeed() / 50f) * 0.04f;
+    Log.d(TAG, "現在のスピード:[" + iwashi_speed + "]");
 
     iwashi = new Iwashi[iwashi_count];
     for (int ii=0; ii<iwashi_count; ii++) {
@@ -203,8 +204,9 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     if (iwashi == null) {
       return;
     }
-    int _iwashi_count = SettingActivity.getIwashiCount(context);
-    float _iwashi_speed = SettingActivity.getIwashiSpeed(context);
+    int _iwashi_count = Prefs.getInstance(context).getIwashiCount();
+    float _iwashi_speed = ((float)Prefs.getInstance(context).getIwashiSpeed() / 50f) * 0.04f;
+    Log.d(TAG, "現在のスピード:[" + _iwashi_speed + "]");
     if (_iwashi_count != iwashi_count) {
       synchronized (this) {
         Iwashi[] newIwashi = new Iwashi[_iwashi_count];

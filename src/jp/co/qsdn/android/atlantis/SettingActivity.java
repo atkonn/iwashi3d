@@ -25,34 +25,18 @@ public class SettingActivity extends PreferenceActivity {
   }
 
   public static int getIwashiCount(Context context) {
-    String ret = PreferenceManager
-                  .getDefaultSharedPreferences(context)    
-                  .getString(KEY_IWASHI_COUNT, DEFAULT_IWASHI_COUNT);
-    int iwashi_count = 1;
-    if (ret != null) {
-      try {
-        iwashi_count = Integer.parseInt(ret);
-      }
-      catch (NumberFormatException ex) {
-        Log.d(TAG, ex.toString());
-      }
-    }
-    return iwashi_count;
+    return Prefs.getInstance(context).getIwashiCount();
   }
 
   public static float getIwashiSpeed(Context context) {
-    String ret = PreferenceManager
-                  .getDefaultSharedPreferences(context)    
-                  .getString(KEY_IWASHI_SPEED, DEFAULT_IWASHI_SPEED);
-    float iwashi_speed = 0.05f;
-    if (ret != null) {
-      try {
-        iwashi_speed = Float.parseFloat(ret);
-      }
-      catch (NumberFormatException ex) {
-        Log.d(TAG, ex.toString());
-      }
-    }
-    return iwashi_speed;
+    return Prefs.getInstance(context).getIwashiSpeed();
+  }
+
+  public static void setIwashiCount(Context context, int iwashiCount) {
+    Prefs.getInstance(context).setIwashiCount(iwashiCount);
+  }
+
+  public static void setIwashiSpeed(Context context, int iwashiSpeed) {
+    Prefs.getInstance(context).setIwashiSpeed(iwashiSpeed);
   }
 }
