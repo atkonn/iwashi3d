@@ -30,6 +30,7 @@ public class SettingActivity extends PreferenceActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    setContentView(R.layout.setting);
     addPreferencesFromResource(R.xml.setting);
 
     boolean b = Prefs.getInstance(this).getIwashiBoids();

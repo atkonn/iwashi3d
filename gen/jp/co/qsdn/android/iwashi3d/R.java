@@ -28,6 +28,7 @@ public final class R {
     public static final class layout {
         public static final int iwashi_count_dialog=0x7f030000;
         public static final int iwashi_speed_dialog=0x7f030001;
+        public static final int setting=0x7f030002;
     }
     public static final class string {
         public static final int app_name=0x7f050000;
@@ -39,9 +40,11 @@ public final class R {
         public static final int dialog_message_iwashi_speed=0x7f05000f;
         public static final int dialog_title_iwashi_count=0x7f050008;
         public static final int dialog_title_iwashi_speed=0x7f05000e;
+        public static final int key_about_us=0x7f050017;
         public static final int key_preference_iwashi_boids=0x7f050013;
         public static final int key_preference_iwashi_count=0x7f050005;
         public static final int key_preference_iwashi_speed=0x7f05000b;
+        public static final int key_preference_ok_button=0x7f050019;
         public static final int service_name=0x7f050001;
         public static final int setting_title=0x7f050004;
         public static final int summary_off_preference_iwashi_boids=0x7f050016;
@@ -49,6 +52,8 @@ public final class R {
         public static final int summary_preference_iwashi_count=0x7f050007;
         public static final int summary_preference_iwashi_speed=0x7f05000d;
         public static final int summary_setting=0x7f050012;
+        public static final int text_about_us=0x7f050018;
+        public static final int text_preference_ok_button=0x7f05001a;
         public static final int title_preference_iwashi=0x7f050011;
         public static final int title_preference_iwashi_boids=0x7f050014;
         public static final int title_preference_iwashi_count=0x7f050006;

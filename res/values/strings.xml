@@ -1,31 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">3D鰯</string>
-    <string name="service_name">3D鰯</string>
-    <string name="description">Boidsアルゴリズムを使った鰯の群れ3Dライブ壁紙</string>
-    <string name="author">株式会社QSDN</string>
+  <string name="app_name">3D鰯</string>
+  <string name="service_name">3D鰯</string>
+  <string name="description">Boidsアルゴリズムを使った鰯の群れ3Dライブ壁紙</string>
+  <string name="author">株式会社QSDN</string>
 
-    <string name="setting_title">設定</string>
-    <string name="key_preference_iwashi_count">iwashi_count</string>
-    <string name="title_preference_iwashi_count">鰯数</string>
-    <string name="summary_preference_iwashi_count">表示する鰯の数を指定します</string>
-    <string name="dialog_title_iwashi_count" >鰯何匹？</string>
-    <string name="dialog_message_iwashi_count" >表示する鰯の数を選択してください。</string>
-    <string name="dialog_iwashi_count_label">鰯の数：</string>
+  <string name="setting_title">設定</string>
+  <string name="key_preference_iwashi_count">iwashi_count</string>
+  <string name="title_preference_iwashi_count">鰯数</string>
+  <string name="summary_preference_iwashi_count">表示する鰯の数を指定します</string>
+  <string name="dialog_title_iwashi_count" >鰯何匹？</string>
+  <string name="dialog_message_iwashi_count" >表示する鰯の数を選択してください。</string>
+  <string name="dialog_iwashi_count_label">鰯の数：</string>
 
-    <string name="key_preference_iwashi_speed">iwashi_speed</string>
-    <string name="title_preference_iwashi_speed">鰯のスピード</string>
-    <string name="summary_preference_iwashi_speed">鰯の基本となる移動速度を指定します</string>
-    <string name="dialog_title_iwashi_speed" >鰯のスピード</string>
-    <string name="dialog_message_iwashi_speed" >鰯の泳ぐ移動速度を選択してください。</string>
-    <string name="dialog_iwashi_speed_label">鰯の数：</string>
+  <string name="key_preference_iwashi_speed">iwashi_speed</string>
+  <string name="title_preference_iwashi_speed">鰯のスピード</string>
+  <string name="summary_preference_iwashi_speed">鰯の基本となる移動速度を指定します</string>
+  <string name="dialog_title_iwashi_speed" >鰯のスピード</string>
+  <string name="dialog_message_iwashi_speed" >鰯の泳ぐ移動速度を選択してください。</string>
+  <string name="dialog_iwashi_speed_label">鰯の数：</string>
 
-    <string name="title_preference_iwashi">鰯設定</string>
+  <string name="title_preference_iwashi">鰯設定</string>
 
-    <string name="summary_setting">鰯の数や移動スピードを変更する場合に選択します。</string>
+  <string name="summary_setting">鰯の数や移動スピードを変更する場合に選択します。</string>
 
-    <string name="key_preference_iwashi_boids">iwashi_boids</string>
-    <string name="title_preference_iwashi_boids">群れ機能</string>
-    <string name="summary_on_preference_iwashi_boids">群れ機能を無効にします。(現在有効）</string>
-    <string name="summary_off_preference_iwashi_boids">群れ機能を有効にします。(現在無効）</string>
+  <string name="key_preference_iwashi_boids">iwashi_boids</string>
+  <string name="title_preference_iwashi_boids">群れ機能</string>
+  <string name="summary_on_preference_iwashi_boids">群れ機能を無効にします。(現在有効）</string>
+  <string name="summary_off_preference_iwashi_boids">群れ機能を有効にします。(現在無効）</string>
+
+  <string name="key_about_us">about_us</string>
+  <string name="text_about_us">この壁紙について</string>
+  <string name="key_preference_ok_button">ok_button</string>
+  <string name="text_preference_ok_button">    戻る    </string>
 </resources>

@@ -1124,7 +1124,7 @@ public class Iwashi {
   }
   public boolean doAlignment() {
     java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
-    if (rand.nextInt(100) <= 40) {
+    if (rand.nextInt(100) <= 20) {
       return false;
     }
     for (int ii=0; ii<species.length; ii++) {
