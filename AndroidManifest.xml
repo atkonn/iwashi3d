@@ -24,6 +24,16 @@
         <category android:name="android.intent.category.DEFAULT" />
       </intent-filter>
     </activity>
+    <activity
+      android:name="jp.co.qsdn.android.iwashi3d.setting.AboutActivity"
+      android:label="@string/about_title"
+      android:launchMode="singleTask">
+      <intent-filter>
+        <action
+          android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.DEFAULT" />
+      </intent-filter>
+    </activity>
     <receiver android:name="AtlantisBroadcastReceiver">
       <intent-filter>
         <action android:name="android.intent.action.BOOT_COMPLETED"/>

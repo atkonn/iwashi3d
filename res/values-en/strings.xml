@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">3D Sardines</string>
-  <string name="service_name">3D Sardine</string>
+  <string name="app_name">School of Sardines</string>
+  <string name="service_name">School of Sardine</string>
   <string name="description">3D live wallpaper of sardines that used BOIDS algorithm</string>
   <string name="author">QSDN,Inc.</string>
+  <string name="version">version 1.0.0</string>
+  <string name="copyright">Copyright (c) 2011 QSDN,Inc. All rights reserved.</string>
 
   <string name="setting_title">Settings</string>
   <string name="key_preference_iwashi_count">iwashi_count</string>
@@ -32,4 +34,19 @@
   <string name="text_about_us">about</string>
   <string name="key_preference_ok_button">ok_button</string>
   <string name="text_preference_ok_button">OK</string>
+
+  <string name="about_title">about School of sardines</string>
+  <string name="text_about_ok_button">OK</string>
+  <string name="about_description">This is 3D live wallpaper that used BOID algorithm.</string>
+
+  <string name="key_preference_camera_mode">camera_mode</string>
+  <string name="title_preference_camera_mode">Sardine View Mode</string>
+  <string name="summary_on_preference_camera_mode">Sardine View Mode is running.</string>
+  <string name="summary_off_preference_camera_mode">Normal View Mode is running.</string>
+
+  <string name="title_preference_change_camera">Change Viewpoint</string>
+  <string name="summary_preference_change_camera">This changes it of the distance from a viewpoint to a school of sardine.</string>
+  <string name="dialog_title_change_camera">Change Viewpoint</string>
+  <string name="dialog_message_change_camera">Please appoint the distance to a school of sardine</string>
+  <string name="dialog_camera_distance_label">Distance:</string>
 </resources>

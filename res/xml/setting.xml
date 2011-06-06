@@ -23,5 +23,19 @@
       android:summaryOff="@string/summary_off_preference_iwashi_boids"
       android:defaultValue="true"
     />
+    <CheckBoxPreference   
+      android:key="@string/key_preference_camera_mode"
+      android:title="@string/title_preference_camera_mode"
+      android:summaryOn="@string/summary_on_preference_camera_mode"  
+      android:summaryOff="@string/summary_off_preference_camera_mode"
+      android:defaultValue="false"
+    />
+    <jp.co.qsdn.android.iwashi3d.setting.ChangeCameraDialog
+      android:title="@string/title_preference_change_camera"
+      android:summary="@string/summary_preference_change_camera"
+      android:dialogTitle="@string/dialog_title_change_camera"
+      android:dialogMessage="@string/dialog_message_change_camera"
+      android:dialogLayout="@layout/change_camera_dialog"
+    />
   </PreferenceCategory>
 </PreferenceScreen>

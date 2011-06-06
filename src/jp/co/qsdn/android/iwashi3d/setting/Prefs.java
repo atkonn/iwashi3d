@@ -16,14 +16,20 @@ public class Prefs {
   private static final String PACKAGE_NAME = "jp.co.qsdn.android.iwashi3d";
   private Context mContext = null;
 
-  private static final String KEY_IWASHI_COUNT = "iwashi_count";
-  private static final int DEFAULT_IWASHI_COUNT = 20;
+  public static final String KEY_IWASHI_COUNT = "iwashi_count";
+  public static final int DEFAULT_IWASHI_COUNT = 20;
 
-  private static final String KEY_IWASHI_SPEED = "iwashi_speed";
-  private static final int DEFAULT_IWASHI_SPEED = 50;
+  public static final String KEY_IWASHI_SPEED = "iwashi_speed";
+  public static final int DEFAULT_IWASHI_SPEED = 50;
 
-  private static final String KEY_IWASHI_BOIDS = "iwashi_boids";
-  private static final boolean DEFAULT_IWASHI_BOIDS = true;
+  public static final String KEY_IWASHI_BOIDS = "iwashi_boids";
+  public static final boolean DEFAULT_IWASHI_BOIDS = true;
+
+  public static final String KEY_CAMERA_MODE = "camera_mode";
+  public static final boolean DEFAULT_CAMERA_MODE = false;
+
+  public static final String KEY_CAMERA_DISTANCE = "camera_distance";
+  public static final int DEFAULT_CAMERA_DISTANCE = 5;
 
   public static Prefs getInstance(Context context) {
     if (mPrefs == null) {
@@ -96,5 +102,38 @@ public class Prefs {
   public boolean getIwashiBoids() {
     SharedPreferences sharedPreferences = mContext.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);  
     return  sharedPreferences.getBoolean(KEY_IWASHI_BOIDS, DEFAULT_IWASHI_BOIDS);
+  }
+  public void setCameraMode(boolean cameraMode) {
+    SharedPreferences sharedPreferences = mContext.getSharedPreferences(PACKAGE_NAME,Context.MODE_PRIVATE);  
+    sharedPreferences
+      .edit()
+      .putBoolean(KEY_CAMERA_MODE, cameraMode)
+      .commit();  
+  }
+  public boolean getCameraMode() {
+    SharedPreferences sharedPreferences = mContext.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);  
+    return  sharedPreferences.getBoolean(KEY_CAMERA_MODE, DEFAULT_CAMERA_MODE);
+  }
+
+  public void setCameraDistance(int distance) {
+    SharedPreferences sharedPreferences = mContext.getSharedPreferences(PACKAGE_NAME,Context.MODE_PRIVATE);  
+    sharedPreferences
+      .edit()
+      .putString(KEY_CAMERA_DISTANCE, "" + distance)
+      .commit();  
+  }
+  public int getCameraDistance() {
+    SharedPreferences sharedPreferences = mContext.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);  
+    String ret = sharedPreferences.getString(KEY_CAMERA_DISTANCE, "" + DEFAULT_CAMERA_DISTANCE);
+    int distance = DEFAULT_CAMERA_DISTANCE;
+    if (ret != null) {
+      try {
+        distance = Integer.parseInt(ret);
+      }
+      catch (NumberFormatException ex) {
+        Log.e(TAG, ex.toString());
+      }
+    }
+    return distance;
   }
 }

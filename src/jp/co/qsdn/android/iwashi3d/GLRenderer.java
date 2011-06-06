@@ -37,6 +37,8 @@ public class GLRenderer implements GLSurfaceView.Renderer {
   /* カメラの位置 */
   private float[] camera = {0f,0f,0f};
   private float[] org_camera = {0f,0f,0f};
+  private boolean cameraMode = false; /* false:通常モード true:鰯視点モード */
+  private float cameraDistance = 5f; /* 群れまでの距離 */
 
   private BaitManager baitManager = new BaitManager();
 
@@ -67,6 +69,8 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     iwashi_speed = ((float)Prefs.getInstance(context).getIwashiSpeed() / 50f) * 0.04f;
     if (_debug) Log.d(TAG, "現在のスピード:[" + iwashi_speed + "]");
     enableIwashiBoids = Prefs.getInstance(context).getIwashiBoids();
+    cameraDistance = (float)Prefs.getInstance(context).getCameraDistance();
+    cameraMode = Prefs.getInstance(context).getCameraMode();
     
 
     iwashi = new Iwashi[iwashi_count];
@@ -82,7 +86,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
     org_camera[0] = camera[0] = 0f;
     org_camera[1] = camera[1] = 0f;
-    org_camera[2] = camera[2] = Aquarium.max_z + 5.0f;
+    org_camera[2] = camera[2] = Aquarium.max_z;
 
     /*=======================================================================*/
     /* フォグのセットアップ                                                  */
@@ -201,6 +205,8 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     int _iwashi_count = Prefs.getInstance(context).getIwashiCount();
     float _iwashi_speed = ((float)Prefs.getInstance(context).getIwashiSpeed() / 50f) * 0.04f;
     boolean _iwashi_boids = Prefs.getInstance(context).getIwashiBoids();
+    boolean _camera_mode = Prefs.getInstance(context).getCameraMode();
+    float _camera_distance = (float)Prefs.getInstance(context).getCameraDistance();
     if (_debug) Log.d(TAG, "現在のスピード:[" + _iwashi_speed + "]");
 
     if (_debug) Log.d(TAG,"現在のBOIDS:[" + _iwashi_boids + "]");
@@ -243,6 +249,12 @@ public class GLRenderer implements GLSurfaceView.Renderer {
       }
       enableIwashiBoids = _iwashi_boids;
     }
+    if (_camera_mode != cameraMode) {
+      cameraMode = _camera_mode;
+    }
+    if (_camera_distance != cameraDistance) {
+      cameraDistance = _camera_distance;
+    }
   }
 
 
@@ -254,7 +266,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     gl10.glMatrixMode(GL10.GL_PROJECTION);
     gl10.glLoadIdentity();
     float ratio = (float) width / height;
-    CoordUtil.perspective(gl10,45.0f, ratio, 1f, 30f);
+    CoordUtil.perspective(gl10,45.0f, ratio, 0.1f, 30f);
     this.screen_width = width;
     this.screen_height = height;
 
@@ -343,16 +355,22 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
 
     // カメラ
-    CoordUtil.lookAt(gl10,
-                  camera[0],camera[1],camera[2],
-                  camera[0],camera[1],-10f,
-                  0,1,0);
-    /*
-    GLU.gluLookAt(gl10,
-                  camera[0],camera[1],camera[2],
-                  camera[0],camera[1],-100f,
-                  0,1,0);
-    */
+    if (cameraMode) {
+      /* 鰯視点モード */
+      float c_x = iwashi[0].getX() - iwashi[0].getDirectionX() * (cameraDistance/5.0f);
+      float c_y = iwashi[0].getY() - iwashi[0].getDirectionY() * (cameraDistance/5.0f);
+      float c_z = iwashi[0].getZ() - iwashi[0].getDirectionZ() * (cameraDistance/5.0f);
+      CoordUtil.lookAt(gl10,
+                    c_x, c_y, c_z,
+                    iwashi[0].getDirectionX(),iwashi[0].getDirectionY(),iwashi[0].getDirectionZ(),
+                    0,1,0);
+    }
+    else {
+      CoordUtil.lookAt(gl10,
+                    camera[0],camera[1],camera[2]+cameraDistance,
+                    camera[0],camera[1],-10f,
+                    0,1,0);
+    }
 
 
     /*=======================================================================*/

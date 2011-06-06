@@ -1,0 +1,85 @@
+package jp.co.qsdn.android.iwashi3d.setting;
+
+import android.app.Dialog;
+
+import android.content.Context;
+import android.content.res.Resources;
+
+import android.preference.DialogPreference;
+import android.preference.PreferenceManager;
+
+import android.util.AttributeSet;
+import android.util.Log;
+
+import android.view.View;
+
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.SeekBar;
+import android.widget.TextView;
+
+import jp.co.qsdn.android.iwashi3d.R;
+
+public class ChangeCameraDialog 
+  extends DialogPreference {
+  private static final boolean _debug = false;
+  private static final String TAG = ChangeCameraDialog.class.getName();
+  private static SeekBar seekBar = null;
+
+  public ChangeCameraDialog(Context context, AttributeSet attrs) {
+    super(context, attrs);
+  }
+
+  public ChangeCameraDialog(Context context, AttributeSet attrs, int defStyle) {
+    super(context, attrs, defStyle);
+  }
+
+  @Override
+  public View onCreateDialogView() {
+    View view = super.onCreateDialogView();
+    if (view != null) {
+      seekBar = (SeekBar)view.findViewById(R.id.distance);
+      seekBar.setProgress(Prefs.getInstance(getContext()).getCameraDistance());
+      final TextView nowCountView = (TextView)view.findViewById(R.id.dialog_now_count);
+
+      Resources res = view.getResources();
+      final String label = res.getString(R.string.dialog_camera_distance_label);
+
+      nowCountView.setText(label + seekBar.getProgress());
+      seekBar.setOnSeekBarChangeListener(
+        new OnSeekBarChangeListener() {
+          // トラッキング開始時に呼び出されます
+          @Override
+          public void onStartTrackingTouch(SeekBar seekBar) {
+            nowCountView.setText(label + seekBar.getProgress());
+          }
+          // トラッキング中に呼び出されます
+          @Override
+          public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
+            nowCountView.setText(label + seekBar.getProgress());
+          }
+          // トラッキング終了時に呼び出されます
+          @Override
+          public void onStopTrackingTouch(SeekBar seekBar) {
+            nowCountView.setText(label + seekBar.getProgress());
+          }
+      });
+    }
+    return view;
+  }
+
+  @Override
+  protected void onDialogClosed (boolean positiveResult) {
+    if (_debug) Log.d(TAG, "start onDialogClosed(" + positiveResult + ")");
+    if (positiveResult) {
+      if (seekBar != null) {
+        Prefs.getInstance(getContext()).setCameraDistance(seekBar.getProgress());
+        seekBar = null;
+      }
+    }
+    super.onDialogClosed(positiveResult);
+    if (_debug) Log.d(TAG, "end onDialogClosed(" + positiveResult + ")");
+  }
+
+}
+
+

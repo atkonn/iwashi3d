@@ -41,9 +41,9 @@ public class Iwashi {
    * 仲間、同種
    */
   private Iwashi[] species;
-  private double separate_dist  = 2.0d * scale;
-  private double alignment_dist = 4.0d * scale;
-  private double cohesion_dist  = 50.0d * scale;
+  private double separate_dist  = 5.0d * scale;
+  private double alignment_dist = 20.0d * scale;
+  private double cohesion_dist  = 40.0d * scale;
   private float[] schoolCenter = {0f,0f,0f};
 
   private enum STATUS {
@@ -1052,9 +1052,9 @@ public class Iwashi {
       /* 環境光の材質色設定                                                    */
       /*=======================================================================*/
       float[] mat_amb = { 
-        0.05f, 
-        0.05f, 
-        0.05f,
+        0.07f, 
+        0.07f, 
+        0.07f,
         1.0f,
        };
       gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, mat_amb, 0);
@@ -1062,9 +1062,9 @@ public class Iwashi {
       /* 拡散反射光の色設定                                                    */
       /*=======================================================================*/
       float[] mat_diff = { 
-        0.12f, 
-        0.12f, 
-        0.12f, 
+        0.24f, 
+        0.24f, 
+        0.24f, 
         1.0f,
        };
       gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, mat_diff, 0);
@@ -1152,13 +1152,13 @@ public class Iwashi {
   public boolean doCohesion() {
     java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
     if (getStatus() == STATUS.COHESION) {
-      if (rand.nextInt(100) <= 5) {
+      if (rand.nextInt(100) <= 10) {
         /* 前回COHESIONである場合今回もCOHESIONである可能性は高い */
         return false;
       }
     }
     else {
-      if (rand.nextInt(100) <= 30) {
+      if (rand.nextInt(100) <= 40) {
         return false;
       }
     }

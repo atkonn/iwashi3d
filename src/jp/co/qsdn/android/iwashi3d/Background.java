@@ -77,9 +77,9 @@ public class Background {
     /* 環境光の材質色設定                                                    */
     /*=======================================================================*/
     float[] mat_amb = { 
-      1.0f, 
-      1.0f, 
-      1.0f,
+      0.07f, 
+      0.07f, 
+      0.07f, 
       1.0f,
      };
     gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, mat_amb, 0);
@@ -87,9 +87,9 @@ public class Background {
     /* 拡散反射光の色設定                                                    */
     /*=======================================================================*/
     float[] mat_diff = { 
-      1.0f, 
-      1.0f, 
-      1.0f, 
+      0.07f, 
+      0.07f, 
+      0.07f, 
       1.0f,
      };
     gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, mat_diff, 0);
@@ -97,9 +97,9 @@ public class Background {
     /* 鏡面反射光の質感色設定                                                */
     /*=======================================================================*/
     float[] mat_spec = { 
-      1.0f, 
-      1.0f, 
-      1.0f, 
+      0.07f, 
+      0.07f, 
+      0.07f, 
       1.0f,
     };
 

@@ -16,12 +16,14 @@
     android:paddingTop="10dip" 
     android:layout_height="wrap_content">
     <Button 
+      android:id="@+id/preference_button_about"
       android:key="@string/key_about_us"
       android:layout_width="0dip"
       android:layout_weight="1"
       android:text="@string/text_about_us"
       android:layout_height="wrap_content" />
     <Button 
+      android:id="@+id/preference_button_ok"
       android:key="@string/key_preference_ok_button"
       android:layout_width="0dip"
       android:layout_weight="1"
