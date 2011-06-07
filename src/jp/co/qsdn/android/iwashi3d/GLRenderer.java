@@ -207,6 +207,12 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     boolean _iwashi_boids = Prefs.getInstance(context).getIwashiBoids();
     boolean _camera_mode = Prefs.getInstance(context).getCameraMode();
     float _camera_distance = (float)Prefs.getInstance(context).getCameraDistance();
+/*DEBUG*/
+if (false){
+  _iwashi_count = 1;
+  _camera_distance = 10f;
+}
+/*DEBUG*/
     if (_debug) Log.d(TAG, "現在のスピード:[" + _iwashi_speed + "]");
 
     if (_debug) Log.d(TAG,"現在のBOIDS:[" + _iwashi_boids + "]");
@@ -298,6 +304,10 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
   public void onCommand(GL10 gl10, String action, int x, int y, int z, Bundle extras, boolean resultRequested) {
     if (_debug) Log.d(TAG, "start onCommand");
+    if (cameraMode) {
+      /* 鰯視点モードのため、何もしない */
+      return ;
+    }
     /*=======================================================================*/
     /* タッチされたら寄ってくる                                              */
     /* 餌はiwashi_count分                                                    */
@@ -325,7 +335,8 @@ public class GLRenderer implements GLSurfaceView.Renderer {
       if (_debug) Log.d(TAG,"変換結果(UnProject):[" + (ret[0]/ret[3]) + "][" + (ret[1]/ret[3]) + "][" + (ret[2]/ret[3]) + "][" + ret[3] + "]");
       nx = (ret[0] / ret[3]);
       ny = (ret[1] / ret[3]) * -1f;
-      nz = (ret[2] / ret[3]);
+      //nz = (ret[2] / ret[3]);
+      nz = Aquarium.max_z - 0.2f;
       if (_debug) {
         Log.d(TAG,"変換結果"
          + "x:[" + nx + "] "

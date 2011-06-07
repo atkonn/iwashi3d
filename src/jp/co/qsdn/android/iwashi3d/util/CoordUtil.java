@@ -119,6 +119,9 @@ public class CoordUtil {
     }
     return s;
   }
+  public static double convertToDegree(double radian) {
+    return radian * 180.0d / (Math.atan(1.0d) * 4.0d);
+  }
 
   /**
    * AndroidのOpenGL ESではglGetIntやglGetFloatでMATRIXが取得できないので
@@ -195,8 +198,12 @@ public class CoordUtil {
   /**
    * 内積
    */
-  public static float dot(float[] v1, float[] v2) {
-    return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+  public static float dot(float[] v1, float[] v2, int n) {
+    float ret = 0f;
+    for (int ii=0; ii<n; ii++) {
+      ret += (v1[ii] * v2[ii]);
+    }
+    return ret;
   }
 
   public static float[][] calcViewMatrix(float eyex, float eyey, float eyez,
@@ -310,5 +317,23 @@ public class CoordUtil {
 
 
     gl10.glFrustumf(left, right, bottom, top, zNear, zFar);
+  }
+
+  /**
+   * ベクトル間の角度を求める 
+   * @param v1 ベクトル1
+   * @param v2 ベクトル2
+   * @param n 次元数
+   * @return 角度
+   */
+  public static float includedAngle(float[] v1, float[] v2, int n) {
+    return (float)convertToDegree(Math.acos((double)(dot(v1, v2, n) / (norm(v1, n) * norm(v2, n)))));
+  }
+
+  /**
+   * ノルム
+   */
+  public static float norm(float[] v1, int n) {
+    return (float)Math.sqrt((double)dot(v1, v1, n));
   }
 }

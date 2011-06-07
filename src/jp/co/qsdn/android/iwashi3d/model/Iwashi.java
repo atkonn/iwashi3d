@@ -37,6 +37,8 @@ public class Iwashi {
   private long seed = 0;
   private BaitManager baitManager;
   private boolean enableBoids = true;
+  public float[] distances = new float[100];
+  private float targetDistance = 0f;
   /*
    * 仲間、同種
    */
@@ -90,6 +92,8 @@ public class Iwashi {
   private float cohesion_speed = speed * 3f;
   private float sv_speed = speed;
 
+  private int iwashiNo = 0;
+
   public Iwashi(int ii) {
 
     ByteBuffer nbb = ByteBuffer.allocateDirect(IwashiData.normals.length * 4);
@@ -110,6 +114,7 @@ public class Iwashi {
     position[0] = rand.nextFloat() * 8f - 4f;
     position[1] = rand.nextFloat() * 8f - 4f;
     position[2] = rand.nextFloat() * 4f - 2f;
+    iwashiNo = ii;
   }
 
   public static void loadTexture(GL10 gl10, Context context, int resource) {
@@ -1099,57 +1104,33 @@ public class Iwashi {
     gl10.glPopMatrix();
   }
 
-  public boolean doSeparation() {
-    for (int ii=0; ii<species.length; ii++) {
-      if (species[ii].equals(this)) {
-        /*===================================================================*/
-        /* 自分だったらパス                                                  */
-        /*===================================================================*/
-        continue;
-      }
-      double dist = Math.sqrt(
-          Math.pow(position[0]-species[ii].getX(), 2)
-        + Math.pow(position[1]-species[ii].getY(), 2)
-        + Math.pow(position[2]-species[ii].getZ(), 2));
-      if (dist <= separate_dist) {
-        /*===================================================================*/
-        /* セパレーション領域にターゲットがいる場合                          */
-        /*===================================================================*/
-        setStatus(STATUS.SEPARATE);
-        turnSeparation(species[ii]);
-        return true;
-      }
+  public boolean doSeparation(Iwashi target, float targetDistance) {
+    if (targetDistance <= separate_dist) {
+      /*===================================================================*/
+      /* セパレーション領域にターゲットがいる場合                          */
+      /*===================================================================*/
+      setStatus(STATUS.SEPARATE);
+      turnSeparation(target);
+      return true;
     }
     return false;
   }
-  public boolean doAlignment() {
+  public boolean doAlignment(Iwashi target, float targetDistance) {
     java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
     if (rand.nextInt(100) <= 20) {
       return false;
     }
-    for (int ii=0; ii<species.length; ii++) {
-      if (species[ii].equals(this)) {
-        /*===================================================================*/
-        /* 自分だったらパス                                                  */
-        /*===================================================================*/
-        continue;
-      }
-      double dist = Math.sqrt(
-          Math.pow(position[0]-species[ii].getX(), 2)
-        + Math.pow(position[1]-species[ii].getY(), 2)
-        + Math.pow(position[2]-species[ii].getZ(), 2));
-      if (dist <= alignment_dist && dist > separate_dist) {
-        /*===================================================================*/
-        /* アラインメント領域にターゲットがいる場合                          */
-        /*===================================================================*/
-        setStatus(STATUS.ALIGNMENT);
-        turnAlignment(species[ii]);
-        return true;
-      }
+    if (targetDistance <= alignment_dist) {
+      /*===================================================================*/
+      /* アラインメント領域にターゲットがいる場合                          */
+      /*===================================================================*/
+      setStatus(STATUS.ALIGNMENT);
+      turnAlignment(target);
+      return true;
     }
     return false;
   }
-  public boolean doCohesion() {
+  public boolean doCohesion(Iwashi target, float targetDistance) {
     java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
     if (getStatus() == STATUS.COHESION) {
       if (rand.nextInt(100) <= 10) {
@@ -1162,25 +1143,13 @@ public class Iwashi {
         return false;
       }
     }
-    for (int ii=0; ii<species.length; ii++) {
-      if (species[ii].equals(this)) {
-        /*===================================================================*/
-        /* 自分だったらパス                                                  */
-        /*===================================================================*/
-        continue;
-      }
-      double dist = Math.sqrt(
-          Math.pow(position[0]-species[ii].getX(), 2)
-        + Math.pow(position[1]-species[ii].getY(), 2)
-        + Math.pow(position[2]-species[ii].getZ(), 2));
-      if (dist <= cohesion_dist && dist > alignment_dist) {
-        /*===================================================================*/
-        /* コアージョン領域にターゲットがいる場合                            */
-        /*===================================================================*/
-        setStatus(STATUS.COHESION);
-        turnCohesion(species[ii]);
-        return true;
-      }
+    if (targetDistance <= cohesion_dist) {
+      /*===================================================================*/
+      /* コアージョン領域にターゲットがいる場合                            */
+      /*===================================================================*/
+      setStatus(STATUS.COHESION);
+      turnCohesion(target);
+      return true;
     }
     return false;
   }
@@ -1204,6 +1173,46 @@ public class Iwashi {
     if (speed > speed_max) {
       speed = speed_max;
     }
+  }
+
+  /** 
+   * もっとも近い鰯を返す
+   */
+  public Iwashi getTarget() {
+    this.targetDistance = 10000f;
+    int target = 9999;
+    for (int ii=0; ii<species.length; ii++) {
+      float dist = 0f;
+      if (ii < iwashiNo) {
+        dist = species[ii].distances[iwashiNo];
+      }
+      else if (ii == iwashiNo) {
+        continue;
+      }
+      else {
+        dist = (float)Math.sqrt(
+            Math.pow(getX()-species[ii].getX(), 2)
+          + Math.pow(getY()-species[ii].getY(), 2)
+          + Math.pow(getZ()-species[ii].getZ(), 2));
+      }
+      this.distances[ii] = dist;
+      if (targetDistance > dist) {
+        float[] v1 = {getDirectionX(), getDirectionY(), getDirectionZ()};
+        float[] v2 = {species[ii].getX() - getX(), species[ii].getY() - getY(), species[ii].getZ() - getZ()};
+        float degree = CoordUtil.includedAngle(v1, v2, 3);
+        if ((degree <= 90f && degree >= 0f)
+        ||  (degree >= -90f && degree <= 0f)) {
+          /* おおむね前方だったら */
+          targetDistance = dist;
+          target = ii;
+        }
+      }
+    }
+    if (target == 9999) {
+      /* 見つからなかった */
+      return null;
+    }
+    return species[target];
   }
   /**
    * どの方向に進むか考える
@@ -1255,17 +1264,20 @@ public class Iwashi {
        *  　　→仲間の中心方向に飛ぶ
        */
       // separation
-      if (doSeparation()) {
-        update_speed();
-        return;
-      }
-      // alignment
-      if (doAlignment()) {
-        return;
-      }
-      if (doCohesion()) {
-        update_speed();
-        return;
+      Iwashi target = getTarget();
+      if (target != null) {
+        if (doSeparation(target, targetDistance)) {
+          update_speed();
+          return;
+        }
+        // alignment
+        if (doAlignment(target, targetDistance)) {
+          return;
+        }
+        if (doCohesion(target, targetDistance)) {
+          update_speed();
+          return;
+        }
       }
     }
 
@@ -1558,6 +1570,7 @@ public class Iwashi {
     float v_x = (Aquarium.center[0] - getX());
     float v_y = (Aquarium.center[1] - getY());
     float v_z = (Aquarium.center[2] - getZ());
+if (false) {
     if (debug) {
       Log.d(TAG, "向かいたい方向"
        + " x:[" + v_x + "]:"
@@ -1586,6 +1599,151 @@ public class Iwashi {
       Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
       Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
     }
+}
+else {
+    java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
+    Log.d(TAG, iwashiNo + " now pos:"
+      + "x:[" + getX() + "]:"
+      + "y:[" + getY() + "]:"
+      + "z:[" + getZ() + "]:");
+    if (Aquarium.min_x.compareTo(getX()) < 0 && Aquarium.max_x.compareTo(getX()) > 0 
+    &&  Aquarium.min_y.compareTo(getY()) < 0 && Aquarium.max_y.compareTo(getY()) > 0) {
+      /* Zだけはみ出た */
+      v_x = direction[0];
+      v_y = direction[1];
+      Log.d(TAG, iwashiNo + " Zだけはみ出た");
+    }
+    else 
+    if (Aquarium.min_x.compareTo(getX()) < 0 && Aquarium.max_x.compareTo(getX()) > 0
+    &&  Aquarium.min_z.compareTo(getZ()) < 0 && Aquarium.max_z.compareTo(getZ()) > 0) {
+      /* Yだけはみ出た */
+      v_x = direction[0];
+      v_z = direction[2];
+      Log.d(TAG, iwashiNo + " Yだけはみ出た");
+    }
+    else 
+    if (Aquarium.min_y.compareTo(getY()) < 0 && Aquarium.max_y.compareTo(getY()) > 0 
+    &&  Aquarium.min_z.compareTo(getZ()) < 0 && Aquarium.max_z.compareTo(getZ()) > 0) {
+      /* Xだけはみ出た */
+      v_y = direction[1];
+      v_z = direction[2];
+      Log.d(TAG, iwashiNo + " Xだけはみ出た");
+    }
+    Log.d(TAG, iwashiNo + "ベクトル1: "
+      + "v_x[" + v_x + "]:"
+      + "v_y[" + v_y + "]:"
+      + "v_z[" + v_z + "]:");
+    Log.d(TAG, iwashiNo + "ベクトル2: "
+      + "d_x[" + direction[0] + "]:"
+      + "d_y[" + direction[1] + "]:"
+      + "d_z[" + direction[2] + "]:");
+    /* 2ベクトルから差角度を求める */
+    /* まず、x/yの2次元の角度(上下) */   
+    float want_x = 0.0f;
+    {
+      float[] v1 = {direction[2], direction[1]};
+      float[] v2 = {v_z, v_y};
+      if ((v1[0] == 0.0f && v1[1] == 0.0f)
+      ||  (v2[0] == 0.0f && v2[1] == 0.0f)) {
+        want_x = 0.0f;
+      }
+      else {
+        want_x = CoordUtil.includedAngle(v1, v2, 2);
+      }
+      if (Float.isNaN(want_x)) {
+        want_x = 0.0f;
+      }
+      Log.d(TAG, iwashiNo
+        + " want_x:[" + want_x + "]");
+      want_x *= -1;
+      if (want_x < 0.0f && v_y > 0.0f) {
+        want_x *= -1;
+      }
+      Log.d(TAG, iwashiNo
+        + " want_x:[" + want_x + "]");
+    }
+    Log.d(TAG, iwashiNo + " x 2ベクトルの差角度1(" + want_x + ")");
+    if (want_x > 180.0f) {
+      want_x = 360f - want_x;
+    }
+    else if (want_x < -180.0f) {
+      want_x = -360f - want_x;
+    }
+    if (want_x > 22.5f) {
+      want_x = rand.nextFloat() * 22.5f;
+    }
+    else if (want_x < -22.5f) {
+      want_x = rand.nextFloat() * -22.5f;
+    }
+    Log.d(TAG, iwashiNo + " x 再計算2ベクトルの差角度1(" + want_x + ")");
+    /* まず、x/zの2次元の角度(左右) */   
+    float want_y = 0.0f;
+    {
+      float[] v1 = {direction[0], direction[2]};
+      float[] v2 = {v_x, v_z};
+      if ((v1[0] == 0.0f && v1[1] == 0.0f)
+      ||  (v2[0] == 0.0f && v2[1] == 0.0f)) {
+        want_y = 0.0f;
+      }
+      else {
+        want_y = CoordUtil.includedAngle(v1, v2, 2);
+      }
+      if (Float.isNaN(want_y)) {
+        want_y = 0.0f;
+      }
+    }
+    Log.d(TAG, iwashiNo + " y 2ベクトルの差角度2(" + want_y + ")");
+    if (want_y > 180.0f) {
+      want_y = 360f - want_y;
+    }
+    else if (want_y < -180.0f) {
+      want_y = -360f - want_y;
+    }
+    Log.d(TAG, iwashiNo + " y 再計算2ベクトルの差角度2(" + want_y + ")");
+    if (want_x > 22.5f) {
+      want_x = 22.5f;
+    }
+    else if (want_x < -22.5f) {
+      want_x = -22.5f;
+    }
+    if (want_y > 22.5f) {
+      want_y = rand.nextFloat() * 22.5f;
+    }
+    else if (want_y < -22.5f) {
+      want_y = rand.nextFloat() * -22.5f;
+    }
+
+    x_angle = x_angle + want_x;
+    y_angle = y_angle + want_y;
+    x_angle = x_angle % 360f;
+    if (x_angle > 45.0f) {
+      if (x_angle > 180.0f) {
+        x_angle -= 180.0f;
+        x_angle *= -1f;
+        if (x_angle < -45.0f) {
+          x_angle = -45.0f;
+        }
+      }
+      else {
+        x_angle = 45.0f;
+      }
+    }
+    else if (x_angle < -45.0f) {
+      if (x_angle < -180.0f) {
+        x_angle += 180.0f;
+        x_angle *= -1f;
+        if (x_angle > 45.0f) {
+          x_angle = 45.0f;
+        }
+      }
+      else {
+        x_angle = -45.0f;
+      }
+    }
+    Log.d(TAG, iwashiNo 
+      + " 結果:x_angle:[" + x_angle + "]:"
+      + " 結果:y_angle:[" + y_angle + "]:");
+}
 
     coordUtil.setMatrixRotateZ(x_angle);
     float[] retx = coordUtil.affine(-1.0f,0.0f, 0.0f);
@@ -1813,6 +1971,9 @@ public class Iwashi {
    */
   public void setSpecies(Iwashi[] species) {
     this.species = species;
+    for (int ii=0; ii<species.length; ii++) {
+      this.distances[ii] = 10000f;
+    }
   }
   
   /**
