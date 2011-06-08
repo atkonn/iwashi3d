@@ -14,6 +14,8 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import java.util.Random;
+
 import javax.microedition.khronos.opengles.GL10;
 
 import jp.co.qsdn.android.iwashi3d.Aquarium;
@@ -39,13 +41,14 @@ public class Iwashi {
   private boolean enableBoids = true;
   public float[] distances = new float[100];
   private float targetDistance = 0f;
+  private Random rand = null;
   /*
    * 仲間、同種
    */
   private Iwashi[] species;
-  private double separate_dist  = 5.0d * scale;
-  private double alignment_dist = 20.0d * scale;
-  private double cohesion_dist  = 40.0d * scale;
+  private double separate_dist  = 5.0d * scale * 0.5d;
+  private double alignment_dist = 25.0d * scale * 0.5d;
+  private double cohesion_dist  = 70.0d * scale * 0.5d;
   private float[] schoolCenter = {0f,0f,0f};
 
   private enum STATUS {
@@ -86,10 +89,10 @@ public class Iwashi {
   /*=========================================================================*/
   /* スピード                                                                */
   /*=========================================================================*/
-  private float speed = 0.020f;
-  private float speed_unit = speed / 5f;
-  private float speed_max = 0.050f;
-  private float cohesion_speed = speed * 3f;
+  private float speed = 0.020f * 0.5f;
+  private float speed_unit = speed / 5f * 0.5f;
+  private float speed_max = 0.050f * 0.5f;
+  private float cohesion_speed = speed * 2f * 0.5f;
   private float sv_speed = speed;
 
   private int iwashiNo = 0;
@@ -109,11 +112,11 @@ public class Iwashi {
     mTextureBuffer.position(0);
 
     // 初期配置
-    java.util.Random rand = new java.util.Random(System.nanoTime() + (ii * 500));
-    this.seed = (long)(rand.nextFloat() * 5000f);
-    position[0] = rand.nextFloat() * 8f - 4f;
-    position[1] = rand.nextFloat() * 8f - 4f;
-    position[2] = rand.nextFloat() * 4f - 2f;
+    this.rand = new java.util.Random(System.nanoTime() + (ii * 500));
+    this.seed = (long)(this.rand.nextFloat() * 5000f);
+    position[0] = this.rand.nextFloat() * 8f - 4f;
+    position[1] = this.rand.nextFloat() * 8f - 4f;
+    position[2] = this.rand.nextFloat() * 4f - 2f;
     iwashiNo = ii;
   }
 
@@ -1086,6 +1089,7 @@ public class Iwashi {
       gl10.glMaterialf(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, 64f);
     }
     gl10.glTranslatef(getX(),getY(),getZ());
+gl10.glScalef(0.7f,0.7f,0.7f);
 
     gl10.glRotatef(y_angle, 0.0f, 1.0f, 0.0f);
     gl10.glRotatef(x_angle * -1f, 0.0f, 0.0f, 1.0f);
@@ -1116,8 +1120,7 @@ public class Iwashi {
     return false;
   }
   public boolean doAlignment(Iwashi target, float targetDistance) {
-    java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
-    if (rand.nextInt(100) <= 20) {
+    if (this.rand.nextInt(100) <= 18) {
       return false;
     }
     if (targetDistance <= alignment_dist) {
@@ -1131,15 +1134,15 @@ public class Iwashi {
     return false;
   }
   public boolean doCohesion(Iwashi target, float targetDistance) {
-    java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
+    /* 鰯は結構な確率でCohesionするものと思われる */
     if (getStatus() == STATUS.COHESION) {
-      if (rand.nextInt(100) <= 10) {
+      if (this.rand.nextInt(100) <= 5) {
         /* 前回COHESIONである場合今回もCOHESIONである可能性は高い */
         return false;
       }
     }
     else {
-      if (rand.nextInt(100) <= 40) {
+      if (this.rand.nextInt(100) <= 10) {
         return false;
       }
     }
@@ -1161,12 +1164,11 @@ public class Iwashi {
     }
     speed = sv_speed;
 
-    java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
-    if (rand.nextInt(100) <= 80) {
+    if (this.rand.nextInt(100) <= 50) {
       // 変更なし
       return;
     }
-    speed += (rand.nextFloat() * (speed_unit * 2f) / 2f);
+    speed += (this.rand.nextFloat() * (speed_unit * 2f) / 2f);
     if (speed <= 0.0f) {
       speed = speed_unit;
     }
@@ -1243,8 +1245,7 @@ public class Iwashi {
      */
     Bait bait = baitManager.getBait();
     if (bait != null) {
-      java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
-      if (rand.nextInt(100) <= 55) {
+      if (this.rand.nextInt(100) <= 55) {
         if (aimBait(bait)) {
           setStatus(STATUS.TO_BAIT);
           update_speed();
@@ -1281,8 +1282,7 @@ public class Iwashi {
       }
     }
 
-    java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
-    if (rand.nextInt(100) <= 95) {
+    if (this.rand.nextInt(100) <= 95) {
       // 変更なし
       return;
     }
@@ -1303,18 +1303,17 @@ public class Iwashi {
     float old_angle_y = y_angle;
     x_angle = old_angle_x;
     y_angle = old_angle_y;
-    java.util.Random rand = new java.util.Random(System.nanoTime());
-    float newAngleX = rand.nextFloat() * 45f - 22.5f;
-    float newAngleY = rand.nextFloat() * 45f - 22.5f;
+    float newAngleX = this.rand.nextFloat() * 45f - 22.5f;
+    float newAngleY = this.rand.nextFloat() * 45f - 22.5f;
     if (newAngleX + x_angle <= 45f && newAngleX + x_angle >= -45f) {
       x_angle = x_angle + newAngleX;
     } 
     else {
       if (newAngleX + x_angle >= 45f) {
-        x_angle = 45f;
+        x_angle = (this.rand.nextFloat() * 45f);
       }
       else if (newAngleX + x_angle <= -45f) {
-        x_angle = -45f;
+        x_angle = (this.rand.nextFloat() * -45f);
       }
     }
     y_angle = (float)((int)(y_angle + newAngleY) % 360);
@@ -1327,8 +1326,7 @@ public class Iwashi {
     direction[2] = rety[2];
   }
   public void aimTargetDegree(float angle_x, float angle_y) {
-    java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
-    float newAngle = rand.nextFloat() * 22.5f;
+    float newAngle = this.rand.nextFloat() * 22.5f;
     float xx = angle_x - x_angle;
     if (xx < 0.0f) {
       if (xx > -22.5f) {
@@ -1380,17 +1378,20 @@ public class Iwashi {
     y_angle = y_angle % 360f;
   }
   public void aimTargetSpeed(float t_speed) {
-    java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
-    if (t_speed < speed) {
+    if (t_speed <= speed) {
       /* 自分のスピードよりも相手の方が遅い場合 */
-      speed -= (rand.nextFloat() * speed_unit);
+      speed -= (this.rand.nextFloat() * speed_unit);
       if (speed <= 0.0f) {
         speed = speed_unit;
       }
     }
     else {
       /* 相手の方が早い場合 */
-      speed += (rand.nextFloat() * speed_unit);
+      speed += (this.rand.nextFloat() * speed_unit);
+      if (t_speed < speed) {
+        /* 越えちゃったらちょっとだけ遅く*/
+        speed = t_speed - (this.rand.nextFloat() * speed_unit);
+      }
       if (speed > speed_max) {
         speed = speed_max;
       }
@@ -1470,6 +1471,12 @@ public class Iwashi {
       Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
       Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
     }
+
+    /* 誤差生成 */
+if (false) {
+    angle_x = angle_x + ((rand.nextFloat() * 2.0f) - 1.0f);
+    angle_y = angle_y + ((rand.nextFloat() * 2.0f) - 1.0f);
+}
 
     /* その角度へ近づける */
     aimTargetDegree(angle_x, angle_y);
@@ -1601,7 +1608,6 @@ if (false) {
     }
 }
 else {
-    java.util.Random rand = new java.util.Random(System.nanoTime() + this.seed);
     Log.d(TAG, iwashiNo + " now pos:"
       + "x:[" + getX() + "]:"
       + "y:[" + getY() + "]:"
@@ -1670,10 +1676,10 @@ else {
       want_x = -360f - want_x;
     }
     if (want_x > 22.5f) {
-      want_x = rand.nextFloat() * 22.5f;
+      want_x = this.rand.nextFloat() * 22.5f;
     }
     else if (want_x < -22.5f) {
-      want_x = rand.nextFloat() * -22.5f;
+      want_x = this.rand.nextFloat() * -22.5f;
     }
     Log.d(TAG, iwashiNo + " x 再計算2ベクトルの差角度1(" + want_x + ")");
     /* まず、x/zの2次元の角度(左右) */   
@@ -1707,10 +1713,10 @@ else {
       want_x = -22.5f;
     }
     if (want_y > 22.5f) {
-      want_y = rand.nextFloat() * 22.5f;
+      want_y = this.rand.nextFloat() * 22.5f;
     }
     else if (want_y < -22.5f) {
-      want_y = rand.nextFloat() * -22.5f;
+      want_y = this.rand.nextFloat() * -22.5f;
     }
 
     x_angle = x_angle + want_x;
@@ -1922,10 +1928,10 @@ else {
   }
   
   public void setSpeed(float speed) {
-    this.speed = speed;
-    this.speed_unit = speed / 5f;
-    this.speed_max = speed + 0.03f;
-    this.cohesion_speed = speed * 3f;
+    this.speed = speed * 0.5f;
+    this.speed_unit = speed / 5f * 0.5f;
+    this.speed_max = speed + 0.03f * 0.5f;
+    this.cohesion_speed = speed * 2f * 0.5f;
     this.sv_speed = speed;
   }
   
