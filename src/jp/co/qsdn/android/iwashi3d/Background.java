@@ -110,6 +110,12 @@ public class Background {
 //    gl10.glLoadIdentity();
     gl10.glDisable(GL10.GL_DEPTH_TEST);    // DepthTestを無効にする
 
+    if (true) {
+      /* シースルーモード */
+      gl10.glEnable(GL10.GL_BLEND);
+      gl10.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE);
+    }
+
 
     /*=======================================================================*/
     /* 環境光の材質色設定                                                    */
@@ -168,6 +174,9 @@ public class Background {
     gl10.glNormal3f(0,0,-1);
     gl10.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 12, 4);
 
+    if (true) {
+      gl10.glDisable(GL10.GL_BLEND);
+    }
     gl10.glEnable(GL10.GL_DEPTH_TEST);     // DepthTestを有効にする
     gl10.glPopMatrix();
     
