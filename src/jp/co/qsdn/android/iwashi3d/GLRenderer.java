@@ -44,6 +44,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
   private BaitManager baitManager = new BaitManager();
   private float baseAngle = 0f;
+  private float[] mScratch32 = new float[32];
 
   GLRenderer(Context context) { 
     this.context = context;
@@ -359,7 +360,15 @@ else {
       }
     }
 
-    baitManager.addBait(nx,ny,nz);
+    if (baseAngle > 0.0f) {
+      baitManager.addBait(-nz,ny,nx);
+    }
+    else if (baseAngle < 0.0f) {
+      baitManager.addBait(nz,ny,nx);
+    }
+    else {
+      baitManager.addBait(nx,ny,nz);
+    }
 
     if (_debug) Log.d(TAG, "end onCommand");
   }
