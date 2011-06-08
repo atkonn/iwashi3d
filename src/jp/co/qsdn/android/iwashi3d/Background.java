@@ -18,7 +18,7 @@ public class Background {
   private static int texid;
 
   public Background() {
-    float one = 4.0f;
+    float one = 4.5f;
     float half = one / 2.0f;
     float vertices[] = {
       -one, -one, -one,   // 左下

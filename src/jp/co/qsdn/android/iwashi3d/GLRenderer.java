@@ -31,6 +31,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
   private final Context context;
   private final Background background = new Background();
   private final Ground ground = new Ground();
+  private final Wave wave = new Wave();
   private Iwashi[] iwashi = null;
   private int iwashi_count = 1;
   private boolean enableIwashiBoids = true;
@@ -39,9 +40,10 @@ public class GLRenderer implements GLSurfaceView.Renderer {
   private float[] camera = {0f,0f,0f};
   private float[] org_camera = {0f,0f,0f};
   private boolean cameraMode = false; /* false:通常モード true:鰯視点モード */
-  private float cameraDistance = 5f; /* 群れまでの距離 */
+  private float cameraDistance = 10f; /* 群れまでの距離 */
 
   private BaitManager baitManager = new BaitManager();
+  private float baseAngle = 0f;
 
   GLRenderer(Context context) { 
     this.context = context;
@@ -65,6 +67,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     gl10.glEnable(GL10.GL_TEXTURE_2D);
     Background.loadTexture(gl10, context, R.drawable.background);
     Ground.loadTexture(gl10, context, R.drawable.sand);
+    Wave.loadTexture(gl10, context, R.drawable.wave);
     Iwashi.loadTexture(gl10, context, R.drawable.iwashi);
 
     iwashi_count = Prefs.getInstance(context).getIwashiCount();
@@ -191,8 +194,8 @@ public class GLRenderer implements GLSurfaceView.Renderer {
   public void setupFog(GL10 gl10) {
     gl10.glEnable(GL10.GL_FOG);
     gl10.glFogf(GL10.GL_FOG_MODE, GL10.GL_LINEAR);
-    gl10.glFogf(GL10.GL_FOG_START, 7f);
-    gl10.glFogf(GL10.GL_FOG_END, 21.0f);
+    gl10.glFogf(GL10.GL_FOG_START, 7f + (cameraDistance - 5f));
+    gl10.glFogf(GL10.GL_FOG_END, 21.0f + (cameraDistance - 5f));
 
     float[] color = {
       0.011f, 0.4218f, 0.6445f, 1.0f,
@@ -274,7 +277,7 @@ if (false){
     gl10.glMatrixMode(GL10.GL_PROJECTION);
     gl10.glLoadIdentity();
     float ratio = (float) width / height;
-    CoordUtil.perspective(gl10,45.0f, ratio, 0.1f, 30f);
+    CoordUtil.perspective(gl10,45.0f, ratio, 0.1f, 50f);
     this.screen_width = width;
     this.screen_height = height;
 
@@ -294,10 +297,18 @@ if (false){
         + "yPixelOffset:[" + yPixelOffset + "]:");
     }
     synchronized(this) {
+if (false) {
       if (xOffset >= 0.0f && xOffset <= 1.0f) {
         float newCamera_x = xOffset - 0.5f;
         camera[0] = org_camera[0] + (newCamera_x * 3f);
       }
+}
+else {
+      if (xOffset >= 0.0f && xOffset <= 1.0f) {
+        float offset = xOffset - 0.5f;
+        baseAngle = offset * (-180f);
+      }
+}
     }
     if (_debug) {
       Log.d(TAG, "end onOffsetsChanged()");
@@ -356,6 +367,7 @@ if (false){
 
   public synchronized void onDrawFrame(GL10 gl10) {
     if (_debug) Log.d(TAG, "start onDrawFrame()");
+    setupFog(gl10);
     gl10.glMatrixMode(GL10.GL_MODELVIEW);
     gl10.glPushMatrix(); 
 
@@ -384,6 +396,8 @@ if (false){
                     camera[0],camera[1],-10f,
                     0,1,0);
     }
+    gl10.glPushMatrix();
+    gl10.glRotatef(baseAngle, 0.0f, 1.0f, 0.0f);
 
 
     /*=======================================================================*/
@@ -395,6 +409,7 @@ if (false){
     // 背景描画
     background.draw(gl10);
     ground.draw(gl10);
+    wave.draw(gl10);
     
     // model
     /* 群れの中心算出 */
@@ -415,6 +430,7 @@ if (false){
     }
     gl10.glPopMatrix(); 
             
+    gl10.glPopMatrix();
     if (_debug) Log.d(TAG, "end onDrawFrame()");
   }
 }

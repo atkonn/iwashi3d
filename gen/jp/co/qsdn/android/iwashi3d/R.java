@@ -18,6 +18,7 @@ public final class R {
         public static final int sand=0x7f020004;
         public static final int smallicon=0x7f020005;
         public static final int thumbnail=0x7f020006;
+        public static final int wave=0x7f020007;
     }
     public static final class id {
         public static final int ScrollView=0x7f060003;

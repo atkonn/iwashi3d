@@ -18,7 +18,7 @@ public class Ground {
   private static int texid;
 
   public Ground() {
-    float one = 4.0f;
+    float one = 4.5f;
     float half = one / 2.0f;
     float vertices[] = {
       -one, -one,  one,   // 左下
