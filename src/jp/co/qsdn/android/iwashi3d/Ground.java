@@ -12,55 +12,22 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLUtils;
 
-public class Background {
+public class Ground {
   private final FloatBuffer mVertexBuffer;
   private final IntBuffer mTextureBuffer;  
   private static int texid;
 
-  public Background() {
+  public Ground() {
     float one = 4.0f;
     float half = one / 2.0f;
     float vertices[] = {
-      -one, -one, -one,   // 左下
-       one, -one, -one,   // 右下
-      -one,  one, -one,   // 左上
-       one,  one, -one,   // 右上
-
-       // 右面
-       one, -one, -one,    // 左下
-       one, -one,  one,    // 右下
-       one,  one, -one,    // 左上
-       one,  one,  one,    // 右上
-
-       // 左面
-       -one, -one,  one,    // 左下
-       -one, -one, -one,    // 右下
-       -one,  one,  one,    // 左上
-       -one,  one, -one,    // 右上
-
-       // 前面
-       one, -one,  one,   // 左下
-      -one, -one,  one,   // 右下
-       one,  one,  one,   // 左上
-      -one,  one,  one,   // 右上
+      -one, -one,  one,   // 左下
+       one, -one,  one,   // 右下
+      -one, -one, -one,   // 左上
+       one, -one, -one,   // 右上
     };
 
     int texCoords[] = {
-      0,1,
-      1,1,
-      0,0,
-      1,0,
-
-      0,1,
-      1,1,
-      0,0,
-      1,0,
-
-      0,1,
-      1,1,
-      0,0,
-      1,0,
-
       0,1,
       1,1,
       0,0,
@@ -97,17 +64,8 @@ public class Background {
     /*-----------------------------------------------------------------------*/
     /* 背景描画                                                              */
     /*-----------------------------------------------------------------------*/
-//    gl10.glMatrixMode(GL10.GL_MODELVIEW);  // ModelView行列をクリア
-//    gl10.glPushMatrix();
-//    gl10.glLoadIdentity();
-//    gl10.glMatrixMode(GL10.GL_PROJECTION); // Projection行列をクリア
-//    gl10.glPushMatrix();
-//    gl10.glLoadIdentity();
-//    gl10.glDisable(GL10.GL_DEPTH_TEST);    // DepthTestを無効にする
-
     gl10.glMatrixMode(GL10.GL_MODELVIEW);  // ModelView行列をクリア
     gl10.glPushMatrix();
-//    gl10.glLoadIdentity();
     gl10.glDisable(GL10.GL_DEPTH_TEST);    // DepthTestを無効にする
 
 
@@ -115,9 +73,9 @@ public class Background {
     /* 環境光の材質色設定                                                    */
     /*=======================================================================*/
     float[] mat_amb = { 
-      0.07f, 
-      0.07f, 
-      0.07f, 
+      1.0f, 
+      1.0f, 
+      1.0f, 
       1.0f,
      };
     gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, mat_amb, 0);
@@ -125,9 +83,9 @@ public class Background {
     /* 拡散反射光の色設定                                                    */
     /*=======================================================================*/
     float[] mat_diff = { 
-      0.07f, 
-      0.07f, 
-      0.07f, 
+      1.0f, 
+      1.0f, 
+      1.0f, 
       1.0f,
      };
     gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, mat_diff, 0);
@@ -135,9 +93,9 @@ public class Background {
     /* 鏡面反射光の質感色設定                                                */
     /*=======================================================================*/
     float[] mat_spec = { 
-      0.07f, 
-      0.07f, 
-      0.07f, 
+      0.0f, 
+      0.0f, 
+      0.0f, 
       1.0f,
     };
 
@@ -156,24 +114,10 @@ public class Background {
     /* 頂点描画                                                              */
     /*-----------------------------------------------------------------------*/
     gl10.glColor4f(1,1,1,1);
-    gl10.glNormal3f(0,0,1);
+    gl10.glNormal3f(0,1,0);
     gl10.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
-
-    gl10.glNormal3f(-1,0,0);
-    gl10.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 4, 4);
-
-    gl10.glNormal3f(1,0,0);
-    gl10.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 8, 4);
-
-    gl10.glNormal3f(0,0,-1);
-    gl10.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 12, 4);
 
     gl10.glEnable(GL10.GL_DEPTH_TEST);     // DepthTestを有効にする
     gl10.glPopMatrix();
-    
-//    gl10.glMatrixMode(GL10.GL_PROJECTION); // Projection行列を元に戻す
-//    gl10.glPopMatrix();
-//    gl10.glMatrixMode(GL10.GL_MODELVIEW);  // ModelView行列を元に戻す
-//    gl10.glPopMatrix();
   }
 }

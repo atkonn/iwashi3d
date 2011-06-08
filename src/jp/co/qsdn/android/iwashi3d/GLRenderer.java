@@ -30,6 +30,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
   private static final String TAG = GLRenderer.class.getName();
   private final Context context;
   private final Background background = new Background();
+  private final Ground ground = new Ground();
   private Iwashi[] iwashi = null;
   private int iwashi_count = 1;
   private boolean enableIwashiBoids = true;
@@ -63,6 +64,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     /*=======================================================================*/
     gl10.glEnable(GL10.GL_TEXTURE_2D);
     Background.loadTexture(gl10, context, R.drawable.background);
+    Ground.loadTexture(gl10, context, R.drawable.sand);
     Iwashi.loadTexture(gl10, context, R.drawable.iwashi);
 
     iwashi_count = Prefs.getInstance(context).getIwashiCount();
@@ -392,6 +394,7 @@ if (false){
 
     // 背景描画
     background.draw(gl10);
+    ground.draw(gl10);
     
     // model
     /* 群れの中心算出 */
