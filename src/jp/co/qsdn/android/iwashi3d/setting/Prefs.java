@@ -29,7 +29,7 @@ public class Prefs {
   public static final boolean DEFAULT_CAMERA_MODE = false;
 
   public static final String KEY_CAMERA_DISTANCE = "camera_distance";
-  public static final int DEFAULT_CAMERA_DISTANCE = 5;
+  public static final int DEFAULT_CAMERA_DISTANCE = 10;
 
   public static Prefs getInstance(Context context) {
     if (mPrefs == null) {

@@ -20,7 +20,7 @@
   <string name="summary_preference_iwashi_speed">鰯の基本となる移動速度を指定します</string>
   <string name="dialog_title_iwashi_speed" >鰯のスピード</string>
   <string name="dialog_message_iwashi_speed" >鰯の泳ぐ移動速度を選択してください。</string>
-  <string name="dialog_iwashi_speed_label">鰯の数：</string>
+  <string name="dialog_iwashi_speed_label">鰯のスピード：</string>
 
   <string name="title_preference_iwashi">鰯設定</string>
 
