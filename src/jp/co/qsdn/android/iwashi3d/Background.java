@@ -14,7 +14,7 @@ import android.opengl.GLUtils;
 
 public class Background {
   private final FloatBuffer mVertexBuffer;
-  private final IntBuffer mTextureBuffer;  
+  private final FloatBuffer mTextureBuffer;  
   private static int texid;
 
   public Background() {
@@ -45,26 +45,26 @@ public class Background {
       -one,  one,  one,   // 右上
     };
 
-    int texCoords[] = {
-      0,1,
-      1,1,
-      0,0,
-      1,0,
+    float texCoords[] = {
+      0.0f,1.0f,
+      1.0f,1.0f,
+      0.0f,0.0f,
+      1.0f,0.0f,
 
-      0,1,
-      1,1,
-      0,0,
-      1,0,
+      0.0f,1.0f,
+      1.0f,1.0f,
+      0.0f,0.0f,
+      1.0f,0.0f,
 
-      0,1,
-      1,1,
-      0,0,
-      1,0,
+      0.0f,1.0f,
+      1.0f,1.0f,
+      0.0f,0.0f,
+      1.0f,0.0f,
 
-      0,1,
-      1,1,
-      0,0,
-      1,0,
+      0.0f,1.0f,
+      1.0f,1.0f,
+      0.0f,0.0f,
+      1.0f,0.0f,
     };
 
     ByteBuffer vbb = ByteBuffer.allocateDirect(vertices.length * 4);
@@ -76,7 +76,7 @@ public class Background {
 
     ByteBuffer tbb = ByteBuffer.allocateDirect(texCoords.length * 4);
     tbb.order(ByteOrder.nativeOrder());
-    mTextureBuffer = tbb.asIntBuffer();
+    mTextureBuffer = tbb.asFloatBuffer();
     mTextureBuffer.put(texCoords);
     mTextureBuffer.position(0);
   }
@@ -156,7 +156,7 @@ public class Background {
     gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, mVertexBuffer);
     gl10.glEnable(GL10.GL_TEXTURE_2D);
     gl10.glBindTexture(GL10.GL_TEXTURE_2D, texid);
-    gl10.glTexCoordPointer(2, GL10.GL_FIXED, 0, mTextureBuffer);
+    gl10.glTexCoordPointer(2, GL10.GL_FLOAT, 0, mTextureBuffer);
 
     /*-----------------------------------------------------------------------*/
     /* 頂点描画                                                              */
