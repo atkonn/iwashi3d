@@ -21,7 +21,10 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
+import jp.co.qsdn.android.iwashi3d.model.Background;
+import jp.co.qsdn.android.iwashi3d.model.Ground;
 import jp.co.qsdn.android.iwashi3d.model.Iwashi;
+import jp.co.qsdn.android.iwashi3d.model.Wave;
 import jp.co.qsdn.android.iwashi3d.setting.Prefs;
 import jp.co.qsdn.android.iwashi3d.util.CoordUtil;
 
@@ -54,6 +57,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     if (_debug) Log.d(TAG, "start onSurfaceCreated()");
     gl10.glEnable(GL10.GL_DEPTH_TEST);
     gl10.glDepthFunc(GL10.GL_LEQUAL);
+
     gl10.glEnableClientState(GL10.GL_VERTEX_ARRAY);
     gl10.glEnableClientState(GL10.GL_NORMAL_ARRAY);
     gl10.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
@@ -61,6 +65,15 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     /* カリングの有効化                                                      */
     /*=======================================================================*/
     gl10.glEnable(GL10.GL_CULL_FACE);
+    /*=======================================================================*/
+    /* ティザーを無効に                                                      */
+    /*=======================================================================*/
+    gl10.glDisable(GL10.GL_DITHER);  
+
+    /*=======================================================================*/
+    /* OpenGLにスムージングを設定                                            */
+    /*=======================================================================*/
+    gl10.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);  
 
     /*=======================================================================*/
     /* テクスチャ                                                            */
@@ -89,6 +102,15 @@ public class GLRenderer implements GLSurfaceView.Renderer {
       iwashi[ii].setSpeed(iwashi_speed);
       iwashi[ii].setBaitManager(baitManager);
     }
+/*DEBUG*/
+if (false) {
+    for (int ii=0; ii<iwashi_count; ii++) {
+      iwashi[ii].setX(0.0f);
+      iwashi[ii].setY(0.0f);
+      iwashi[ii].setZ(0.0f);
+    }
+}
+/*DEBUG*/
 
     org_camera[0] = camera[0] = 0f;
     org_camera[1] = camera[1] = 0f;
@@ -102,7 +124,12 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     gl10.glEnable(GL10.GL_NORMALIZE) ;
     gl10.glEnable(GL10.GL_RESCALE_NORMAL);
     gl10.glShadeModel(GL10.GL_SMOOTH);
+    //背景のクリア
+    gl10.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    gl10.glClearDepthf(1.0f);
 
+    // ステンシルのクリア
+    gl10.glClearStencil(0);
 
     if (_debug) Log.d(TAG, "end onSurfaceCreated()");
   }
@@ -203,6 +230,17 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     };
     gl10.glFogfv(GL10.GL_FOG_COLOR, color, 0);
   }
+  public void setupFog2(GL10 gl10) {
+    gl10.glEnable(GL10.GL_FOG);
+    gl10.glFogf(GL10.GL_FOG_MODE, GL10.GL_LINEAR);
+    gl10.glFogf(GL10.GL_FOG_START, cameraDistance + 1f);
+    gl10.glFogf(GL10.GL_FOG_END, 21.0f + (cameraDistance - 5f));
+
+    float[] color = {
+      1.0f, 1.0f, 1.0f, 1.0f,
+    };
+    gl10.glFogfv(GL10.GL_FOG_COLOR, color, 0);
+  }
 
   public void updateSetting() {
     if (iwashi == null) {
@@ -216,7 +254,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 /*DEBUG*/
 if (false){
   _iwashi_count = 1;
-  _camera_distance = 10f;
+  _camera_distance = 1f;
 }
 /*DEBUG*/
     if (_debug) Log.d(TAG, "現在のスピード:[" + _iwashi_speed + "]");
@@ -298,18 +336,10 @@ if (false){
         + "yPixelOffset:[" + yPixelOffset + "]:");
     }
     synchronized(this) {
-if (false) {
-      if (xOffset >= 0.0f && xOffset <= 1.0f) {
-        float newCamera_x = xOffset - 0.5f;
-        camera[0] = org_camera[0] + (newCamera_x * 3f);
-      }
-}
-else {
       if (xOffset >= 0.0f && xOffset <= 1.0f) {
         float offset = xOffset - 0.5f;
         baseAngle = offset * (-180f);
       }
-}
     }
     if (_debug) {
       Log.d(TAG, "end onOffsetsChanged()");
@@ -381,11 +411,12 @@ else {
     gl10.glPushMatrix(); 
 
     // 画面をクリアする
-    gl10.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+    gl10.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT | GL10.GL_STENCIL_BUFFER_BIT);
 
     // モデルの位置を決める
     gl10.glMatrixMode(GL10.GL_MODELVIEW);
     gl10.glLoadIdentity();
+    gl10.glDisable(GL10.GL_STENCIL_TEST);
 
 
     // カメラ
@@ -415,12 +446,9 @@ else {
     setupLighting2(gl10);
     setupLighting1(gl10);
 
-    // 背景描画
-    background.draw(gl10);
-    ground.draw(gl10);
-    wave.draw(gl10);
-    
-    // model
+    gl10.glDisable(GL10.GL_STENCIL_TEST);
+    gl10.glDisable(GL10.GL_DEPTH_TEST);
+
     /* 群れの中心算出 */
     float[] schoolCenter = {0f,0f,0f};
     for (int ii=0; ii<iwashi_count; ii++) {
@@ -433,10 +461,56 @@ else {
     schoolCenter[2] /= iwashi_count;
     synchronized (this) {
       for (int ii=0; ii<iwashi_count; ii++) {
-          iwashi[ii].setSchoolCenter(schoolCenter);
-          iwashi[ii].draw(gl10);
+        iwashi[ii].setSchoolCenter(schoolCenter);
+        iwashi[ii].calc();
       }
     }
+
+    // 背景描画
+    background.draw(gl10);
+    ground.draw(gl10, iwashi);
+    wave.calc();
+    
+    // model
+    // リフレクションの描画
+    synchronized (this) {
+      wave.draw(gl10);
+      //ステンシルテストの有効化
+      gl10.glColorMask(false,false,false,false);
+      gl10.glDepthMask(false);
+      gl10.glEnable(GL10.GL_STENCIL_TEST);
+
+      gl10.glStencilOp(GL10.GL_REPLACE,GL10.GL_REPLACE,GL10.GL_REPLACE);
+      gl10.glStencilFunc(GL10.GL_ALWAYS,1,~0);
+      wave.draw(gl10);
+      gl10.glColorMask(true,true,true,true);
+      gl10.glDepthMask(true);
+      gl10.glStencilOp(GL10.GL_KEEP, GL10.GL_KEEP, GL10.GL_KEEP);
+      gl10.glStencilFunc(GL10.GL_EQUAL, 1, ~0);
+      gl10.glPushMatrix();
+      gl10.glScalef(1.0f,-1.0f,1.0f);
+      gl10.glTranslatef(0f,-Aquarium.max_y+Aquarium.min_y-0.5f,0f);
+      gl10.glPushMatrix();
+
+      {
+        setupFog2(gl10);
+        for (int ii=0; ii<iwashi_count; ii++) {
+          iwashi[ii].draw(gl10);
+        }
+        setupFog(gl10);
+      }
+      gl10.glPopMatrix();
+      gl10.glPopMatrix();
+
+      gl10.glDisable(GL10.GL_STENCIL_TEST);
+    }
+    gl10.glEnable(GL10.GL_DEPTH_TEST);
+    synchronized (this) {
+      for (int ii=0; ii<iwashi_count; ii++) {
+        iwashi[ii].draw(gl10);
+      }
+    }
+    gl10.glDisable(GL10.GL_DEPTH_TEST);
     gl10.glPopMatrix(); 
             
     gl10.glPopMatrix();

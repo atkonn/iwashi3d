@@ -1,4 +1,4 @@
-package jp.co.qsdn.android.iwashi3d;
+package jp.co.qsdn.android.iwashi3d.model;
 
 import android.content.Context;
 
@@ -61,7 +61,7 @@ public class Wave {
     return fb;
   }
 
-  static void loadTexture(GL10 gl10, Context context, int resource) {
+  public static void loadTexture(GL10 gl10, Context context, int resource) {
     Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), resource);
     int a[] = new int[1];
     gl10.glGenTextures(1, a, 0);
@@ -92,9 +92,12 @@ public class Wave {
     mVertexBuffer = createFloatBuffer(vertices);
   }
 
+  public void calc() {
+    animate();
+  }
+
   public void draw(GL10 gl10) {
 
-    animate();
     /*-----------------------------------------------------------------------*/
     /* 背景描画                                                              */
     /*-----------------------------------------------------------------------*/
@@ -102,7 +105,10 @@ public class Wave {
     gl10.glPushMatrix();
     /* シースルーモード */
     gl10.glEnable(GL10.GL_BLEND);
-    gl10.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE);
+    gl10.glBlendFunc(GL10.GL_ONE, GL10.GL_SRC_ALPHA);
+    //gl10.glBlendFunc(GL10.GL_ONE_MINUS_DST_ALPHA,GL10.GL_DST_ALPHA);
+    //gl10.glBlendFunc(GL10.GL_ZERO, GL10.GL_ONE_MINUS_SRC_ALPHA);
+    //gl10.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_DST_ALPHA);
 
 
     /*=======================================================================*/
@@ -138,24 +144,7 @@ public class Wave {
     gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, mat_spec, 0);
     gl10.glMaterialf(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, 100f);
 
-        //ステンシルバッファの床を描画
-        //gl10.glDisable(GL10.GL_DEPTH_TEST);
-//        gl10.glColorMask(false,false,false,false);
-//        gl10.glDepthMask(false);
-//        
-//        //ステンシルテストの有効化
-//        gl10.glEnable(GL10.GL_STENCIL_TEST);
-//        gl10.glStencilOp(GL10.GL_REPLACE,GL10.GL_REPLACE,GL10.GL_REPLACE);
-//        gl10.glStencilFunc(GL10.GL_ALWAYS,1,0xffffffff);        //ステンシルバッファの床を描画
-//        gl10.glDisable(GL10.GL_DEPTH_TEST);
-//        gl10.glColorMask(false,false,false,false);
-//        gl10.glDepthMask(false);
-//        
-//        //ステンシルテストの有効化
-//        gl10.glEnable(GL10.GL_STENCIL_TEST);
-//        gl10.glStencilOp(GL10.GL_REPLACE,GL10.GL_REPLACE,GL10.GL_REPLACE);
-//        gl10.glStencilFunc(GL10.GL_ALWAYS,1,0xffffffff);
-
+        
     /*-----------------------------------------------------------------------*/
     /* 頂点座標バッファを読み込む                                            */
     /*-----------------------------------------------------------------------*/
@@ -172,10 +161,6 @@ public class Wave {
     gl10.glColor4f(1,1,1,1);
     gl10.glNormal3f(0,-1,0);
     gl10.glDrawArrays(GL10.GL_TRIANGLE_STRIP, 0, 4);
-
-        //ステンシルテストの無効化
-//        gl10.glDisable(GL10.GL_STENCIL_TEST);
-
 
     gl10.glDisable(GL10.GL_BLEND);
     gl10.glPopMatrix();

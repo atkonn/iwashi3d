@@ -23,7 +23,7 @@ import jp.co.qsdn.android.iwashi3d.Bait;
 import jp.co.qsdn.android.iwashi3d.BaitManager;
 import jp.co.qsdn.android.iwashi3d.util.CoordUtil;
 
-public class Iwashi {
+public class Iwashi implements Model {
   private static final boolean debug = false;
   private static final String TAG = Iwashi.class.getName();
   private static final long BASE_TICK = 17852783L;
@@ -42,6 +42,7 @@ public class Iwashi {
   public float[] distances = new float[100];
   private float targetDistance = 0f;
   private Random rand = null;
+  private float size = 10f * scale * 0.7f;
   /*
    * 仲間、同種
    */
@@ -1044,15 +1045,17 @@ public class Iwashi {
 
   }
 
-
-  public void draw(GL10 gl10) {
-    gl10.glPushMatrix();
-
+  public void calc() {
     synchronized (this) {
       think();
       move();
       animate();
     }
+  }
+
+  public void draw(GL10 gl10) {
+    gl10.glPushMatrix();
+
 
     gl10.glPushMatrix();
     {
@@ -1089,7 +1092,7 @@ public class Iwashi {
       gl10.glMaterialf(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, 64f);
     }
     gl10.glTranslatef(getX(),getY(),getZ());
-gl10.glScalef(0.7f,0.7f,0.7f);
+    gl10.glScalef(0.7f,0.7f,0.7f);
 
     gl10.glRotatef(y_angle, 0.0f, 1.0f, 0.0f);
     gl10.glRotatef(x_angle * -1f, 0.0f, 0.0f, 1.0f);
@@ -1353,7 +1356,7 @@ gl10.glScalef(0.7f,0.7f,0.7f);
 
     float yy = angle_y - y_angle;
     if (yy > 180.0f) {
-      yy = 360f - yy;
+      yy = -360f + yy;
     }
     else if (yy < -180.0f) {
       yy = 360f - yy;
@@ -1376,6 +1379,9 @@ gl10.glScalef(0.7f,0.7f,0.7f);
       }
     }
     y_angle = y_angle % 360f;
+    if (y_angle < 0f) {
+      y_angle = 360f + y_angle;
+    }
   }
   public void aimTargetSpeed(float t_speed) {
     if (t_speed <= speed) {
@@ -1574,17 +1580,263 @@ if (false) {
     if (debug) {
       Log.d(TAG, "start aimAquariumCenter ");
     }
+//if (false) {
+//    float v_x = (Aquarium.center[0] - getX());
+//    float v_y = (Aquarium.center[1] - getY());
+//    float v_z = (Aquarium.center[2] - getZ());
+//}
+//if (false) {
+////  if (iwashiNo == 0) {
+////      Log.d(TAG, "向かいたい方向"
+////       + " x:[" + v_x + "]:"
+////       + " y:[" + v_y + "]:"
+////       + " z:[" + v_z + "]:");
+////  }
+//}
+//if (false) {
+////    if (debug) {
+////      Log.d(TAG, "向かいたい方向"
+////       + " x:[" + v_x + "]:"
+////       + " y:[" + v_y + "]:"
+////       + " z:[" + v_z + "]:");
+////    }
+//
+//    /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
+//    float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
+//    /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
+//    float angle_y = (float)coordUtil.convertDegreeXZ((double)v_x * -1d, (double)v_z);
+//    if (angle_x > 180f) {
+//      angle_x = angle_x - 360f;
+//    }
+//    if ((angle_x < 0.0f && v_y > 0.0f) || (angle_x > 0.0f && v_y < 0.0f)) {
+//      angle_x *= -1f;
+//    }
+//    if (debug) {
+//      Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
+//      Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
+//    }
+//
+//    /* その角度へ近づける */
+//    aimTargetDegree(angle_x, angle_y);
+//    if (debug) {
+//      Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
+//      Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
+//    }
+//}
+//else {
+//if (false) {
+//    if (false) {
+//      Log.d(TAG, iwashiNo + " now pos:"
+//        + "x:[" + getX() + "]:"
+//        + "y:[" + getY() + "]:"
+//        + "z:[" + getZ() + "]:");
+//    }
+//    if (Aquarium.min_x.compareTo(getX()) < 0 && Aquarium.max_x.compareTo(getX()) > 0 
+//    &&  Aquarium.min_y.compareTo(getY()) < 0 && Aquarium.max_y.compareTo(getY()) > 0) {
+//      /* Zだけはみ出た */
+//      v_x = direction[0];
+//      v_y = direction[1];
+//      if (true) {
+//        if (iwashiNo == 0) {
+//          Log.d(TAG, iwashiNo + " Zだけはみ出た");
+//        }
+//      }
+//    }
+//    else 
+//    if (Aquarium.min_x.compareTo(getX()) < 0 && Aquarium.max_x.compareTo(getX()) > 0
+//    &&  Aquarium.min_z.compareTo(getZ()) < 0 && Aquarium.max_z.compareTo(getZ()) > 0) {
+//      /* Yだけはみ出た */
+//      v_x = direction[0];
+//      v_z = direction[2];
+//      if (true) {
+//        if (iwashiNo == 0) {
+//          Log.d(TAG, iwashiNo + " Yだけはみ出た");
+//        }
+//      }
+//    }
+//    else 
+//    if (Aquarium.min_y.compareTo(getY()) < 0 && Aquarium.max_y.compareTo(getY()) > 0 
+//    &&  Aquarium.min_z.compareTo(getZ()) < 0 && Aquarium.max_z.compareTo(getZ()) > 0) {
+//      /* Xだけはみ出た */
+//      v_y = direction[1];
+//      v_z = direction[2];
+//      if (true) {
+//        if (iwashiNo == 0) {
+//          Log.d(TAG, iwashiNo + " Xだけはみ出た");
+//        }
+//      }
+//    }
+//    if (false) {
+//    Log.d(TAG, iwashiNo + "ベクトル1: "
+//      + "v_x[" + v_x + "]:"
+//      + "v_y[" + v_y + "]:"
+//      + "v_z[" + v_z + "]:");
+//    Log.d(TAG, iwashiNo + "ベクトル2: "
+//      + "d_x[" + direction[0] + "]:"
+//      + "d_y[" + direction[1] + "]:"
+//      + "d_z[" + direction[2] + "]:");
+//    }
+//    /* 2ベクトルから差角度を求める */
+//    /* まず、x/yの2次元の角度(上下) */   
+//    float want_x = 0.0f;
+//    {
+//      float[] v1 = {direction[2], direction[1]};
+//      float[] v2 = {v_z, v_y};
+//      if ((v1[0] == 0.0f && v1[1] == 0.0f)
+//      ||  (v2[0] == 0.0f && v2[1] == 0.0f)) {
+//        want_x = 0.0f;
+//      }
+//      else {
+//        want_x = CoordUtil.includedAngle(v1, v2, 2);
+//      }
+//      if (Float.isNaN(want_x)) {
+//        want_x = 0.0f;
+//      }
+//      if (false) {
+//      Log.d(TAG, iwashiNo
+//        + " want_x:[" + want_x + "]");
+//      }
+//      want_x *= -1;
+//      if (want_x < 0.0f && v_y > 0.0f) {
+//        want_x *= -1;
+//      }
+//      if (false) {
+//      Log.d(TAG, iwashiNo
+//        + " want_x:[" + want_x + "]");
+//      }
+//    }
+//    if (false) Log.d(TAG, iwashiNo + " x 2ベクトルの差角度1(" + want_x + ")");
+//    if (want_x > 180.0f) {
+//      want_x = 360f - want_x;
+//    }
+//    else if (want_x < -180.0f) {
+//      want_x = -360f - want_x;
+//    }
+//    if (want_x > 22.5f) {
+//      want_x = this.rand.nextFloat() * 22.5f;
+//    }
+//    else if (want_x < -22.5f) {
+//      want_x = this.rand.nextFloat() * -22.5f;
+//    }
+//    if (false) Log.d(TAG, iwashiNo + " x 再計算2ベクトルの差角度1(" + want_x + ")");
+//    /* まず、x/zの2次元の角度(左右) */   
+//    float want_y = 0.0f;
+//    {
+//      float[] v1 = {-1.0f, 0.0f};
+//      float[] v2 = {v_x, v_z};
+//      if ((v1[0] == 0.0f && v1[1] == 0.0f)
+//      ||  (v2[0] == 0.0f && v2[1] == 0.0f)) {
+//        want_y = 0.0f;
+//      }
+//      else {
+//        /* 新しい方向への-1.0f,0.0fからの角度 */
+//        want_y = CoordUtil.includedAngle(v1, v2, 2);
+///*DEBUG*/ if (true) { if (iwashiNo == 0) { Log.d(TAG, iwashiNo + " 向かいたい角度:[" + want_y + "]");}};
+//      }
+//      want_y = want_y - y_angle;
+//  
+///*DEBUG*/ if (true) { if (iwashiNo == 0) { Log.d(TAG, iwashiNo + " v2(" + v_x+"," + v_z+ ")");}} /*DEBUG*/
+///*DEBUG*/ if (true) { if (iwashiNo == 0) { Log.d(TAG, iwashiNo + " includedAngle算出結果: want_y:[" + want_y + "]"); } } /*DEBUG*/
+//      if (Float.isNaN(want_y)) {
+//        want_y = 0.0f;
+//      }
+//    }
+//    if (false) Log.d(TAG, iwashiNo + " y 2ベクトルの差角度2(" + want_y + ")");
+///*DEBUG*/ if (true) { if (iwashiNo == 0) { Log.d(TAG, iwashiNo + " 1 want_y:[" + want_y + "]"); } } /*DEBUG*/
+//    if (want_y > 180.0f) {
+//      want_y = -360f + want_y;
+//    }
+//    else if (want_y < -180.0f) {
+//      want_y = 360f - want_y;
+//    }
+///*DEBUG*/ if (true) { if (iwashiNo == 0) { Log.d(TAG, iwashiNo + " 2 want_y:[" + want_y + "]"); } } /*DEBUG*/
+//    if (false) Log.d(TAG, iwashiNo + " y 再計算2ベクトルの差角度2(" + want_y + ")");
+//    if (want_y > 22.5f) {
+//      want_y = this.rand.nextFloat() * 22.5f;
+//    }
+//    else if (want_y < -22.5f) {
+//      want_y = this.rand.nextFloat() * -22.5f;
+//    }
+///*DEBUG*/ if (true) { if (iwashiNo == 0) { Log.d(TAG, iwashiNo + " 3  want_y:[" + want_y + "]"); } } /*DEBUG*/
+//
+//    x_angle = x_angle + want_x;
+//    y_angle = y_angle + want_y;
+//    y_angle = y_angle % 360f;
+//    if (x_angle > 45.0f) {
+//      if (x_angle > 180.0f) {
+//        x_angle -= 180.0f;
+//        x_angle *= -1f;
+//        if (x_angle < -45.0f) {
+//          x_angle = -45.0f;
+//        }
+//      }
+//      else {
+//        x_angle = 45.0f;
+//      }
+//    }
+//    else if (x_angle < -45.0f) {
+//      if (x_angle < -180.0f) {
+//        x_angle += 180.0f;
+//        x_angle *= -1f;
+//        if (x_angle > 45.0f) {
+//          x_angle = 45.0f;
+//        }
+//      }
+//      else {
+//        x_angle = -45.0f;
+//      }
+//    }
+//    if (y_angle < 0f) {
+//      y_angle = 360f + y_angle;
+//    }
+//if (true) {
+//    if (iwashiNo == 0) {
+//    Log.d(TAG, iwashiNo 
+//      + " 結果:x_angle:[" + x_angle + "]:"
+//      + " 結果:y_angle:[" + y_angle + "]:");
+//    }
+//}
+//}
+//}
+if (true) {
     float v_x = (Aquarium.center[0] - getX());
     float v_y = (Aquarium.center[1] - getY());
     float v_z = (Aquarium.center[2] - getZ());
-if (false) {
-    if (debug) {
-      Log.d(TAG, "向かいたい方向"
-       + " x:[" + v_x + "]:"
-       + " y:[" + v_y + "]:"
-       + " z:[" + v_z + "]:");
+    if (Aquarium.min_x.compareTo(getX()) < 0 && Aquarium.max_x.compareTo(getX()) > 0 
+    &&  Aquarium.min_y.compareTo(getY()) < 0 && Aquarium.max_y.compareTo(getY()) > 0) {
+      /* Zだけはみ出た */
+      v_x = 0.0f;
+      v_y = 0.0f;
+      if (true) {
+        if (iwashiNo == 0) {
+          Log.d(TAG, iwashiNo + " Zだけはみ出た");
+        }
+      }
     }
-
+    else 
+    if (Aquarium.min_x.compareTo(getX()) < 0 && Aquarium.max_x.compareTo(getX()) > 0
+    &&  Aquarium.min_z.compareTo(getZ()) < 0 && Aquarium.max_z.compareTo(getZ()) > 0) {
+      /* Yだけはみ出た */
+      v_x = 0.0f;
+      v_z = 0.0f;
+      if (true) {
+        if (iwashiNo == 0) {
+          Log.d(TAG, iwashiNo + " Yだけはみ出た");
+        }
+      }
+    }
+    else 
+    if (Aquarium.min_y.compareTo(getY()) < 0 && Aquarium.max_y.compareTo(getY()) > 0 
+    &&  Aquarium.min_z.compareTo(getZ()) < 0 && Aquarium.max_z.compareTo(getZ()) > 0) {
+      /* Xだけはみ出た */
+      v_y = 0.0f;
+      v_z = 0.0f;
+      if (true) {
+        if (iwashiNo == 0) {
+          Log.d(TAG, iwashiNo + " Xだけはみ出た");
+        }
+      }
+    }
     /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
     float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
     /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
@@ -1600,167 +1852,17 @@ if (false) {
       Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
     }
 
+    if (angle_y < 0.0f) {
+      angle_y = 360f + angle_y;
+    }
+    angle_y = angle_y % 360f;
+
     /* その角度へ近づける */
     aimTargetDegree(angle_x, angle_y);
     if (debug) {
       Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
       Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
     }
-}
-else {
-    if (false) {
-      Log.d(TAG, iwashiNo + " now pos:"
-        + "x:[" + getX() + "]:"
-        + "y:[" + getY() + "]:"
-        + "z:[" + getZ() + "]:");
-    }
-    if (Aquarium.min_x.compareTo(getX()) < 0 && Aquarium.max_x.compareTo(getX()) > 0 
-    &&  Aquarium.min_y.compareTo(getY()) < 0 && Aquarium.max_y.compareTo(getY()) > 0) {
-      /* Zだけはみ出た */
-      v_x = direction[0];
-      v_y = direction[1];
-      if (false) {
-         Log.d(TAG, iwashiNo + " Zだけはみ出た");
-      }
-    }
-    else 
-    if (Aquarium.min_x.compareTo(getX()) < 0 && Aquarium.max_x.compareTo(getX()) > 0
-    &&  Aquarium.min_z.compareTo(getZ()) < 0 && Aquarium.max_z.compareTo(getZ()) > 0) {
-      /* Yだけはみ出た */
-      v_x = direction[0];
-      v_z = direction[2];
-      if (false) Log.d(TAG, iwashiNo + " Yだけはみ出た");
-    }
-    else 
-    if (Aquarium.min_y.compareTo(getY()) < 0 && Aquarium.max_y.compareTo(getY()) > 0 
-    &&  Aquarium.min_z.compareTo(getZ()) < 0 && Aquarium.max_z.compareTo(getZ()) > 0) {
-      /* Xだけはみ出た */
-      v_y = direction[1];
-      v_z = direction[2];
-      if (false) Log.d(TAG, iwashiNo + " Xだけはみ出た");
-    }
-    if (false) {
-    Log.d(TAG, iwashiNo + "ベクトル1: "
-      + "v_x[" + v_x + "]:"
-      + "v_y[" + v_y + "]:"
-      + "v_z[" + v_z + "]:");
-    Log.d(TAG, iwashiNo + "ベクトル2: "
-      + "d_x[" + direction[0] + "]:"
-      + "d_y[" + direction[1] + "]:"
-      + "d_z[" + direction[2] + "]:");
-    }
-    /* 2ベクトルから差角度を求める */
-    /* まず、x/yの2次元の角度(上下) */   
-    float want_x = 0.0f;
-    {
-      float[] v1 = {direction[2], direction[1]};
-      float[] v2 = {v_z, v_y};
-      if ((v1[0] == 0.0f && v1[1] == 0.0f)
-      ||  (v2[0] == 0.0f && v2[1] == 0.0f)) {
-        want_x = 0.0f;
-      }
-      else {
-        want_x = CoordUtil.includedAngle(v1, v2, 2);
-      }
-      if (Float.isNaN(want_x)) {
-        want_x = 0.0f;
-      }
-      if (false) {
-      Log.d(TAG, iwashiNo
-        + " want_x:[" + want_x + "]");
-      }
-      want_x *= -1;
-      if (want_x < 0.0f && v_y > 0.0f) {
-        want_x *= -1;
-      }
-      if (false) {
-      Log.d(TAG, iwashiNo
-        + " want_x:[" + want_x + "]");
-      }
-    }
-    if (false) Log.d(TAG, iwashiNo + " x 2ベクトルの差角度1(" + want_x + ")");
-    if (want_x > 180.0f) {
-      want_x = 360f - want_x;
-    }
-    else if (want_x < -180.0f) {
-      want_x = -360f - want_x;
-    }
-    if (want_x > 22.5f) {
-      want_x = this.rand.nextFloat() * 22.5f;
-    }
-    else if (want_x < -22.5f) {
-      want_x = this.rand.nextFloat() * -22.5f;
-    }
-    if (false) Log.d(TAG, iwashiNo + " x 再計算2ベクトルの差角度1(" + want_x + ")");
-    /* まず、x/zの2次元の角度(左右) */   
-    float want_y = 0.0f;
-    {
-      float[] v1 = {direction[0], direction[2]};
-      float[] v2 = {v_x, v_z};
-      if ((v1[0] == 0.0f && v1[1] == 0.0f)
-      ||  (v2[0] == 0.0f && v2[1] == 0.0f)) {
-        want_y = 0.0f;
-      }
-      else {
-        want_y = CoordUtil.includedAngle(v1, v2, 2);
-      }
-      if (Float.isNaN(want_y)) {
-        want_y = 0.0f;
-      }
-    }
-    if (false) Log.d(TAG, iwashiNo + " y 2ベクトルの差角度2(" + want_y + ")");
-    if (want_y > 180.0f) {
-      want_y = 360f - want_y;
-    }
-    else if (want_y < -180.0f) {
-      want_y = -360f - want_y;
-    }
-    if (false) Log.d(TAG, iwashiNo + " y 再計算2ベクトルの差角度2(" + want_y + ")");
-    if (want_x > 22.5f) {
-      want_x = 22.5f;
-    }
-    else if (want_x < -22.5f) {
-      want_x = -22.5f;
-    }
-    if (want_y > 22.5f) {
-      want_y = this.rand.nextFloat() * 22.5f;
-    }
-    else if (want_y < -22.5f) {
-      want_y = this.rand.nextFloat() * -22.5f;
-    }
-
-    x_angle = x_angle + want_x;
-    y_angle = y_angle + want_y;
-    x_angle = x_angle % 360f;
-    if (x_angle > 45.0f) {
-      if (x_angle > 180.0f) {
-        x_angle -= 180.0f;
-        x_angle *= -1f;
-        if (x_angle < -45.0f) {
-          x_angle = -45.0f;
-        }
-      }
-      else {
-        x_angle = 45.0f;
-      }
-    }
-    else if (x_angle < -45.0f) {
-      if (x_angle < -180.0f) {
-        x_angle += 180.0f;
-        x_angle *= -1f;
-        if (x_angle > 45.0f) {
-          x_angle = 45.0f;
-        }
-      }
-      else {
-        x_angle = -45.0f;
-      }
-    }
-if (false) {
-    Log.d(TAG, iwashiNo 
-      + " 結果:x_angle:[" + x_angle + "]:"
-      + " 結果:y_angle:[" + y_angle + "]:");
-}
 }
 
     coordUtil.setMatrixRotateZ(x_angle);
@@ -2142,5 +2244,25 @@ if (false) {
    */
   public void setStatus(STATUS status) {
     this.status = status;
+  }
+  
+  /**
+   * Get size.
+   *
+   * @return size as float.
+   */
+  public float getSize()
+  {
+      return size;
+  }
+  
+  /**
+   * Set size.
+   *
+   * @param size the value to set.
+   */
+  public void setSize(float size)
+  {
+      this.size = size;
   }
 }
