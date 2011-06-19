@@ -20,12 +20,13 @@ import java.nio.IntBuffer;
 import javax.microedition.khronos.opengles.GL10;
 
 import jp.co.qsdn.android.iwashi3d.Aquarium;
+import jp.co.qsdn.android.iwashi3d.tls.BitmapContext;
 
 public class Ground {
   private static final String TAG = Ground.class.getName();
   private final FloatBuffer mVertexBuffer;
   private final FloatBuffer mTextureBuffer;  
-  private static Bitmap mBitmap;
+  private Bitmap mBitmap;
   private int scratch_ii = 0;
   private Paint mPaint = null;
 
@@ -64,18 +65,21 @@ public class Ground {
 
   protected static int[] textureIds = null;
   public static void loadTexture(GL10 gl10, Context context, int resource) {
-    mBitmap = BitmapFactory.decodeResource(context.getResources(), resource);
+    Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), resource);
     textureIds = new int[1];
     gl10.glGenTextures(1, textureIds, 0);
     gl10.glBindTexture(GL10.GL_TEXTURE_2D, textureIds[0]);
-    GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, mBitmap, 0);
+    GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bmp, 0);
     gl10.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
     gl10.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
+    BitmapContext.instance().setBitmap(bmp);
   }
   public static void deleteTexture(GL10 gl10) {
-    if (mBitmap != null) {
-      mBitmap.recycle();
-      mBitmap = null;
+    Bitmap bmp = BitmapContext.instance().getBitmap();
+    if (bmp != null) {
+      bmp.recycle();
+      bmp = null;
+      BitmapContext.instance().setBitmap(bmp);
     }
     if (textureIds != null) {
       gl10.glDeleteTextures(1, textureIds, 0);
@@ -125,8 +129,8 @@ public class Ground {
     gl10.glMaterialf(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, 100f);
 
     /* mBitmapがnullの場合がある・・・ */
-    if (mBitmap != null) {
-      Bitmap bmp = mBitmap.copy(Bitmap.Config.ARGB_8888,true);
+    if (BitmapContext.instance().getBitmap() != null) {
+      Bitmap bmp = BitmapContext.instance().getBitmap().copy(Bitmap.Config.ARGB_8888,true);
       if (bmp != null) {
         Canvas canvas = new Canvas(bmp);
         
@@ -157,7 +161,7 @@ public class Ground {
     /* 頂点座標バッファを読み込む                                            */
     /*-----------------------------------------------------------------------*/
     gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, mVertexBuffer);
-    if (mBitmap != null) {
+    if (BitmapContext.instance().getBitmap() != null) {
       gl10.glEnable(GL10.GL_TEXTURE_2D);
       gl10.glBindTexture(GL10.GL_TEXTURE_2D, textureIds[0]);
       gl10.glTexCoordPointer(2, GL10.GL_FLOAT, 0, mTextureBuffer);

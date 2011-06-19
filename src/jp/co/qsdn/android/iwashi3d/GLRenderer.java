@@ -277,10 +277,13 @@ if (false) {
     gl10.glFogf(GL10.GL_FOG_START, 7f + (cameraDistance - 5f));
     gl10.glFogf(GL10.GL_FOG_END, 26.0f + (cameraDistance - 5f));
 
-    float[] color = {
-      0.011f, 0.4218f, 0.6445f, 1.0f,
-    };
-    gl10.glFogfv(GL10.GL_FOG_COLOR, color, 0);
+    synchronized (mScratch4f) {
+      mScratch4f[0] = 0.011f;
+      mScratch4f[1] = 0.4218f;
+      mScratch4f[2] = 0.6445f;
+      mScratch4f[3] = 1.0f;
+      gl10.glFogfv(GL10.GL_FOG_COLOR, mScratch4f, 0);
+    }
   }
   public void setupFog2(GL10 gl10) {
     gl10.glEnable(GL10.GL_FOG);
@@ -288,10 +291,13 @@ if (false) {
     gl10.glFogf(GL10.GL_FOG_START, cameraDistance + 1f);
     gl10.glFogf(GL10.GL_FOG_END, cameraDistance + 10f);
 
-    float[] color = {
-      1.0f, 1.0f, 1.0f, 1.0f,
-    };
-    gl10.glFogfv(GL10.GL_FOG_COLOR, color, 0);
+    synchronized (mScratch4f) {
+      mScratch4f[0] = 1.0f;
+      mScratch4f[1] = 1.0f;
+      mScratch4f[2] = 1.0f;
+      mScratch4f[3] = 1.0f;
+      gl10.glFogfv(GL10.GL_FOG_COLOR, mScratch4f, 0);
+    }
   }
 
   public void updateSetting(Context context) {

@@ -1744,9 +1744,9 @@ public class Iwashi implements Model {
       speed = sv_speed;
     }
     prevTime = nowTime;
-    if (  (Aquarium.min_x.compareTo(new Float(position[0])) >= 0 || Aquarium.max_x.compareTo(new Float(position[0])) <= 0)
-      ||  (Aquarium.min_y.compareTo(new Float(position[1])) >= 0 || Aquarium.max_y.compareTo(new Float(position[1])) <= 0)
-      ||  (Aquarium.min_z.compareTo(new Float(position[2])) >= 0 || Aquarium.max_z.compareTo(new Float(position[2])) <= 0)) {
+    if (  (Aquarium.min_x.compareTo(position[0]) >= 0 || Aquarium.max_x.compareTo(position[0]) <= 0)
+      ||  (Aquarium.min_y.compareTo(position[1]) >= 0 || Aquarium.max_y.compareTo(position[1]) <= 0)
+      ||  (Aquarium.min_z.compareTo(position[2]) >= 0 || Aquarium.max_z.compareTo(position[2]) <= 0)) {
       /*=====================================================================*/
       /* 水槽からはみ出てる                                                  */
       /*=====================================================================*/

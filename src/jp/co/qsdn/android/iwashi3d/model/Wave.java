@@ -43,6 +43,7 @@ public class Wave {
     -oneW * 2.0f, oneH,  oneW * 2.0f / 4.0f,   // 右上
   };
 
+  private float[] mScratch4f = new float[4];
   public Wave() {
 
     float texCoords[] = {
@@ -132,34 +133,33 @@ public class Wave {
     /*=======================================================================*/
     /* 環境光の材質色設定                                                    */
     /*=======================================================================*/
-    float[] mat_amb = { 
-      1.0f, 
-      1.0f, 
-      1.0f, 
-      1.0f,
-     };
-    gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, mat_amb, 0);
+    synchronized (mScratch4f) {
+      mScratch4f[0] = 1.0f;
+      mScratch4f[1] = 1.0f;
+      mScratch4f[2] = 1.0f;
+      mScratch4f[3] = 1.0f;
+      gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, mScratch4f, 0);
+    }
     /*=======================================================================*/
     /* 拡散反射光の色設定                                                    */
     /*=======================================================================*/
-    float[] mat_diff = { 
-      1.0f, 
-      1.0f, 
-      1.0f, 
-      1.0f,
-     };
-    gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, mat_diff, 0);
+    synchronized (mScratch4f) {
+      mScratch4f[0] = 1.0f;
+      mScratch4f[1] = 1.0f;
+      mScratch4f[2] = 1.0f;
+      mScratch4f[3] = 1.0f;
+      gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, mScratch4f, 0);
+    }
     /*=======================================================================*/
     /* 鏡面反射光の質感色設定                                                */
     /*=======================================================================*/
-    float[] mat_spec = { 
-      1.0f, 
-      1.0f, 
-      1.0f, 
-      1.0f,
-    };
-
-    gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, mat_spec, 0);
+    synchronized (mScratch4f) {
+      mScratch4f[0] = 1.0f;
+      mScratch4f[1] = 1.0f;
+      mScratch4f[2] = 1.0f;
+      mScratch4f[3] = 1.0f;
+      gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, mScratch4f, 0);
+    }
     gl10.glMaterialf(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, 100f);
 
         
