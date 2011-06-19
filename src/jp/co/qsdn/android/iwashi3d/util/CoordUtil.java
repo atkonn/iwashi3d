@@ -8,13 +8,13 @@ import android.util.Log;
 public class CoordUtil {
   private static final String TAG = CoordUtil.class.getName();
 
-  protected float[][] matrix;
+  protected float[][] matrix = null;
 
   public float convertDegreeToRadian(float angle) {
     return angle * ((float)Math.PI) / 180.0f;
   }
   
-  protected void initMatrix() {
+  private void __initMatrix() {
     matrix = new float[4][];
     for (int ii=0; ii<4; ii++) {
       matrix[ii] = new float[4];
@@ -22,6 +22,18 @@ public class CoordUtil {
     for (int x = 0; x < 4; x++) {
       for (int y = 0; y < 4; y++) {
         matrix[x][y] = 0f;
+      }
+    }
+  }
+  protected void initMatrix() {
+    if (matrix == null) {
+      __initMatrix(); 
+    }
+    else {
+      for (int x = 0; x < 4; x++) {
+        for (int y = 0; y < 4; y++) {
+          matrix[x][y] = 0f;
+        }
       }
     }
   }

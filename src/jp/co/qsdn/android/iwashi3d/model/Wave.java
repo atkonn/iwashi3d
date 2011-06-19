@@ -5,8 +5,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 import android.opengl.GLUtils;
+import android.opengl.GLUtils;
+
 import android.util.Log;
 
 import java.nio.ByteBuffer;
@@ -15,27 +19,29 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import javax.microedition.khronos.opengles.GL10;
-import android.opengl.GLUtils;
-import android.graphics.Paint;
-import android.graphics.Color;
 
-
+import jp.co.qsdn.android.iwashi3d.Aquarium;
 public class Wave {
-  private FloatBuffer mVertexBuffer;
+  private final FloatBuffer mVertexBuffer;
+  private final FloatBuffer mVertexForStencilBuffer;
   private final FloatBuffer mTextureBuffer;  
-  private static int texid;
-  private Bitmap mBitmap;
 
-  float one = 4.5f;
-  float half = one / 2.0f;
+  float oneW = Aquarium.max_x + 0.5f;
+  float oneH = Aquarium.max_y + 0.3f;
   private float scale = 0.05f;
   float vertices[] = {
-     one, one - 0.2f,  one,   // 左下
-    -one, one - 0.2f,  one,   // 右下
-     one, one - 0.2f, -one,   // 左上
-    -one, one - 0.2f, -one,   // 右上
+     oneW, oneH,  oneW,   // 左下
+    -oneW, oneH,  oneW,   // 右下
+     oneW, oneH, -oneW,   // 左上
+    -oneW, oneH, -oneW,   // 右上
   };
   float org_vertices[];
+  float vertices_for_stencil[] = {
+     oneW * 2.0f, oneH,  oneW * 2.0f,   // 左下
+    -oneW * 2.0f, oneH,  oneW * 2.0f,   // 右下
+     oneW * 2.0f, oneH,  oneW * 2.0f / 4.0f,   // 左上
+    -oneW * 2.0f, oneH,  oneW * 2.0f / 4.0f,   // 右上
+  };
 
   public Wave() {
 
@@ -47,6 +53,7 @@ public class Wave {
     };
 
     mVertexBuffer = createFloatBuffer(vertices);
+    mVertexForStencilBuffer = createFloatBuffer(vertices_for_stencil);
     mTextureBuffer = createFloatBuffer(texCoords);
     org_vertices = new float[vertices.length];
     System.arraycopy(vertices,0, org_vertices, 0, vertices.length);
@@ -61,16 +68,22 @@ public class Wave {
     return fb;
   }
 
+  static int textureIds[] = null;
   public static void loadTexture(GL10 gl10, Context context, int resource) {
+    textureIds = new int[1];
     Bitmap bmp = BitmapFactory.decodeResource(context.getResources(), resource);
-    int a[] = new int[1];
-    gl10.glGenTextures(1, a, 0);
-    gl10.glBindTexture(GL10.GL_TEXTURE_2D, a[0]);
-    texid = a[0];
+    gl10.glGenTextures(1, textureIds, 0);
+    gl10.glBindTexture(GL10.GL_TEXTURE_2D, textureIds[0]);
     GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bmp, 0);
     gl10.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
     gl10.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
     bmp.recycle();
+    bmp = null;
+  }
+  public static void deleteTexture(GL10 gl10) {
+    if (textureIds != null) {
+      gl10.glDeleteTextures(1, textureIds, 0);
+    }
   }
 
 
@@ -89,7 +102,10 @@ public class Wave {
     vertices[1*3+1] = org_vertices[1*3+1] + s2;
     vertices[2*3+1] = org_vertices[2*3+1] + s3;
     vertices[3*3+1] = org_vertices[3*3+1] + s4;
-    mVertexBuffer = createFloatBuffer(vertices);
+
+    mVertexBuffer.position(0);
+    mVertexBuffer.put(vertices);
+    mVertexBuffer.position(0);
   }
 
   public void calc() {
@@ -97,6 +113,12 @@ public class Wave {
   }
 
   public void draw(GL10 gl10) {
+    _draw(gl10,mVertexBuffer);
+  }
+  public void drawForStencil(GL10 gl10) {
+    _draw(gl10,mVertexForStencilBuffer);
+  }
+  public void _draw(GL10 gl10, FloatBuffer vertexBuffer) {
 
     /*-----------------------------------------------------------------------*/
     /* 背景描画                                                              */
@@ -106,10 +128,6 @@ public class Wave {
     /* シースルーモード */
     gl10.glEnable(GL10.GL_BLEND);
     gl10.glBlendFunc(GL10.GL_ONE, GL10.GL_SRC_ALPHA);
-    //gl10.glBlendFunc(GL10.GL_ONE_MINUS_DST_ALPHA,GL10.GL_DST_ALPHA);
-    //gl10.glBlendFunc(GL10.GL_ZERO, GL10.GL_ONE_MINUS_SRC_ALPHA);
-    //gl10.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_DST_ALPHA);
-
 
     /*=======================================================================*/
     /* 環境光の材質色設定                                                    */
@@ -148,10 +166,10 @@ public class Wave {
     /*-----------------------------------------------------------------------*/
     /* 頂点座標バッファを読み込む                                            */
     /*-----------------------------------------------------------------------*/
-    gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, mVertexBuffer);
+    gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
     gl10.glEnable(GL10.GL_TEXTURE_2D);
 
-    gl10.glBindTexture(GL10.GL_TEXTURE_2D, texid);
+    gl10.glBindTexture(GL10.GL_TEXTURE_2D, textureIds[0]);
     gl10.glTexCoordPointer(2, GL10.GL_FLOAT, 0, mTextureBuffer);
 
 

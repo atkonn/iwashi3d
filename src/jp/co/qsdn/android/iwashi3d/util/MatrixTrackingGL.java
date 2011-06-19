@@ -1141,4 +1141,20 @@ public class MatrixTrackingGL implements GL, GL10, GL10Ext, GL11, GL11Ext {
       throw new IllegalArgumentException("Matrix math difference.");
     }
   }
+
+  public void shutdown() {
+    mgl = null;
+    mgl10Ext = null;
+    mgl11 = null;
+    mgl11Ext = null;
+    mCurrent = null;
+    mModelView = null;
+    mTexture = null;
+    mProjection = null;
+    viewport = null;
+    mByteBuffer = null;
+    mFloatBuffer = null;
+    mCheckA = null;
+    mCheckB = null;
+  }
 }

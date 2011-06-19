@@ -17,14 +17,14 @@ import android.opengl.GLUtils;
  */
 public class Aquarium {
   // 水槽の大きさ（案）
-  public static Float min_x = new Float(-4.0f);
-  public static Float max_x = new Float(4.0f);
+  public static Float min_x = new Float(-8.0f);
+  public static Float max_x = new Float(8.0f);
 
   public static Float min_y = new Float(-4.0f);
   public static Float max_y = new Float(4.0f);
 
-  public static Float min_z = new Float(-4.0f);
-  public static Float max_z = new Float(4.0f);
+  public static Float min_z = new Float(-8.0f);
+  public static Float max_z = new Float(8.0f);
 
   // 水槽の中心
   public static float[] center = { 0.0f, 0.0f, 0.0f };

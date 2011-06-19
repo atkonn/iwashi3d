@@ -29,9 +29,9 @@ import jp.co.qsdn.android.iwashi3d.setting.Prefs;
 import jp.co.qsdn.android.iwashi3d.util.CoordUtil;
 
 public class GLRenderer implements GLSurfaceView.Renderer {
-  private static final boolean _debug = false;
+  private static final boolean _debug = true;
   private static final String TAG = GLRenderer.class.getName();
-  private final Context context;
+  private static final int MAX_IWASHI_COUNT = 50;
   private final Background background = new Background();
   private final Ground ground = new Ground();
   private final Wave wave = new Wave();
@@ -39,18 +39,60 @@ public class GLRenderer implements GLSurfaceView.Renderer {
   private int iwashi_count = 1;
   private boolean enableIwashiBoids = true;
   private float iwashi_speed = 0.03f;
+  private Context context;
   /* カメラの位置 */
   private float[] camera = {0f,0f,0f};
   private float[] org_camera = {0f,0f,0f};
   private boolean cameraMode = false; /* false:通常モード true:鰯視点モード */
   private float cameraDistance = 10f; /* 群れまでの距離 */
+  private float zFar = 50.0f;
+  private float zNear = 1.0f;
+  private float perspectiveAngle = 45.0f;
 
   private BaitManager baitManager = new BaitManager();
   private float baseAngle = 0f;
   private float[] mScratch32 = new float[32];
+  private float[] mScratch4f = new float[4];
+  public static GLRenderer glRenderer = null;
 
-  GLRenderer(Context context) { 
+  private GLRenderer(Context context) {
     this.context = context;
+    iwashi_count = Prefs.getInstance(context).getIwashiCount();
+    iwashi_speed = ((float)Prefs.getInstance(context).getIwashiSpeed() / 50f) * 0.04f;
+    enableIwashiBoids = Prefs.getInstance(context).getIwashiBoids();
+    cameraDistance = (float)Prefs.getInstance(context).getCameraDistance();
+    cameraMode = Prefs.getInstance(context).getCameraMode();
+    
+
+    iwashi = new Iwashi[MAX_IWASHI_COUNT];
+    for (int ii=0; ii<MAX_IWASHI_COUNT; ii++) {
+      iwashi[ii] = new Iwashi(ii);
+    }
+    for (int ii=0; ii<MAX_IWASHI_COUNT; ii++) {
+      iwashi[ii].setEnableBoids(enableIwashiBoids);
+      iwashi[ii].setSpecies(iwashi);
+      iwashi[ii].setSpeed(iwashi_speed);
+      iwashi[ii].setBaitManager(baitManager);
+    }
+/*DEBUG*/
+if (false) {
+    for (int ii=0; ii<MAX_IWASHI_COUNT; ii++) {
+      iwashi[ii].setX(0.0f);
+      iwashi[ii].setY(0.0f);
+      iwashi[ii].setZ(0.0f);
+    }
+}
+/*DEBUG*/
+  }
+  
+  public static GLRenderer getInstance(Context context) {
+    Log.d(TAG, "start getInstance()");
+    if (glRenderer == null) {
+      Log.d(TAG, "new GLRenderer");
+      glRenderer = new GLRenderer(context);
+    }
+    Log.d(TAG, "end getInstance()");
+    return glRenderer;
   }
 
   public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
@@ -84,37 +126,10 @@ public class GLRenderer implements GLSurfaceView.Renderer {
     Wave.loadTexture(gl10, context, R.drawable.wave);
     Iwashi.loadTexture(gl10, context, R.drawable.iwashi);
 
-    iwashi_count = Prefs.getInstance(context).getIwashiCount();
-    iwashi_speed = ((float)Prefs.getInstance(context).getIwashiSpeed() / 50f) * 0.04f;
-    if (_debug) Log.d(TAG, "現在のスピード:[" + iwashi_speed + "]");
-    enableIwashiBoids = Prefs.getInstance(context).getIwashiBoids();
-    cameraDistance = (float)Prefs.getInstance(context).getCameraDistance();
-    cameraMode = Prefs.getInstance(context).getCameraMode();
-    
-
-    iwashi = new Iwashi[iwashi_count];
-    for (int ii=0; ii<iwashi_count; ii++) {
-      iwashi[ii] = new Iwashi(ii);
-    }
-    for (int ii=0; ii<iwashi_count; ii++) {
-      iwashi[ii].setEnableBoids(enableIwashiBoids);
-      iwashi[ii].setSpecies(iwashi);
-      iwashi[ii].setSpeed(iwashi_speed);
-      iwashi[ii].setBaitManager(baitManager);
-    }
-/*DEBUG*/
-if (false) {
-    for (int ii=0; ii<iwashi_count; ii++) {
-      iwashi[ii].setX(0.0f);
-      iwashi[ii].setY(0.0f);
-      iwashi[ii].setZ(0.0f);
-    }
-}
-/*DEBUG*/
 
     org_camera[0] = camera[0] = 0f;
     org_camera[1] = camera[1] = 0f;
-    org_camera[2] = camera[2] = Aquarium.max_z;
+    org_camera[2] = camera[2] = Aquarium.max_z + zNear;
 
     /*=======================================================================*/
     /* フォグのセットアップ                                                  */
@@ -134,6 +149,13 @@ if (false) {
     if (_debug) Log.d(TAG, "end onSurfaceCreated()");
   }
 
+  public void onSurfaceDestroyed(GL10 gl10) {
+    Background.deleteTexture(gl10);
+    Ground.deleteTexture(gl10);
+    Wave.deleteTexture(gl10);
+    Iwashi.deleteTexture(gl10);
+  }
+
   /**
    * 光のセットアップ
    */
@@ -147,28 +169,58 @@ if (false) {
       /*=======================================================================*/
       /* 環境光の色設定                                                        */
       /*=======================================================================*/
-      float[] amb = { 1.0f, 1.0f, 1.0f, 1.0f };
-      gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_AMBIENT, amb, 0);
+//      float[] amb = { 1.0f, 1.0f, 1.0f, 1.0f };
+      synchronized(mScratch4f) {
+        mScratch4f[0] = 1.0f;
+        mScratch4f[1] = 1.0f;
+        mScratch4f[2] = 1.0f;
+        mScratch4f[3] = 1.0f;
+        gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_AMBIENT, mScratch4f, 0);
+      }
       /*=======================================================================*/
       /* 拡散反射光の色設定                                                    */
       /*=======================================================================*/
-      float[] diff = { 1.0f, 1.0f, 1.0f, 1.0f };
-      gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, diff, 0);
+//      float[] diff = { 1.0f, 1.0f, 1.0f, 1.0f };
+      synchronized(mScratch4f) {
+        mScratch4f[0] = 1.0f;
+        mScratch4f[1] = 1.0f;
+        mScratch4f[2] = 1.0f;
+        mScratch4f[3] = 1.0f;
+        gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, mScratch4f, 0);
+      }
       /*=======================================================================*/
       /* 鏡面反射光の色設定                                                    */
       /*=======================================================================*/
-      float[] spec = { 1.0f, 1.0f, 1.0f, 1.0f };
-      gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_SPECULAR, spec, 0);
+//      float[] spec = { 1.0f, 1.0f, 1.0f, 1.0f };
+      synchronized(mScratch4f){
+        mScratch4f[0] = 1.0f;
+        mScratch4f[1] = 1.0f;
+        mScratch4f[2] = 1.0f;
+        mScratch4f[3] = 1.0f;
+        gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_SPECULAR, mScratch4f, 0);
+      }
       /*=======================================================================*/
       /* そもそもの光の位置設定                                                */
       /*=======================================================================*/
-      float[] pos1 = { 0.0f, 10.0f, 0.0f, 1.0f };
-      gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, pos1, 0);
+//      float[] pos1 = { 0.0f, 10.0f, 0.0f, 1.0f };
+      synchronized(mScratch4f){
+        mScratch4f[0] = 0.0f;
+        mScratch4f[1] = 10.0f;
+        mScratch4f[2] = 0.0f;
+        mScratch4f[3] = 1.0f;
+        gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, mScratch4f, 0);
+      }
       /*=======================================================================*/
       /* そもそもの光の向き設定                                                */
       /*=======================================================================*/
-      float[] dir = { 0.0f, -1.0f, 0.0f };
-      gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_SPOT_DIRECTION, dir, 0);
+//      float[] dir = { 0.0f, -1.0f, 0.0f };
+      synchronized(mScratch4f) {
+        mScratch4f[0] = 0.0f;
+        mScratch4f[1] = -1.0f;
+        mScratch4f[2] = 0.0f;
+        mScratch4f[3] = 0.0f;
+        gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_SPOT_DIRECTION, mScratch4f, 0);
+      }
       gl10.glLightf(GL10.GL_LIGHT0, GL10.GL_SPOT_CUTOFF, 90);
       gl10.glLightf(GL10.GL_LIGHT0, GL10.GL_SPOT_EXPONENT, 0);
       /*=======================================================================*/
@@ -223,7 +275,7 @@ if (false) {
     gl10.glEnable(GL10.GL_FOG);
     gl10.glFogf(GL10.GL_FOG_MODE, GL10.GL_LINEAR);
     gl10.glFogf(GL10.GL_FOG_START, 7f + (cameraDistance - 5f));
-    gl10.glFogf(GL10.GL_FOG_END, 21.0f + (cameraDistance - 5f));
+    gl10.glFogf(GL10.GL_FOG_END, 26.0f + (cameraDistance - 5f));
 
     float[] color = {
       0.011f, 0.4218f, 0.6445f, 1.0f,
@@ -234,7 +286,7 @@ if (false) {
     gl10.glEnable(GL10.GL_FOG);
     gl10.glFogf(GL10.GL_FOG_MODE, GL10.GL_LINEAR);
     gl10.glFogf(GL10.GL_FOG_START, cameraDistance + 1f);
-    gl10.glFogf(GL10.GL_FOG_END, 21.0f + (cameraDistance - 5f));
+    gl10.glFogf(GL10.GL_FOG_END, cameraDistance + 10f);
 
     float[] color = {
       1.0f, 1.0f, 1.0f, 1.0f,
@@ -242,7 +294,7 @@ if (false) {
     gl10.glFogfv(GL10.GL_FOG_COLOR, color, 0);
   }
 
-  public void updateSetting() {
+  public void updateSetting(Context context) {
     if (iwashi == null) {
       return;
     }
@@ -263,41 +315,24 @@ if (false){
 
     if (_iwashi_count != iwashi_count) {
       synchronized (this) {
-        Iwashi[] newIwashi = new Iwashi[_iwashi_count];
-        for (int ii=0; ii<_iwashi_count; ii++) {
-          if (ii < iwashi_count) {
-            newIwashi[ii] = iwashi[ii];
-          }
-          else {
-            newIwashi[ii] = new Iwashi(ii);
-          }
-        }
-        for (int ii=0; ii<iwashi_count; ii++) {
-          iwashi[ii] = null;
-        }
-        iwashi = null;
         iwashi_count = _iwashi_count;
-        iwashi = newIwashi;
-        for (int ii=0; ii<iwashi_count; ii++) {
-          iwashi[ii].setEnableBoids(enableIwashiBoids);
-          iwashi[ii].setSpecies(iwashi);
-          iwashi[ii].setBaitManager(baitManager);
-        }
       }
     }
     if (_iwashi_speed != iwashi_speed) {
       synchronized (this) {
-        for (int ii=0; ii<iwashi_count; ii++) {
+        for (int ii=0; ii<MAX_IWASHI_COUNT; ii++) {
           iwashi[ii].setSpeed(_iwashi_speed);
         }
         iwashi_speed = _iwashi_speed;
       }
     }
     if (_iwashi_boids != enableIwashiBoids) {
-      for (int ii=0; ii<iwashi_count; ii++) {
-        iwashi[ii].setEnableBoids(_iwashi_boids);
+      synchronized (this) {
+        for (int ii=0; ii<MAX_IWASHI_COUNT; ii++) {
+          iwashi[ii].setEnableBoids(_iwashi_boids);
+        }
+        enableIwashiBoids = _iwashi_boids;
       }
-      enableIwashiBoids = _iwashi_boids;
     }
     if (_camera_mode != cameraMode) {
       cameraMode = _camera_mode;
@@ -316,7 +351,7 @@ if (false){
     gl10.glMatrixMode(GL10.GL_PROJECTION);
     gl10.glLoadIdentity();
     float ratio = (float) width / height;
-    CoordUtil.perspective(gl10,45.0f, ratio, 0.1f, 50f);
+    CoordUtil.perspective(gl10,perspectiveAngle, ratio, zNear, zFar);
     this.screen_width = width;
     this.screen_height = height;
 
@@ -374,15 +409,30 @@ if (false){
     float nz = 0f;
     {
       float[] ret = new float[4];
-      GLU.gluUnProject((float)x, (float)y, 0.85f, view, 0, projection, 0, new int[]{0, 0, screen_width, screen_height}, 0, ret, 0);
+      /* カメラから水槽までの距離を算出 */
+      float dist_from_camera = 0.0f;
+      dist_from_camera = cameraDistance;
+      if (dist_from_camera < 0.0f) {
+        dist_from_camera = 0.0f;
+      }
+      else {
+        dist_from_camera = (dist_from_camera / (zFar - zNear));
+        if (dist_from_camera > 1.0f) {
+          dist_from_camera = 1.0f;
+        }
+      }
+      
+      GLU.gluUnProject((float)x, (float)y, dist_from_camera, view, 0, projection, 0, new int[]{0, 0, screen_width, screen_height}, 0, ret, 0);
       if (_debug) Log.d(TAG,"変換結果(UnProject):[" + ret[0] + "][" + ret[1] + "][" + ret[2] + "][" + ret[3] + "]");
-      if (_debug) Log.d(TAG,"変換結果(UnProject):[" + (ret[0]/ret[3]) + "][" + (ret[1]/ret[3]) + "][" + (ret[2]/ret[3]) + "][" + ret[3] + "]");
-      nx = (ret[0] / ret[3]);
-      ny = (ret[1] / ret[3]) * -1f;
-      //nz = (ret[2] / ret[3]);
-      nz = Aquarium.max_z - 0.2f;
+      {
+        float bb = (cameraDistance == 0.0f) ? 0.1f : cameraDistance;
+        nx = ret[0] * bb / ret[3];
+        ny = ret[1] * -bb / ret[3];
+        nz = ret[2] / ret[3];
+      }
       if (_debug) {
         Log.d(TAG,"変換結果"
+         + "dist:[" + dist_from_camera + "] "
          + "x:[" + nx + "] "
          + "y:[" + ny + "] "
          + "z:[" + nz + "] "
@@ -391,12 +441,66 @@ if (false){
     }
 
     if (baseAngle > 0.0f) {
+      if (nz > Aquarium.max_x - 0.2f) {
+        nz = Aquarium.max_x - 0.2f;
+      }
+      if (nz < Aquarium.min_x + 0.2f) {
+        nz = Aquarium.min_x + 0.2f;
+      }
+      if (ny > Aquarium.max_y - 0.2f) {
+        ny = Aquarium.max_y - 0.2f;
+      }
+      if (ny < Aquarium.min_y + 0.2f) {
+        ny = Aquarium.min_y + 0.2f;
+      }
+      if (nx > Aquarium.max_z - 0.2f) {
+        nx = Aquarium.max_z - 0.2f; 
+      }
+      if (nx < Aquarium.min_z + 0.2f) {
+        nx = Aquarium.min_z + 0.2f; 
+      }
       baitManager.addBait(-nz,ny,nx);
     }
     else if (baseAngle < 0.0f) {
-      baitManager.addBait(nz,ny,nx);
+      if (nz > Aquarium.max_x - 0.2f) {
+        nz = Aquarium.max_x - 0.2f;
+      }
+      if (nz < Aquarium.min_x + 0.2f) {
+        nz = Aquarium.min_x + 0.2f;
+      }
+      if (ny > Aquarium.max_y - 0.2f) {
+        ny = Aquarium.max_y - 0.2f;
+      }
+      if (ny < Aquarium.min_y + 0.2f) {
+        ny = Aquarium.min_y + 0.2f;
+      }
+      if (nx > Aquarium.max_z - 0.2f) {
+        nx = Aquarium.max_z - 0.2f; 
+      }
+      if (nx < Aquarium.min_z + 0.2f) {
+        nx = Aquarium.min_z + 0.2f; 
+      }
+      baitManager.addBait(nz,ny,-nx);
     }
     else {
+      if (nx > Aquarium.max_x - 0.2f) {
+        nx = Aquarium.max_x - 0.2f;
+      }
+      if (nx < Aquarium.min_x + 0.2f) {
+        nx = Aquarium.min_x + 0.2f;
+      }
+      if (ny > Aquarium.max_y - 0.2f) {
+        ny = Aquarium.max_y - 0.2f;
+      }
+      if (ny < Aquarium.min_y + 0.2f) {
+        ny = Aquarium.min_y + 0.2f;
+      }
+      if (nz > Aquarium.max_z - 0.2f) {
+        nz = Aquarium.max_z - 0.2f; 
+      }
+      if (nz < Aquarium.min_z + 0.2f) {
+        nz = Aquarium.min_z + 0.2f; 
+      }
       baitManager.addBait(nx,ny,nz);
     }
 
@@ -405,7 +509,6 @@ if (false){
 
 
   public synchronized void onDrawFrame(GL10 gl10) {
-    if (_debug) Log.d(TAG, "start onDrawFrame()");
     setupFog(gl10);
     gl10.glMatrixMode(GL10.GL_MODELVIEW);
     gl10.glPushMatrix(); 
@@ -483,10 +586,18 @@ if (false){
       gl10.glStencilOp(GL10.GL_REPLACE,GL10.GL_REPLACE,GL10.GL_REPLACE);
       gl10.glStencilFunc(GL10.GL_ALWAYS,1,~0);
       wave.draw(gl10);
+      {
+        gl10.glPushMatrix();
+        gl10.glStencilOp(GL10.GL_KEEP, GL10.GL_KEEP, GL10.GL_INCR);
+        gl10.glStencilFunc(GL10.GL_EQUAL, 1, ~0);
+        gl10.glRotatef(-baseAngle, 0.0f, 1.0f, 0.0f);
+        wave.drawForStencil(gl10);
+        gl10.glPopMatrix();
+      }
       gl10.glColorMask(true,true,true,true);
       gl10.glDepthMask(true);
       gl10.glStencilOp(GL10.GL_KEEP, GL10.GL_KEEP, GL10.GL_KEEP);
-      gl10.glStencilFunc(GL10.GL_EQUAL, 1, ~0);
+      gl10.glStencilFunc(GL10.GL_EQUAL, 2, ~0);
       gl10.glPushMatrix();
       gl10.glScalef(1.0f,-1.0f,1.0f);
       gl10.glTranslatef(0f,-Aquarium.max_y+Aquarium.min_y-0.5f,0f);
@@ -495,7 +606,9 @@ if (false){
       {
         setupFog2(gl10);
         for (int ii=0; ii<iwashi_count; ii++) {
-          iwashi[ii].draw(gl10);
+          if (iwashi[ii].getY() >= Aquarium.max_y / 3.0f * 2.0f) {
+            iwashi[ii].draw(gl10);
+          }
         }
         setupFog(gl10);
       }
@@ -514,6 +627,8 @@ if (false){
     gl10.glPopMatrix(); 
             
     gl10.glPopMatrix();
-    if (_debug) Log.d(TAG, "end onDrawFrame()");
+  }
+
+  public void onDestroy() {
   }
 }
