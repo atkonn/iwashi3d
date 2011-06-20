@@ -54,6 +54,8 @@ public class GLRenderer {
   private float[] mScratch32 = new float[32];
   private float[] mScratch4f = new float[4];
   public static GLRenderer glRenderer = null;
+  /* 群れの中心 */
+  float[] schoolCenter = {0f,0f,0f};
 
   private GLRenderer(Context context) {
     iwashi_count = Prefs.getInstance(context).getIwashiCount();
@@ -233,28 +235,46 @@ if (false) {
       /*=======================================================================*/
       /* 環境光の色設定                                                        */
       /*=======================================================================*/
-      float[] amb = { 0.019f, 0.9606f, 1.0f, 1.0f };
-      gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_AMBIENT, amb, 0);
+      //float[] amb = { 0.019f, 0.9606f, 1.0f, 1.0f };
+      synchronized(mScratch4f) {
+        mScratch4f[0] = 0.019f;
+        mScratch4f[1] = 0.9606f;
+        mScratch4f[2] = 1.0f;
+        mScratch4f[3] = 1.0f;
+        gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_AMBIENT, mScratch4f, 0);
       /*=======================================================================*/
       /* 拡散反射光の色設定                                                    */
       /*=======================================================================*/
-      float[] diff = { 0.019f, 0.9606f, 1.0f, 1.0f };
-      gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_DIFFUSE, diff, 0);
+        //float[] diff = { 0.019f, 0.9606f, 1.0f, 1.0f };
+        gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_DIFFUSE, mScratch4f, 0);
       /*=======================================================================*/
       /* 鏡面反射光の色設定                                                    */
       /*=======================================================================*/
-      float[] spec = { 0.019f, 0.9606f, 1.0f, 1.0f };
-      gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_SPECULAR, spec, 0);
+        //float[] spec = { 0.019f, 0.9606f, 1.0f, 1.0f };
+        gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_SPECULAR, mScratch4f, 0);
+      }
       /*=======================================================================*/
       /* そもそもの光の位置設定                                                */
       /*=======================================================================*/
-      float[] pos = { 0.0f, -10.0f, 0.0f, 1.0f };
-      gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_POSITION, pos, 0);
+      //float[] pos = { 0.0f, -10.0f, 0.0f, 1.0f };
+      synchronized (mScratch4f) {
+        mScratch4f[0] = 0.0f;
+        mScratch4f[1] = -10.0f;
+        mScratch4f[2] = 0.0f;
+        mScratch4f[3] = 1.0f;
+        gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_POSITION, mScratch4f, 0);
+      }
       /*=======================================================================*/
       /* そもそもの光の向き設定                                                */
       /*=======================================================================*/
-      float[] dir = { 0.0f, 1.0f, 0.0f };
-      gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_SPOT_DIRECTION, dir, 0);
+      //float[] dir = { 0.0f, 1.0f, 0.0f };
+      synchronized (mScratch4f) {
+        mScratch4f[0] = 0.0f;
+        mScratch4f[1] = 1.0f;
+        mScratch4f[2] = 0.0f;
+        mScratch4f[3] = 0.0f;
+        gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_SPOT_DIRECTION, mScratch4f, 0);
+      }
       gl10.glLightf(GL10.GL_LIGHT1, GL10.GL_SPOT_CUTOFF, 90);
       gl10.glLightf(GL10.GL_LIGHT1, GL10.GL_SPOT_EXPONENT, 0);
       /*=======================================================================*/
@@ -558,7 +578,7 @@ if (false){
     gl10.glDisable(GL10.GL_DEPTH_TEST);
 
     /* 群れの中心算出 */
-    float[] schoolCenter = {0f,0f,0f};
+    schoolCenter[0] = schoolCenter[1] = schoolCenter[2] = 0f;
     for (int ii=0; ii<iwashi_count; ii++) {
       schoolCenter[0] += iwashi[ii].getX();;
       schoolCenter[1] += iwashi[ii].getY();;

@@ -1750,9 +1750,9 @@ public class Iwashi implements Model {
       speed = sv_speed;
     }
     prevTime = nowTime;
-    if (  (Aquarium.min_x.compareTo(position[0]) >= 0 || Aquarium.max_x.compareTo(position[0]) <= 0)
-      ||  (Aquarium.min_y.compareTo(position[1]) >= 0 || Aquarium.max_y.compareTo(position[1]) <= 0)
-      ||  (Aquarium.min_z.compareTo(position[2]) >= 0 || Aquarium.max_z.compareTo(position[2]) <= 0)) {
+    if (  (Aquarium.min_x.floatValue() >= position[0] || Aquarium.max_x.floatValue() <= position[0])
+      ||  (Aquarium.min_y.floatValue() >= position[1] || Aquarium.max_y.floatValue() <= position[1])
+      ||  (Aquarium.min_z.floatValue() >= position[2] || Aquarium.max_z.floatValue() <= position[2])) {
       /*=====================================================================*/
       /* 水槽からはみ出てる                                                  */
       /*=====================================================================*/
@@ -1839,12 +1839,16 @@ public class Iwashi implements Model {
     }
     y_angle = (float)((int)(y_angle + newAngleY) % 360);
     coordUtil.setMatrixRotateZ(x_angle);
-    float[] retx = coordUtil.affine(-1.0f,0.0f, 0.0f);
-    coordUtil.setMatrixRotateY(y_angle);
-    float[] rety = coordUtil.affine(retx[0],retx[1], retx[2]);
-    direction[0] = rety[0];
-    direction[1] = rety[1];
-    direction[2] = rety[2];
+    synchronized (mScratch4f_1) {
+      synchronized (mScratch4f_2) {
+        coordUtil.affine(-1.0f,0.0f, 0.0f, mScratch4f_1);
+        coordUtil.setMatrixRotateY(y_angle);
+        coordUtil.affine(mScratch4f_1[0],mScratch4f_1[1], mScratch4f_1[2], mScratch4f_2);
+        direction[0] = mScratch4f_2[0];
+        direction[1] = mScratch4f_2[1];
+        direction[2] = mScratch4f_2[2];
+      }
+    }
   }
   public void aimTargetDegree(float angle_x, float angle_y) {
     float newAngle = this.rand.nextFloat() * 22.5f;
@@ -1970,12 +1974,16 @@ public class Iwashi implements Model {
 
     /* direction設定 */
     coordUtil.setMatrixRotateZ(x_angle);
-    float[] retx = coordUtil.affine(-1.0f,0.0f, 0.0f);
-    coordUtil.setMatrixRotateY(y_angle);
-    float[] rety = coordUtil.affine(retx[0],retx[1], retx[2]);
-    direction[0] = rety[0];
-    direction[1] = rety[1];
-    direction[2] = rety[2];
+    synchronized (mScratch4f_1) {
+      synchronized (mScratch4f_2) {
+        coordUtil.affine(-1.0f,0.0f, 0.0f, mScratch4f_1);
+        coordUtil.setMatrixRotateY(y_angle);
+        coordUtil.affine(mScratch4f_1[0],mScratch4f_1[1], mScratch4f_1[2], mScratch4f_2);
+        direction[0] = mScratch4f_2[0];
+        direction[1] = mScratch4f_2[1];
+        direction[2] = mScratch4f_2[2];
+      }
+    }
     if (debug) {
       Log.d(TAG, "結果的に向かう方向"
        + " x:[" + direction[0] + "]:"
@@ -2011,12 +2019,16 @@ if (false) {
 
     /* direction設定 */
     coordUtil.setMatrixRotateZ(x_angle);
-    float[] retx = coordUtil.affine(-1.0f,0.0f, 0.0f);
-    coordUtil.setMatrixRotateY(y_angle);
-    float[] rety = coordUtil.affine(retx[0],retx[1], retx[2]);
-    direction[0] = rety[0];
-    direction[1] = rety[1];
-    direction[2] = rety[2];
+    synchronized (mScratch4f_1) {
+      synchronized (mScratch4f_2) {
+        coordUtil.affine(-1.0f,0.0f, 0.0f, mScratch4f_1);
+        coordUtil.setMatrixRotateY(y_angle);
+        coordUtil.affine(mScratch4f_1[0],mScratch4f_1[1], mScratch4f_1[2], mScratch4f_2);
+        direction[0] = mScratch4f_2[0];
+        direction[1] = mScratch4f_2[1];
+        direction[2] = mScratch4f_2[2];
+      }
+    }
     if (debug) {
       Log.d(TAG, "結果的に向かう方向"
        + " x:[" + direction[0] + "]:"
@@ -2076,12 +2088,16 @@ if (false) {
 
     /* direction設定 */
     coordUtil.setMatrixRotateZ(x_angle);
-    float[] retx = coordUtil.affine(-1.0f,0.0f, 0.0f);
-    coordUtil.setMatrixRotateY(y_angle);
-    float[] rety = coordUtil.affine(retx[0],retx[1], retx[2]);
-    direction[0] = rety[0];
-    direction[1] = rety[1];
-    direction[2] = rety[2];
+    synchronized (mScratch4f_1) {
+      synchronized (mScratch4f_2) {
+        coordUtil.affine(-1.0f,0.0f, 0.0f, mScratch4f_1);
+        coordUtil.setMatrixRotateY(y_angle);
+        coordUtil.affine(mScratch4f_1[0],mScratch4f_1[1], mScratch4f_1[2], mScratch4f_2);
+        direction[0] = mScratch4f_2[0];
+        direction[1] = mScratch4f_2[1];
+        direction[2] = mScratch4f_2[2];
+      }
+    }
     if (debug) {
       Log.d(TAG, "結果的に向かう方向"
        + " x:[" + direction[0] + "]:"
@@ -2320,22 +2336,22 @@ if (true) {
     float v_x = (Aquarium.center[0] - getX());
     float v_y = (Aquarium.center[1] - getY());
     float v_z = (Aquarium.center[2] - getZ());
-    if (Aquarium.min_x.compareTo(getX()) < 0 && Aquarium.max_x.compareTo(getX()) > 0 
-    &&  Aquarium.min_y.compareTo(getY()) < 0 && Aquarium.max_y.compareTo(getY()) > 0) {
+    if (Aquarium.min_x.floatValue() < getX() && Aquarium.max_x.floatValue() > getX()
+    &&  Aquarium.min_y.floatValue() < getY() && Aquarium.max_y.floatValue() > getY()) {
       /* Zだけはみ出た */
       v_x = 0.0f;
       v_y = 0.0f;
     }
     else 
-    if (Aquarium.min_x.compareTo(getX()) < 0 && Aquarium.max_x.compareTo(getX()) > 0
-    &&  Aquarium.min_z.compareTo(getZ()) < 0 && Aquarium.max_z.compareTo(getZ()) > 0) {
+    if (Aquarium.min_x.floatValue() < getX() && Aquarium.max_x.floatValue() > getX()
+    &&  Aquarium.min_z.floatValue() < getZ() && Aquarium.max_z.floatValue() > getZ()) {
       /* Yだけはみ出た */
       v_x = 0.0f;
       v_z = 0.0f;
     }
     else 
-    if (Aquarium.min_y.compareTo(getY()) < 0 && Aquarium.max_y.compareTo(getY()) > 0 
-    &&  Aquarium.min_z.compareTo(getZ()) < 0 && Aquarium.max_z.compareTo(getZ()) > 0) {
+    if (Aquarium.min_y.floatValue() < getY() && Aquarium.max_y.floatValue() > getY()
+    &&  Aquarium.min_z.floatValue() < getZ() && Aquarium.max_z.floatValue() > getZ()) {
       /* Xだけはみ出た */
       v_y = 0.0f;
       v_z = 0.0f;
@@ -2369,12 +2385,16 @@ if (true) {
 }
 
     coordUtil.setMatrixRotateZ(x_angle);
-    float[] retx = coordUtil.affine(-1.0f,0.0f, 0.0f);
-    coordUtil.setMatrixRotateY(y_angle);
-    float[] rety = coordUtil.affine(retx[0],retx[1], retx[2]);
-    direction[0] = rety[0];
-    direction[1] = rety[1];
-    direction[2] = rety[2];
+    synchronized (mScratch4f_1) {
+      synchronized (mScratch4f_2) {
+        coordUtil.affine(-1.0f,0.0f, 0.0f, mScratch4f_1);
+        coordUtil.setMatrixRotateY(y_angle);
+        coordUtil.affine(mScratch4f_1[0],mScratch4f_1[1], mScratch4f_1[2], mScratch4f_2);
+        direction[0] = mScratch4f_2[0];
+        direction[1] = mScratch4f_2[1];
+        direction[2] = mScratch4f_2[2];
+      }
+    }
     if (debug) {
       Log.d(TAG, "end aimAquariumCenter "
         + "x:[" + direction[0] + "]:"
@@ -2427,12 +2447,16 @@ if (true) {
     }
 
     coordUtil.setMatrixRotateZ(x_angle);
-    float[] retx = coordUtil.affine(-1.0f,0.0f, 0.0f);
-    coordUtil.setMatrixRotateY(y_angle);
-    float[] rety = coordUtil.affine(retx[0],retx[1], retx[2]);
-    direction[0] = rety[0];
-    direction[1] = rety[1];
-    direction[2] = rety[2];
+    synchronized (mScratch4f_1) {
+      synchronized (mScratch4f_2) {
+        coordUtil.affine(-1.0f,0.0f, 0.0f, mScratch4f_1);
+        coordUtil.setMatrixRotateY(y_angle);
+        coordUtil.affine(mScratch4f_1[0],mScratch4f_1[1], mScratch4f_1[2], mScratch4f_2);
+        direction[0] = mScratch4f_2[0];
+        direction[1] = mScratch4f_2[1];
+        direction[2] = mScratch4f_2[2];
+      }
+    }
     if (debug) {
       Log.d(TAG, "end aimBait "
         + "x:[" + direction[0] + "]:"

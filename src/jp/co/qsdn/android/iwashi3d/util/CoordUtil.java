@@ -87,8 +87,7 @@ public class CoordUtil {
     matrix[3][3] = 1f;
   }
   
-  public float[] affine(float x, float y, float z) {
-    float[] ret = new float[3];
+  public void affine(float x, float y, float z, float[] ret) {
     ret[0] = 
           matrix[0][0] * x +
           matrix[1][0] * y +
@@ -104,7 +103,6 @@ public class CoordUtil {
           matrix[1][2] * y +
           matrix[2][2] * z +
           matrix[3][2] * 1f;
-    return ret;
   }
 
   public double convertDegreeXZ(double x,double y) {
@@ -218,75 +216,85 @@ public class CoordUtil {
     return ret;
   }
 
-  public static float[][] calcViewMatrix(float eyex, float eyey, float eyez,
+  public static void calcViewMatrix(float eyex, float eyey, float eyez,
     float tarx, float tary, float tarz,
-    float upx, float upy, float upz) {
-    float[] view = new float[3]; 
-    float[] up = new float[3]; 
-    float[] side = new float[3]; 
-    float[][] m = new float[4][4];
-
-    view[0] = tarx - eyex;
-    view[1] = tary - eyey;
-    view[2] = tarz - eyez;
-
-    up[0] = upx;
-    up[1] = upy;
-    up[2] = upz;
-
-    normalize3fv(view);
-    normalize3fv(up);
-
-    cross(view, up, side);
-    normalize3fv(side);
-    cross(side, view, up);
-
-    m[0][0] = side[0];
-    m[1][0] = side[1];
-    m[2][0] = side[2];
-    m[3][0] = 0f;
-
-    m[0][1] = up[0];
-    m[1][1] = up[1];
-    m[2][1] = up[2];
-    m[3][1] = 0f;
-
-    m[0][2] = -view[0];
-    m[1][2] = -view[1];
-    m[2][2] = -view[2];
-    m[3][2] = 0f;
-
-    m[0][3] = 0f;
-    m[1][3] = 0f;
-    m[2][3] = 0f;
-    m[3][3] = 1f;
-    return m;
+    float upx, float upy, float upz, float[][] m) {
+    synchronized (mScratch3f_1) {
+      synchronized (mScratch3f_2) {
+        synchronized (mScratch3f_3) {
+          float[] view = mScratch3f_1; 
+          float[] up = mScratch3f_2; 
+          float[] side = mScratch3f_3; 
+      
+          view[0] = tarx - eyex;
+          view[1] = tary - eyey;
+          view[2] = tarz - eyez;
+      
+          up[0] = upx;
+          up[1] = upy;
+          up[2] = upz;
+      
+          normalize3fv(view);
+          normalize3fv(up);
+      
+          cross(view, up, side);
+          normalize3fv(side);
+          cross(side, view, up);
+      
+          m[0][0] = side[0];
+          m[1][0] = side[1];
+          m[2][0] = side[2];
+          m[3][0] = 0f;
+      
+          m[0][1] = up[0];
+          m[1][1] = up[1];
+          m[2][1] = up[2];
+          m[3][1] = 0f;
+      
+          m[0][2] = -view[0];
+          m[1][2] = -view[1];
+          m[2][2] = -view[2];
+          m[3][2] = 0f;
+      
+          m[0][3] = 0f;
+          m[1][3] = 0f;
+          m[2][3] = 0f;
+          m[3][3] = 1f;
+        }
+      }
+    }
   }
 
+  public static float[][] mScratch4x4f = new float[4][4];
+  public static float[] mScratch3f_1 = new float[3];
+  public static float[] mScratch3f_2 = new float[3];
+  public static float[] mScratch3f_3 = new float[3];
   public static float[] viewMatrix = new float[16];
   public static void lookAt(GL10 gl10,
                             float eyex, float eyey, float eyez,
                             float tarx, float tary, float tarz,
                             float upx,  float upy,  float upz) {
-    float[][] m = calcViewMatrix(eyex, eyey, eyez,
-                                 tarx, tary, tarz,
-                                 upx,  upy,  upz);
-    viewMatrix[0] = m[0][0];
-    viewMatrix[1] = m[0][1];
-    viewMatrix[2] = m[0][2];
-    viewMatrix[3] = m[0][3];
-    viewMatrix[4] = m[1][0];
-    viewMatrix[5] = m[1][1];
-    viewMatrix[6] = m[1][2];
-    viewMatrix[7] = m[1][3];
-    viewMatrix[8] = m[2][0];
-    viewMatrix[9] = m[2][1];
-    viewMatrix[10] = m[2][2];
-    viewMatrix[11] = m[2][3];
-    viewMatrix[12] = m[3][0];
-    viewMatrix[13] = m[3][1];
-    viewMatrix[14] = m[3][2];
-    viewMatrix[15] = m[3][3];
+    synchronized (mScratch4x4f) {
+      calcViewMatrix(eyex, eyey, eyez,
+                     tarx, tary, tarz,
+                     upx,  upy,  upz, mScratch4x4f);
+      viewMatrix[0] = mScratch4x4f[0][0];
+      viewMatrix[1] = mScratch4x4f[0][1];
+      viewMatrix[2] = mScratch4x4f[0][2];
+      viewMatrix[3] = mScratch4x4f[0][3];
+      viewMatrix[4] = mScratch4x4f[1][0];
+      viewMatrix[5] = mScratch4x4f[1][1];
+      viewMatrix[6] = mScratch4x4f[1][2];
+      viewMatrix[7] = mScratch4x4f[1][3];
+      viewMatrix[8] = mScratch4x4f[2][0];
+      viewMatrix[9] = mScratch4x4f[2][1];
+      viewMatrix[10] = mScratch4x4f[2][2];
+      viewMatrix[11] = mScratch4x4f[2][3];
+      viewMatrix[12] = mScratch4x4f[3][0];
+      viewMatrix[13] = mScratch4x4f[3][1];
+      viewMatrix[14] = mScratch4x4f[3][2];
+      viewMatrix[15] = mScratch4x4f[3][3];
+    };
     
     /* 
     GLU.gluLookAt(gl10,

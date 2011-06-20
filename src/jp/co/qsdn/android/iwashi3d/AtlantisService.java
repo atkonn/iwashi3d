@@ -179,7 +179,6 @@ public class AtlantisService extends WallpaperService {
               exitEgl();
               if (++counter >= AtlantisService.RETRY_COUNT) {
                 Log.e(TAG, "egl10.eglCreateContextがEGL_NO_CONTEXT");
-                restartService();
                 throw new RuntimeException("OpenGL Error(EGL_NO_CONTEXT)");
               }
               Log.d(TAG, "RETRY");
@@ -418,11 +417,6 @@ public class AtlantisService extends WallpaperService {
       }
       Log.d(TAG, "end exitEgl");
     }
-  }
-  public void restartService() {
-    //Intent intent = new Intent("jp.co.qsdn.android.iwashi3d.AtlantisService", null, this, jp.co.qsdn.android.iwashi3d.AtlantisService.class);
-    //startService(intent);
-    System.exit(0);
   }
   @Override
   public Engine onCreateEngine() {

@@ -8,7 +8,7 @@ import android.util.Log;
  * 餌
  */
 public class BaitManager {
-  private static final String TAG = GLRenderer.class.getName();
+  private static final String TAG = BaitManager.class.getName();
   private int max_count = 100;
   private int nowCount = 0;
   private Stack<Bait> stack = new Stack<Bait>();
