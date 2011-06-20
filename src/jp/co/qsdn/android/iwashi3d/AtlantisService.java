@@ -25,6 +25,7 @@ import javax.microedition.khronos.opengles.GL10;
 import jp.co.qsdn.android.iwashi3d.GLRenderer;
 import jp.co.qsdn.android.iwashi3d.util.MatrixTrackingGL;
 
+import android.content.Intent;
 
 
 public class AtlantisService extends WallpaperService {
@@ -107,6 +108,7 @@ public class AtlantisService extends WallpaperService {
           int counter = 0;
           while(true) {
             Log.d(TAG, "start EGLContext.getEGL()");
+            exitEgl();
             egl10 = (EGL10) EGLContext.getEGL();
             Log.d(TAG, "end EGLContext.getEGL()");
             Log.d(TAG, "start eglGetDisplay");
@@ -177,6 +179,7 @@ public class AtlantisService extends WallpaperService {
               exitEgl();
               if (++counter >= AtlantisService.RETRY_COUNT) {
                 Log.e(TAG, "egl10.eglCreateContextがEGL_NO_CONTEXT");
+                restartService();
                 throw new RuntimeException("OpenGL Error(EGL_NO_CONTEXT)");
               }
               Log.d(TAG, "RETRY");
@@ -227,14 +230,18 @@ public class AtlantisService extends WallpaperService {
             /* Rendererの初期化                                                */
             /*-----------------------------------------------------------------*/
             glRenderer = GLRenderer.getInstance(getApplicationContext());
-            glRenderer.onSurfaceCreated(gl10, config);
+            synchronized (glRenderer) {
+              glRenderer.onSurfaceCreated(gl10, config, getApplicationContext());
+            }
             Log.d(TAG, "EGL initalize done.");
             mInitialized = true;
             if (drawCommand == null) {
               drawCommand = new Runnable() {
                 public void run() {
                   if (mInitialized && glRenderer != null && gl10 != null) {
-                    glRenderer.onDrawFrame(gl10);
+                    synchronized (glRenderer) {
+                      glRenderer.onDrawFrame(gl10);
+                    }
                     egl10.eglSwapBuffers(eglDisplay, eglSurface);
                     if (!getExecutor().isShutdown() && isVisible() && egl10.eglGetError() != EGL11.EGL_CONTEXT_LOST) {
                       getExecutor().execute(drawCommand);
@@ -255,7 +262,20 @@ public class AtlantisService extends WallpaperService {
     @Override
     public void onSurfaceDestroyed(final SurfaceHolder holder) {
       if (_debug) Log.d(TAG, "start onSurfaceDestroyed() [" + this + "]");
-      glRenderer.onSurfaceDestroyed(gl10);
+      Runnable surfaceDestroyedCommand = new Runnable() {
+        @Override
+        public void run() {
+          synchronized (glRenderer) {
+            glRenderer.onSurfaceDestroyed(gl10);
+          }
+          exitEgl();
+          gl10.shutdown();
+          gl10 = null;
+          System.gc();
+          mInitialized = false;
+        }
+      };
+      getExecutor().execute(surfaceDestroyedCommand);
       getExecutor().shutdown();
       try {
         if (!getExecutor().awaitTermination(60, TimeUnit.SECONDS)) {
@@ -270,11 +290,6 @@ public class AtlantisService extends WallpaperService {
         executor.shutdownNow();
         Thread.currentThread().interrupt();
       }
-      exitEgl();
-      gl10.shutdown();
-      gl10 = null;
-      System.gc();
-      mInitialized = false;
       drawCommand = null;
       executor = null;
       super.onSurfaceDestroyed(holder);
@@ -290,7 +305,9 @@ public class AtlantisService extends WallpaperService {
       Runnable surfaceChangedCommand = new Runnable() {
         public void run() {
           if (glRenderer != null && gl10 != null && mInitialized) {
-            glRenderer.onSurfaceChanged(gl10, width, height);
+            synchronized (glRenderer) {
+              glRenderer.onSurfaceChanged(gl10, width, height);
+            }
           }
         };
       };
@@ -306,7 +323,9 @@ public class AtlantisService extends WallpaperService {
       if (visible && drawCommand != null && mInitialized) {
         /* 設定変更のタイミング */
         if (glRenderer != null) {
-          glRenderer.updateSetting(getApplicationContext());
+          synchronized (glRenderer) {
+            glRenderer.updateSetting(getApplicationContext());
+          }
         }
         getExecutor().execute(drawCommand);
       }
@@ -326,7 +345,9 @@ public class AtlantisService extends WallpaperService {
       Runnable offsetsChangedCommand = new Runnable() {
         public void run() {
           if (mInitialized && glRenderer != null && gl10 != null) {
-            glRenderer.onOffsetsChanged(gl10, xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
+            synchronized (glRenderer) {
+              glRenderer.onOffsetsChanged(gl10, xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
+            }
           }
         };
       };
@@ -354,7 +375,9 @@ public class AtlantisService extends WallpaperService {
          Runnable onCommandCommand = new Runnable() {
            public void run() {
              if (mInitialized && glRenderer != null && gl10 != null) {
-               glRenderer.onCommand(gl10, action, x, y, z, extras, resultRequested);
+               synchronized (glRenderer) {
+                 glRenderer.onCommand(gl10, action, x, y, z, extras, resultRequested);
+               }
              }
            }
          };
@@ -368,25 +391,38 @@ public class AtlantisService extends WallpaperService {
       Log.d(TAG, "start exitEgl");
       if (egl10 != null) {
         if (eglDisplay != null && ! eglDisplay.equals(EGL10.EGL_NO_DISPLAY)) {
-          egl10.eglMakeCurrent(eglDisplay, EGL10.EGL_NO_SURFACE,
+          if (! egl10.eglMakeCurrent(eglDisplay, EGL10.EGL_NO_SURFACE,
                                            EGL10.EGL_NO_SURFACE,
-                                           EGL10.EGL_NO_CONTEXT);
+                                           EGL10.EGL_NO_CONTEXT)) {
+            Log.d(TAG, "eglMakeCurrentがfalse [" + AtlantisService.getErrorString(egl10.eglGetError()) + "]");
+          }
        
           if (eglSurface != null && ! eglSurface.equals(EGL10.EGL_NO_SURFACE)) {
-            egl10.eglDestroySurface(eglDisplay, eglSurface);
+            if (! egl10.eglDestroySurface(eglDisplay, eglSurface)) {
+              Log.d(TAG, "eglDestroySurfaceがfalse [" + AtlantisService.getErrorString(egl10.eglGetError()) + "]");
+            }
             eglSurface = null;
           }
           if (eglContext != null && ! eglContext.equals(EGL10.EGL_NO_CONTEXT)) {
-            egl10.eglDestroyContext(eglDisplay, eglContext);
+            if (! egl10.eglDestroyContext(eglDisplay, eglContext)) {
+              Log.d(TAG, "eglDestroyContextがfalse [" + AtlantisService.getErrorString(egl10.eglGetError()) + "]");
+            }
             eglContext = null;
           }
-          egl10.eglTerminate(eglDisplay);
+          if (! egl10.eglTerminate(eglDisplay)) {
+            Log.d(TAG, "eglTerminateがfalse [" + AtlantisService.getErrorString(egl10.eglGetError()) + "]");
+          }
           eglDisplay = null;
         }
         egl10 = null;
       }
       Log.d(TAG, "end exitEgl");
     }
+  }
+  public void restartService() {
+    //Intent intent = new Intent("jp.co.qsdn.android.iwashi3d.AtlantisService", null, this, jp.co.qsdn.android.iwashi3d.AtlantisService.class);
+    //startService(intent);
+    System.exit(0);
   }
   @Override
   public Engine onCreateEngine() {
@@ -400,7 +436,8 @@ public class AtlantisService extends WallpaperService {
   public void waitNano() {
     Log.d(TAG, "start waitNano");
     try { 
-      TimeUnit.NANOSECONDS.sleep(5000);
+      //TimeUnit.NANOSECONDS.sleep(5000);
+      TimeUnit.SECONDS.sleep(5);
     } catch (InterruptedException e) {
     }
     Log.d(TAG, "end waitNano");

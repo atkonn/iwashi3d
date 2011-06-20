@@ -24,6 +24,7 @@ import jp.co.qsdn.android.iwashi3d.tls.BitmapContext;
 
 public class Ground {
   private static final String TAG = Ground.class.getName();
+  private static boolean mTextureLoaded = false;
   private final FloatBuffer mVertexBuffer;
   private final FloatBuffer mTextureBuffer;  
   private Bitmap mBitmap;
@@ -73,6 +74,7 @@ public class Ground {
     gl10.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_LINEAR);
     gl10.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
     BitmapContext.instance().setBitmap(bmp);
+    mTextureLoaded = true;
   }
   public static void deleteTexture(GL10 gl10) {
     Bitmap bmp = BitmapContext.instance().getBitmap();

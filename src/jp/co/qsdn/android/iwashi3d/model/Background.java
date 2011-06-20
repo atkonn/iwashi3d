@@ -17,6 +17,7 @@ import jp.co.qsdn.android.iwashi3d.Aquarium;
 public class Background {
   private final FloatBuffer mVertexBuffer;
   private final FloatBuffer mTextureBuffer;  
+  private static boolean mTextureLoaded = false;
 
   private float[] mScratch4f = new float[4];
 
@@ -95,6 +96,7 @@ public class Background {
     gl10.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
     bmp.recycle();
     bmp = null;
+    mTextureLoaded = true;
   }
   public static void deleteTexture(GL10 gl10) {
     if (textureIds != null) {

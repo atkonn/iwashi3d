@@ -25,6 +25,7 @@ public class Wave {
   private final FloatBuffer mVertexBuffer;
   private final FloatBuffer mVertexForStencilBuffer;
   private final FloatBuffer mTextureBuffer;  
+  private static boolean mTextureLoaded = false;
 
   float oneW = Aquarium.max_x + 0.5f;
   float oneH = Aquarium.max_y + 0.3f;
@@ -80,6 +81,7 @@ public class Wave {
     gl10.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
     bmp.recycle();
     bmp = null;
+    mTextureLoaded = true;
   }
   public static void deleteTexture(GL10 gl10) {
     if (textureIds != null) {

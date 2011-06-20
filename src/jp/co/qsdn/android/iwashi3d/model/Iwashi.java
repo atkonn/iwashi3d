@@ -27,6 +27,7 @@ public class Iwashi implements Model {
   private static final boolean debug = false;
   private static final String TAG = Iwashi.class.getName();
   private static final long BASE_TICK = 17852783L;
+  private static boolean mTextureLoaded = false;
   private final FloatBuffer mVertexBuffer;
   private final FloatBuffer mTextureBuffer;  
   private final FloatBuffer mNormalBuffer;  
@@ -65,6 +66,7 @@ public class Iwashi implements Model {
 
 
   private int[] mScratch128i = new int[128];
+  private float[] mScratch4f = new float[4];
   private float[] mScratch4f_1 = new float[4];
   private float[] mScratch4f_2 = new float[4];
 
@@ -140,11 +142,15 @@ public class Iwashi implements Model {
     gl10.glTexParameterx(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
     bmp.recycle();
     bmp = null;
+    mTextureLoaded = true;
   }
   public static void deleteTexture(GL10 gl10) {
     if (textureIds != null) {
       gl10.glDeleteTextures(1, textureIds, 0);
     }
+  }
+  public static boolean isTextureLoaded() {
+    return mTextureLoaded;
   }
 
   private float getMoveWidth(float x) {
@@ -1566,33 +1572,33 @@ public class Iwashi implements Model {
       /*=======================================================================*/
       /* 環境光の材質色設定                                                    */
       /*=======================================================================*/
-      float[] mat_amb = { 
-        0.07f, 
-        0.07f, 
-        0.07f,
-        1.0f,
-       };
-      gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, mat_amb, 0);
+      synchronized (mScratch4f) {
+        mScratch4f[0] = 0.07f;
+        mScratch4f[1] = 0.07f;
+        mScratch4f[2] = 0.07f;
+        mScratch4f[3] = 1.0f;
+        gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, mScratch4f, 0);
+      }
       /*=======================================================================*/
       /* 拡散反射光の色設定                                                    */
       /*=======================================================================*/
-      float[] mat_diff = { 
-        0.24f, 
-        0.24f, 
-        0.24f, 
-        1.0f,
-       };
-      gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, mat_diff, 0);
+      synchronized (mScratch4f) {
+        mScratch4f[0] = 0.24f;
+        mScratch4f[1] = 0.24f;
+        mScratch4f[2] = 0.24f;
+        mScratch4f[3] = 1.0f;
+        gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, mScratch4f, 0);
+      }
       /*=======================================================================*/
       /* 鏡面反射光の質感色設定                                                */
       /*=======================================================================*/
-      float[] mat_spec = { 
-        1.0f, 
-        1.0f, 
-        1.0f, 
-        1.0f,
-      };
-      gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, mat_spec, 0);
+      synchronized (mScratch4f) {
+        mScratch4f[0] = 1.0f;
+        mScratch4f[1] = 1.0f;
+        mScratch4f[2] = 1.0f;
+        mScratch4f[3] = 1.0f;
+        gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_SPECULAR, mScratch4f, 0);
+      }
       gl10.glMaterialf(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, 64f);
     }
     gl10.glTranslatef(getX(),getY(),getZ());

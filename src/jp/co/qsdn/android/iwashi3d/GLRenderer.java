@@ -28,7 +28,8 @@ import jp.co.qsdn.android.iwashi3d.model.Wave;
 import jp.co.qsdn.android.iwashi3d.setting.Prefs;
 import jp.co.qsdn.android.iwashi3d.util.CoordUtil;
 
-public class GLRenderer implements GLSurfaceView.Renderer {
+//public class GLRenderer implements GLSurfaceView.Renderer {
+public class GLRenderer {
   private static final boolean _debug = true;
   private static final String TAG = GLRenderer.class.getName();
   private static final int MAX_IWASHI_COUNT = 50;
@@ -39,7 +40,6 @@ public class GLRenderer implements GLSurfaceView.Renderer {
   private int iwashi_count = 1;
   private boolean enableIwashiBoids = true;
   private float iwashi_speed = 0.03f;
-  private Context context;
   /* カメラの位置 */
   private float[] camera = {0f,0f,0f};
   private float[] org_camera = {0f,0f,0f};
@@ -56,7 +56,6 @@ public class GLRenderer implements GLSurfaceView.Renderer {
   public static GLRenderer glRenderer = null;
 
   private GLRenderer(Context context) {
-    this.context = context;
     iwashi_count = Prefs.getInstance(context).getIwashiCount();
     iwashi_speed = ((float)Prefs.getInstance(context).getIwashiSpeed() / 50f) * 0.04f;
     enableIwashiBoids = Prefs.getInstance(context).getIwashiBoids();
@@ -95,7 +94,7 @@ if (false) {
     return glRenderer;
   }
 
-  public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
+  public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig, Context context) {
     if (_debug) Log.d(TAG, "start onSurfaceCreated()");
     gl10.glEnable(GL10.GL_DEPTH_TEST);
     gl10.glDepthFunc(GL10.GL_LEQUAL);
