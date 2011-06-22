@@ -40,13 +40,13 @@ public class IwashiSpeedDialog
     View view = super.onCreateDialogView();
     if (view != null) {
       seekBar = (SeekBar)view.findViewById(R.id.seek);
-      seekBar.setProgress(Prefs.getInstance(getContext()).getIwashiSpeed());
+      seekBar.setProgress(Prefs.getInstance(getContext()).getIwashiSpeed() - MIN);
       final TextView nowSpeedView = (TextView)view.findViewById(R.id.dialog_now_speed);
 
       Resources res = view.getResources();
       final String label = res.getString(R.string.dialog_iwashi_speed_label);
 
-      nowSpeedView.setText(label + seekBar.getProgress());
+      nowSpeedView.setText(label + (seekBar.getProgress() + MIN));
       seekBar.setOnSeekBarChangeListener(
         new OnSeekBarChangeListener() {
           // トラッキング開始時に呼び出されます

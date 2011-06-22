@@ -39,13 +39,13 @@ public class IwashiCountDialog
     View view = super.onCreateDialogView();
     if (view != null) {
       seekBar = (SeekBar)view.findViewById(R.id.seek);
-      seekBar.setProgress(Prefs.getInstance(getContext()).getIwashiCount());
+      seekBar.setProgress(Prefs.getInstance(getContext()).getIwashiCount() - MIN);
       final TextView nowCountView = (TextView)view.findViewById(R.id.dialog_now_count);
 
       Resources res = view.getResources();
       final String label = res.getString(R.string.dialog_iwashi_count_label);
 
-      nowCountView.setText(label + seekBar.getProgress());
+      nowCountView.setText(label + (seekBar.getProgress() + MIN));
       seekBar.setOnSeekBarChangeListener(
         new OnSeekBarChangeListener() {
           // トラッキング開始時に呼び出されます

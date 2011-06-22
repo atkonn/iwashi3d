@@ -30,7 +30,7 @@ import android.content.Intent;
 
 public class AtlantisService extends WallpaperService {
   private static final String TAG = AtlantisService.class.getName();
-  private static final boolean _debug = true;
+  private static final boolean _debug = false;
   private static final int RETRY_COUNT = 3;
 
   private class AtlantisEngine extends Engine {

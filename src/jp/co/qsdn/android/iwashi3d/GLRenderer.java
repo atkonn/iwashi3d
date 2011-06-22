@@ -30,7 +30,7 @@ import jp.co.qsdn.android.iwashi3d.util.CoordUtil;
 
 //public class GLRenderer implements GLSurfaceView.Renderer {
 public class GLRenderer {
-  private static final boolean _debug = true;
+  private static final boolean _debug = false;
   private static final String TAG = GLRenderer.class.getName();
   private static final int MAX_IWASHI_COUNT = 50;
   private final Background background = new Background();
