@@ -25,6 +25,7 @@ public class IwashiSpeedDialog
   private static final boolean _debug = false;
   private static final String TAG = IwashiSpeedDialog.class.getName();
   private static SeekBar seekBar = null;
+  private static final int MIN = 20;
 
   public IwashiSpeedDialog(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -51,17 +52,17 @@ public class IwashiSpeedDialog
           // トラッキング開始時に呼び出されます
           @Override
           public void onStartTrackingTouch(SeekBar seekBar) {
-            nowSpeedView.setText(label + seekBar.getProgress());
+            nowSpeedView.setText(label + (seekBar.getProgress() + MIN));
           }
           // トラッキング中に呼び出されます
           @Override
           public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
-            nowSpeedView.setText(label + seekBar.getProgress());
+            nowSpeedView.setText(label + (seekBar.getProgress() + MIN));
           }
           // トラッキング終了時に呼び出されます
           @Override
           public void onStopTrackingTouch(SeekBar seekBar) {
-            nowSpeedView.setText(label + seekBar.getProgress());
+            nowSpeedView.setText(label + (seekBar.getProgress() + MIN));
           }
       });
     }
@@ -73,8 +74,8 @@ public class IwashiSpeedDialog
     if (_debug) Log.d(TAG, "start onDialogClosed(" + positiveResult + ")");
     if (positiveResult) {
       if (seekBar != null) {
-        if (_debug) Log.d(TAG, "スピード:[" + seekBar.getProgress() + "]");
-        Prefs.getInstance(getContext()).setIwashiSpeed(seekBar.getProgress());
+        if (_debug) Log.d(TAG, "スピード:[" + (seekBar.getProgress() + MIN) + "]");
+        Prefs.getInstance(getContext()).setIwashiSpeed((seekBar.getProgress() + MIN));
         seekBar = null;
       }
     }

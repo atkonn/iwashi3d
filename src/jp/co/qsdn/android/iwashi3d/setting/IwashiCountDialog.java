@@ -24,6 +24,7 @@ public class IwashiCountDialog
   private static final boolean _debug = false;
   private static final String TAG = IwashiCountDialog.class.getName();
   private static SeekBar seekBar = null;
+  private static final int MIN = 10;
 
   public IwashiCountDialog(Context context, AttributeSet attrs) {
     super(context, attrs);
@@ -50,17 +51,17 @@ public class IwashiCountDialog
           // トラッキング開始時に呼び出されます
           @Override
           public void onStartTrackingTouch(SeekBar seekBar) {
-            nowCountView.setText(label + seekBar.getProgress());
+            nowCountView.setText(label + (seekBar.getProgress() + MIN));
           }
           // トラッキング中に呼び出されます
           @Override
           public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
-            nowCountView.setText(label + seekBar.getProgress());
+            nowCountView.setText(label + (seekBar.getProgress() + MIN));
           }
           // トラッキング終了時に呼び出されます
           @Override
           public void onStopTrackingTouch(SeekBar seekBar) {
-            nowCountView.setText(label + seekBar.getProgress());
+            nowCountView.setText(label + (seekBar.getProgress() + MIN));
           }
       });
     }
@@ -72,8 +73,8 @@ public class IwashiCountDialog
     if (_debug) Log.d(TAG, "start onDialogClosed(" + positiveResult + ")");
     if (positiveResult) {
       if (seekBar != null) {
-        if (_debug) Log.d(TAG, "鰯数:[" + seekBar.getProgress() + "]");
-        Prefs.getInstance(getContext()).setIwashiCount(seekBar.getProgress());
+        if (_debug) Log.d(TAG, "鰯数:[" + (seekBar.getProgress() + MIN) + "]");
+        Prefs.getInstance(getContext()).setIwashiCount((seekBar.getProgress() + MIN));
         seekBar = null;
       }
     }

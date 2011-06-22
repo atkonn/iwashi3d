@@ -577,19 +577,8 @@ if (false){
     gl10.glDisable(GL10.GL_STENCIL_TEST);
     gl10.glDisable(GL10.GL_DEPTH_TEST);
 
-    /* 群れの中心算出 */
-    schoolCenter[0] = schoolCenter[1] = schoolCenter[2] = 0f;
-    for (int ii=0; ii<iwashi_count; ii++) {
-      schoolCenter[0] += iwashi[ii].getX();;
-      schoolCenter[1] += iwashi[ii].getY();;
-      schoolCenter[2] += iwashi[ii].getZ();;
-    }
-    schoolCenter[0] /= iwashi_count;
-    schoolCenter[1] /= iwashi_count;
-    schoolCenter[2] /= iwashi_count;
     synchronized (this) {
       for (int ii=0; ii<iwashi_count; ii++) {
-        iwashi[ii].setSchoolCenter(schoolCenter);
         iwashi[ii].calc();
       }
     }

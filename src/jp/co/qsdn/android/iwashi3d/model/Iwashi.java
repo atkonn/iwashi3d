@@ -40,7 +40,6 @@ public class Iwashi implements Model {
   private BaitManager baitManager;
   private boolean enableBoids = true;
   public float[] distances = new float[100];
-  private float targetDistance = 0f;
   private Random rand = null;
   private float size = 10f * scale * 0.7f;
   /*
@@ -49,8 +48,10 @@ public class Iwashi implements Model {
   private Iwashi[] species;
   private double separate_dist  = 5.0d * scale * 0.5d;
   private double alignment_dist = 25.0d * scale * 0.5d;
-  private double cohesion_dist  = 70.0d * scale * 0.5d;
+  private double school_dist    = 50.0d * scale * 0.5d;
+  private double cohesion_dist  = 100.0d * scale * 0.5d;
   private float[] schoolCenter = {0f,0f,0f};
+  private int schoolCount = 0;
 
   private enum STATUS {
     TO_CENTER, /* 画面の真ん中へ向かい中 */
@@ -58,6 +59,7 @@ public class Iwashi implements Model {
     SEPARATE,  /* 近づき過ぎたので離れる */
     ALIGNMENT, /* 整列中 */
     COHESION,  /* 近づく */
+    TO_SCHOOL_CENTER,   /* 群れの真ん中へ */
     NORMAL,    /* ランダム */
   };
 
@@ -69,6 +71,7 @@ public class Iwashi implements Model {
   private float[] mScratch4f = new float[4];
   private float[] mScratch4f_1 = new float[4];
   private float[] mScratch4f_2 = new float[4];
+  private Iwashi[] mScratch3Iwashi = new Iwashi[3];
 
 
   /*=========================================================================*/
@@ -99,6 +102,7 @@ public class Iwashi implements Model {
   private float speed = 0.020f * 0.5f;
   private float speed_unit = speed / 5f * 0.5f;
   private float speed_max = 0.050f * 0.5f;
+  private float speed_min = speed_unit;
   private float cohesion_speed = speed * 2f * 0.5f;
   private float sv_speed = speed;
 
@@ -1621,53 +1625,101 @@ public class Iwashi implements Model {
     gl10.glPopMatrix();
   }
 
-  public boolean doSeparation(Iwashi target, float targetDistance) {
-    if (targetDistance <= separate_dist) {
-      /*===================================================================*/
-      /* セパレーション領域にターゲットがいる場合                          */
-      /*===================================================================*/
-      setStatus(STATUS.SEPARATE);
-      turnSeparation(target);
-      return true;
+  public boolean doSeparation(Iwashi target) {
+    /*===================================================================*/
+    /* セパレーション領域にターゲットがいる場合                          */
+    /*===================================================================*/
+    if (debug) {
+      if (iwashiNo == 0) {
+        Log.d(TAG, "doSeparation");
+      }
     }
-    return false;
+    setStatus(STATUS.SEPARATE);
+    turnSeparation(target);
+    return true;
   }
-  public boolean doAlignment(Iwashi target, float targetDistance) {
-    if (this.rand.nextInt(100) <= 18) {
+  public boolean doAlignment(Iwashi target) {
+    int per = 3000;
+    if (this.schoolCount < 3) {
+      /* 3匹以上群れてなければ高確率でCohesion/Schoolへ */
+      per = 9000; 
+    }
+    per = adjustTick(per);
+    if (this.rand.nextInt(10000) <= per) {
       return false;
     }
-    if (targetDistance <= alignment_dist) {
-      /*===================================================================*/
-      /* アラインメント領域にターゲットがいる場合                          */
-      /*===================================================================*/
-      setStatus(STATUS.ALIGNMENT);
-      turnAlignment(target);
-      return true;
+    /*===================================================================*/
+    /* アラインメント領域にターゲットがいる場合                          */
+    /*===================================================================*/
+    if (debug) {
+      if (iwashiNo == 0) {
+        Log.d(TAG, "doAlignment");
+      }
     }
-    return false;
+    setStatus(STATUS.ALIGNMENT);
+    turnAlignment(target);
+    return true;
   }
-  public boolean doCohesion(Iwashi target, float targetDistance) {
+  public int adjustTick(int val) {
+    if (debug) {
+      if (iwashiNo == 0) {
+        Log.d(TAG, "prev " + val);
+      }
+    }
+    int ret = (int)((float)val * ((float)tick / (float)BASE_TICK));
+    if (tick / BASE_TICK >= 2) {
+      ret = (int)((float)val * 1.2f);
+    }
+    if (ret >= 10000) {
+      ret = 9900;
+    }
+    if (debug) {
+      if (iwashiNo == 0) {
+        Log.d(TAG, "aflter " + ret);
+      }
+    }
+    return ret;
+  }
+  public boolean doCohesion(Iwashi target) {
     /* 鰯は結構な確率でCohesionするものと思われる */
     if (getStatus() == STATUS.COHESION) {
-      if (this.rand.nextInt(100) <= 5) {
+      if (this.rand.nextInt(10000) <= adjustTick(500)) {
         /* 前回COHESIONである場合今回もCOHESIONである可能性は高い */
         return false;
       }
     }
     else {
-      if (this.rand.nextInt(100) <= 10) {
+      if (this.rand.nextInt(10000) <= adjustTick(1000)) {
         return false;
       }
     }
-    if (targetDistance <= cohesion_dist) {
-      /*===================================================================*/
-      /* コアージョン領域にターゲットがいる場合                            */
-      /*===================================================================*/
-      setStatus(STATUS.COHESION);
-      turnCohesion(target);
-      return true;
+    /*===================================================================*/
+    /* コアージョン領域にターゲットがいる場合                            */
+    /*===================================================================*/
+    if (debug) {
+      if (iwashiNo == 0) {
+        Log.d(TAG, "doCohesion ("+schoolCount+")");
+      }
     }
-    return false;
+    setStatus(STATUS.COHESION);
+    turnCohesion(target);
+    return true;
+  }
+  public boolean doSchoolCenter() {
+    if (this.rand.nextInt(10000) <= adjustTick(3000)) {
+      return false;
+    }
+    if (schoolCount < 3) {
+      return false;
+    }
+    if (debug) {
+      if (iwashiNo == 0) {
+        Log.d(TAG, "doSchoolCenter");
+      }
+    }
+    setStatus(STATUS.TO_SCHOOL_CENTER);
+    aimSchoolCenter();
+    return true;
   }
   public void update_speed() {
     sv_speed = speed;
@@ -1677,13 +1729,13 @@ public class Iwashi implements Model {
     }
     speed = sv_speed;
 
-    if (this.rand.nextInt(100) <= 50) {
+    if (this.rand.nextInt(10000) <= adjustTick(1000)) {
       // 変更なし
       return;
     }
     speed += (this.rand.nextFloat() * (speed_unit * 2f) / 2f);
-    if (speed <= 0.0f) {
-      speed = speed_unit;
+    if (speed <= speed_min) {
+      speed = speed_min;
     }
     if (speed > speed_max) {
       speed = speed_max;
@@ -1693,9 +1745,18 @@ public class Iwashi implements Model {
   /** 
    * もっとも近い鰯を返す
    */
-  public Iwashi getTarget() {
-    this.targetDistance = 10000f;
-    int target = 9999;
+  public Iwashi[] getTarget() {
+    float targetDistanceS = 10000f;
+    float targetDistanceA = 10000f;
+    float targetDistanceC = 10000f;
+    int targetS = 9999;
+    int targetA = 9999;
+    int targetC = 9999;
+    /* alignment数をカウント */
+    this.schoolCount = 0;
+    this.schoolCenter[0] = 0f;
+    this.schoolCenter[1] = 0f;
+    this.schoolCenter[2] = 0f;
     for (int ii=0; ii<species.length; ii++) {
       float dist = 0f;
       if (ii < iwashiNo) {
@@ -1711,31 +1772,91 @@ public class Iwashi implements Model {
           + Math.pow(getZ()-species[ii].getZ(), 2));
       }
       this.distances[ii] = dist;
-      if (targetDistance > dist) {
-        synchronized (mScratch4f_1) {
-          synchronized (mScratch4f_2) {
-            mScratch4f_1[0] = getDirectionX();
-            mScratch4f_1[1] = getDirectionY();
-            mScratch4f_1[2] = getDirectionZ();
-            mScratch4f_2[0] = species[ii].getX() - getX();
-            mScratch4f_2[1] = species[ii].getY() - getY();
-            mScratch4f_2[2] = species[ii].getZ() - getZ();
-            float degree = CoordUtil.includedAngle(mScratch4f_1, mScratch4f_2, 3);
-            if ((degree <= 90f && degree >= 0f)
-            ||  (degree >= -90f && degree <= 0f)) {
-              /* おおむね前方だったら */
-              targetDistance = dist;
-              target = ii;
+      if (dist < separate_dist) {
+        if (targetDistanceS > dist) {
+          targetDistanceS = dist;
+          targetS = ii;
+        }
+        continue;
+      }
+      if (dist < alignment_dist) {
+        {
+          /* alignmentの位置にいれば、それだけでカウント */
+          this.schoolCount++;
+          schoolCenter[0] += species[ii].getX();;
+          schoolCenter[1] += species[ii].getY();;
+          schoolCenter[2] += species[ii].getZ();;
+        }
+        if (targetDistanceA > dist) {
+          synchronized (mScratch4f_1) {
+            synchronized (mScratch4f_2) {
+              mScratch4f_1[0] = getDirectionX();
+              mScratch4f_1[1] = getDirectionY();
+              mScratch4f_1[2] = getDirectionZ();
+              mScratch4f_2[0] = species[ii].getX() - getX();
+              mScratch4f_2[1] = species[ii].getY() - getY();
+              mScratch4f_2[2] = species[ii].getZ() - getZ();
+              float degree = CoordUtil.includedAngle(mScratch4f_1, mScratch4f_2, 3);
+              if (degree <= 150f && degree >= 0f) {
+                targetDistanceA = dist;
+                targetA = ii;
+              }
+            }
+          }
+        }
+        continue;
+      }
+      if (dist < cohesion_dist) {
+        if (dist < school_dist) {
+          this.schoolCount++;
+          schoolCenter[0] += species[ii].getX();;
+          schoolCenter[1] += species[ii].getY();;
+          schoolCenter[2] += species[ii].getZ();;
+        }
+        if (targetDistanceC > dist) {
+          synchronized (mScratch4f_1) {
+            synchronized (mScratch4f_2) {
+              mScratch4f_1[0] = getDirectionX();
+              mScratch4f_1[1] = getDirectionY();
+              mScratch4f_1[2] = getDirectionZ();
+              mScratch4f_2[0] = species[ii].getX() - getX();
+              mScratch4f_2[1] = species[ii].getY() - getY();
+              mScratch4f_2[2] = species[ii].getZ() - getZ();
+              float degree = CoordUtil.includedAngle(mScratch4f_1, mScratch4f_2, 3);
+              if (degree <= 90f && degree >= 0f) {
+                /* おおむね前方だったら */
+                targetDistanceC = dist;
+                targetC = ii;
+              }
             }
           }
         }
       }
     }
-    if (target == 9999) {
-      /* 見つからなかった */
-      return null;
+    if (schoolCount != 0) {
+      schoolCenter[0] = schoolCenter[0] / (float)schoolCount;
+      schoolCenter[1] = schoolCenter[1] / (float)schoolCount;
+      schoolCenter[2] = schoolCenter[2] / (float)schoolCount;
     }
-    return species[target];
+    if (targetS != 9999) {
+      mScratch3Iwashi[0] = species[targetS];
+    }
+    else {
+      mScratch3Iwashi[0] = null;
+    }
+    if (targetA != 9999) {
+      mScratch3Iwashi[1] = species[targetA];
+    }
+    else {
+      mScratch3Iwashi[1] = null;
+    }
+    if (targetC != 9999) {
+      mScratch3Iwashi[2] = species[targetC];
+    }
+    else {
+      mScratch3Iwashi[2] = null;
+    }
+    return mScratch3Iwashi;
   }
   /**
    * どの方向に進むか考える
@@ -1756,6 +1877,11 @@ public class Iwashi implements Model {
       /*=====================================================================*/
       /* 水槽からはみ出てる                                                  */
       /*=====================================================================*/
+      if (debug) {
+        if (iwashiNo == 0) {
+          Log.d(TAG, "doAquariumCenter");
+        }
+      }
       setStatus(STATUS.TO_CENTER);
       aimAquariumCenter();
       update_speed();
@@ -1766,8 +1892,13 @@ public class Iwashi implements Model {
      */
     Bait bait = baitManager.getBait();
     if (bait != null) {
-      if (this.rand.nextInt(100) <= 55) {
+      if (this.rand.nextInt(10000) <= adjustTick(5500)) {
         if (aimBait(bait)) {
+          if (debug) {
+            if (iwashiNo == 0) {
+              Log.d(TAG, "doBait");
+            }
+          }
           setStatus(STATUS.TO_BAIT);
           update_speed();
           return;
@@ -1786,26 +1917,54 @@ public class Iwashi implements Model {
        *  　　→仲間の中心方向に飛ぶ
        */
       // separation
-      Iwashi target = getTarget();
-      if (target != null) {
-        if (doSeparation(target, targetDistance)) {
+      Iwashi[] target = getTarget();
+      if (target[0] != null) {
+        if (doSeparation(target[0])) {
           update_speed();
+          target[0] = null;
+          target[1] = null;
+          target[2] = null;
           return;
         }
+      }
+      if (target[1] != null) {
         // alignment
-        if (doAlignment(target, targetDistance)) {
+        if (doAlignment(target[1])) {
+          target[0] = null;
+          target[1] = null;
+          target[2] = null;
           return;
         }
-        if (doCohesion(target, targetDistance)) {
+      }
+      if (schoolCount >= 3) {
+        if (doSchoolCenter()) {
           update_speed();
           return;
         }
       }
+      if (target[2] != null) {
+        // cohesion
+        if (doCohesion(target[2])) {
+          update_speed();
+          target[0] = null;
+          target[1] = null;
+          target[2] = null;
+          return;
+        }
+      }
+      target[0] = null;
+      target[1] = null;
+      target[2] = null;
     }
 
-    if (this.rand.nextInt(100) <= 95) {
+    if (this.rand.nextInt(10000) <= adjustTick(9500)) {
       // 変更なし
       return;
+    }
+    if (debug) {
+      if (iwashiNo == 0) {
+        Log.d(TAG, "doNormal");
+      }
     }
     setStatus(STATUS.NORMAL);
     turn();
@@ -1908,9 +2067,14 @@ public class Iwashi implements Model {
   public void aimTargetSpeed(float t_speed) {
     if (t_speed <= speed) {
       /* 自分のスピードよりも相手の方が遅い場合 */
-      speed -= (this.rand.nextFloat() * speed_unit);
-      if (speed <= 0.0f) {
-        speed = speed_unit;
+      if (false) {
+        speed -= (this.rand.nextFloat() * speed_unit);
+        if (speed <= speed_min) {
+          speed = speed_unit;
+        }
+      }
+      else {
+       update_speed();
       }
     }
     else {
@@ -2003,12 +2167,6 @@ public class Iwashi implements Model {
       Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
       Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
     }
-
-    /* 誤差生成 */
-if (false) {
-    angle_x = angle_x + ((rand.nextFloat() * 2.0f) - 1.0f);
-    angle_y = angle_y + ((rand.nextFloat() * 2.0f) - 1.0f);
-}
 
     /* その角度へ近づける */
     aimTargetDegree(angle_x, angle_y);
@@ -2114,225 +2272,6 @@ if (false) {
     if (debug) {
       Log.d(TAG, "start aimAquariumCenter ");
     }
-//if (false) {
-//    float v_x = (Aquarium.center[0] - getX());
-//    float v_y = (Aquarium.center[1] - getY());
-//    float v_z = (Aquarium.center[2] - getZ());
-//}
-//if (false) {
-////  if (iwashiNo == 0) {
-////      Log.d(TAG, "向かいたい方向"
-////       + " x:[" + v_x + "]:"
-////       + " y:[" + v_y + "]:"
-////       + " z:[" + v_z + "]:");
-////  }
-//}
-//if (false) {
-////    if (debug) {
-////      Log.d(TAG, "向かいたい方向"
-////       + " x:[" + v_x + "]:"
-////       + " y:[" + v_y + "]:"
-////       + " z:[" + v_z + "]:");
-////    }
-//
-//    /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-//    float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
-//    /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-//    float angle_y = (float)coordUtil.convertDegreeXZ((double)v_x * -1d, (double)v_z);
-//    if (angle_x > 180f) {
-//      angle_x = angle_x - 360f;
-//    }
-//    if ((angle_x < 0.0f && v_y > 0.0f) || (angle_x > 0.0f && v_y < 0.0f)) {
-//      angle_x *= -1f;
-//    }
-//    if (debug) {
-//      Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
-//      Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
-//    }
-//
-//    /* その角度へ近づける */
-//    aimTargetDegree(angle_x, angle_y);
-//    if (debug) {
-//      Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
-//      Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
-//    }
-//}
-//else {
-//if (false) {
-//    if (false) {
-//      Log.d(TAG, iwashiNo + " now pos:"
-//        + "x:[" + getX() + "]:"
-//        + "y:[" + getY() + "]:"
-//        + "z:[" + getZ() + "]:");
-//    }
-//    if (Aquarium.min_x.compareTo(getX()) < 0 && Aquarium.max_x.compareTo(getX()) > 0 
-//    &&  Aquarium.min_y.compareTo(getY()) < 0 && Aquarium.max_y.compareTo(getY()) > 0) {
-//      /* Zだけはみ出た */
-//      v_x = direction[0];
-//      v_y = direction[1];
-//      if (true) {
-//        if (iwashiNo == 0) {
-//          Log.d(TAG, iwashiNo + " Zだけはみ出た");
-//        }
-//      }
-//    }
-//    else 
-//    if (Aquarium.min_x.compareTo(getX()) < 0 && Aquarium.max_x.compareTo(getX()) > 0
-//    &&  Aquarium.min_z.compareTo(getZ()) < 0 && Aquarium.max_z.compareTo(getZ()) > 0) {
-//      /* Yだけはみ出た */
-//      v_x = direction[0];
-//      v_z = direction[2];
-//      if (true) {
-//        if (iwashiNo == 0) {
-//          Log.d(TAG, iwashiNo + " Yだけはみ出た");
-//        }
-//      }
-//    }
-//    else 
-//    if (Aquarium.min_y.compareTo(getY()) < 0 && Aquarium.max_y.compareTo(getY()) > 0 
-//    &&  Aquarium.min_z.compareTo(getZ()) < 0 && Aquarium.max_z.compareTo(getZ()) > 0) {
-//      /* Xだけはみ出た */
-//      v_y = direction[1];
-//      v_z = direction[2];
-//      if (true) {
-//        if (iwashiNo == 0) {
-//          Log.d(TAG, iwashiNo + " Xだけはみ出た");
-//        }
-//      }
-//    }
-//    if (false) {
-//    Log.d(TAG, iwashiNo + "ベクトル1: "
-//      + "v_x[" + v_x + "]:"
-//      + "v_y[" + v_y + "]:"
-//      + "v_z[" + v_z + "]:");
-//    Log.d(TAG, iwashiNo + "ベクトル2: "
-//      + "d_x[" + direction[0] + "]:"
-//      + "d_y[" + direction[1] + "]:"
-//      + "d_z[" + direction[2] + "]:");
-//    }
-//    /* 2ベクトルから差角度を求める */
-//    /* まず、x/yの2次元の角度(上下) */   
-//    float want_x = 0.0f;
-//    {
-//      float[] v1 = {direction[2], direction[1]};
-//      float[] v2 = {v_z, v_y};
-//      if ((v1[0] == 0.0f && v1[1] == 0.0f)
-//      ||  (v2[0] == 0.0f && v2[1] == 0.0f)) {
-//        want_x = 0.0f;
-//      }
-//      else {
-//        want_x = CoordUtil.includedAngle(v1, v2, 2);
-//      }
-//      if (Float.isNaN(want_x)) {
-//        want_x = 0.0f;
-//      }
-//      if (false) {
-//      Log.d(TAG, iwashiNo
-//        + " want_x:[" + want_x + "]");
-//      }
-//      want_x *= -1;
-//      if (want_x < 0.0f && v_y > 0.0f) {
-//        want_x *= -1;
-//      }
-//      if (false) {
-//      Log.d(TAG, iwashiNo
-//        + " want_x:[" + want_x + "]");
-//      }
-//    }
-//    if (false) Log.d(TAG, iwashiNo + " x 2ベクトルの差角度1(" + want_x + ")");
-//    if (want_x > 180.0f) {
-//      want_x = 360f - want_x;
-//    }
-//    else if (want_x < -180.0f) {
-//      want_x = -360f - want_x;
-//    }
-//    if (want_x > 22.5f) {
-//      want_x = this.rand.nextFloat() * 22.5f;
-//    }
-//    else if (want_x < -22.5f) {
-//      want_x = this.rand.nextFloat() * -22.5f;
-//    }
-//    if (false) Log.d(TAG, iwashiNo + " x 再計算2ベクトルの差角度1(" + want_x + ")");
-//    /* まず、x/zの2次元の角度(左右) */   
-//    float want_y = 0.0f;
-//    {
-//      float[] v1 = {-1.0f, 0.0f};
-//      float[] v2 = {v_x, v_z};
-//      if ((v1[0] == 0.0f && v1[1] == 0.0f)
-//      ||  (v2[0] == 0.0f && v2[1] == 0.0f)) {
-//        want_y = 0.0f;
-//      }
-//      else {
-//        /* 新しい方向への-1.0f,0.0fからの角度 */
-//        want_y = CoordUtil.includedAngle(v1, v2, 2);
-///*DEBUG*/ if (true) { if (iwashiNo == 0) { Log.d(TAG, iwashiNo + " 向かいたい角度:[" + want_y + "]");}};
-//      }
-//      want_y = want_y - y_angle;
-//  
-///*DEBUG*/ if (true) { if (iwashiNo == 0) { Log.d(TAG, iwashiNo + " v2(" + v_x+"," + v_z+ ")");}} /*DEBUG*/
-///*DEBUG*/ if (true) { if (iwashiNo == 0) { Log.d(TAG, iwashiNo + " includedAngle算出結果: want_y:[" + want_y + "]"); } } /*DEBUG*/
-//      if (Float.isNaN(want_y)) {
-//        want_y = 0.0f;
-//      }
-//    }
-//    if (false) Log.d(TAG, iwashiNo + " y 2ベクトルの差角度2(" + want_y + ")");
-///*DEBUG*/ if (true) { if (iwashiNo == 0) { Log.d(TAG, iwashiNo + " 1 want_y:[" + want_y + "]"); } } /*DEBUG*/
-//    if (want_y > 180.0f) {
-//      want_y = -360f + want_y;
-//    }
-//    else if (want_y < -180.0f) {
-//      want_y = 360f - want_y;
-//    }
-///*DEBUG*/ if (true) { if (iwashiNo == 0) { Log.d(TAG, iwashiNo + " 2 want_y:[" + want_y + "]"); } } /*DEBUG*/
-//    if (false) Log.d(TAG, iwashiNo + " y 再計算2ベクトルの差角度2(" + want_y + ")");
-//    if (want_y > 22.5f) {
-//      want_y = this.rand.nextFloat() * 22.5f;
-//    }
-//    else if (want_y < -22.5f) {
-//      want_y = this.rand.nextFloat() * -22.5f;
-//    }
-///*DEBUG*/ if (true) { if (iwashiNo == 0) { Log.d(TAG, iwashiNo + " 3  want_y:[" + want_y + "]"); } } /*DEBUG*/
-//
-//    x_angle = x_angle + want_x;
-//    y_angle = y_angle + want_y;
-//    y_angle = y_angle % 360f;
-//    if (x_angle > 45.0f) {
-//      if (x_angle > 180.0f) {
-//        x_angle -= 180.0f;
-//        x_angle *= -1f;
-//        if (x_angle < -45.0f) {
-//          x_angle = -45.0f;
-//        }
-//      }
-//      else {
-//        x_angle = 45.0f;
-//      }
-//    }
-//    else if (x_angle < -45.0f) {
-//      if (x_angle < -180.0f) {
-//        x_angle += 180.0f;
-//        x_angle *= -1f;
-//        if (x_angle > 45.0f) {
-//          x_angle = 45.0f;
-//        }
-//      }
-//      else {
-//        x_angle = -45.0f;
-//      }
-//    }
-//    if (y_angle < 0f) {
-//      y_angle = 360f + y_angle;
-//    }
-//if (true) {
-//    if (iwashiNo == 0) {
-//    Log.d(TAG, iwashiNo 
-//      + " 結果:x_angle:[" + x_angle + "]:"
-//      + " 結果:y_angle:[" + y_angle + "]:");
-//    }
-//}
-//}
-//}
-if (true) {
     float v_x = (Aquarium.center[0] - getX());
     float v_y = (Aquarium.center[1] - getY());
     float v_z = (Aquarium.center[2] - getZ());
@@ -2382,7 +2321,6 @@ if (true) {
       Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
       Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
     }
-}
 
     coordUtil.setMatrixRotateZ(x_angle);
     synchronized (mScratch4f_1) {
@@ -2397,6 +2335,59 @@ if (true) {
     }
     if (debug) {
       Log.d(TAG, "end aimAquariumCenter "
+        + "x:[" + direction[0] + "]:"
+        + "y:[" + direction[1] + "]:"
+        + "z:[" + direction[2] + "]:");
+    }
+  }
+  public void aimSchoolCenter() {
+    if (debug) {
+      Log.d(TAG, "start aimSchoolCenter ");
+    }
+    float v_x = (schoolCenter[0] - getX());
+    float v_y = (schoolCenter[1] - getY());
+    float v_z = (schoolCenter[2] - getZ());
+
+    /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
+    float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
+    /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
+    float angle_y = (float)coordUtil.convertDegreeXZ((double)v_x * -1d, (double)v_z);
+    if (angle_x > 180f) {
+      angle_x = angle_x - 360f;
+    }
+    if ((angle_x < 0.0f && v_y > 0.0f) || (angle_x > 0.0f && v_y < 0.0f)) {
+      angle_x *= -1f;
+    }
+    if (debug) {
+      Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
+      Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
+    }
+
+    if (angle_y < 0.0f) {
+      angle_y = 360f + angle_y;
+    }
+    angle_y = angle_y % 360f;
+
+    /* その角度へ近づける */
+    aimTargetDegree(angle_x, angle_y);
+    if (debug) {
+      Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
+      Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
+    }
+
+    coordUtil.setMatrixRotateZ(x_angle);
+    synchronized (mScratch4f_1) {
+      synchronized (mScratch4f_2) {
+        coordUtil.affine(-1.0f,0.0f, 0.0f, mScratch4f_1);
+        coordUtil.setMatrixRotateY(y_angle);
+        coordUtil.affine(mScratch4f_1[0],mScratch4f_1[1], mScratch4f_1[2], mScratch4f_2);
+        direction[0] = mScratch4f_2[0];
+        direction[1] = mScratch4f_2[1];
+        direction[2] = mScratch4f_2[2];
+      }
+    }
+    if (debug) {
+      Log.d(TAG, "end aimSchoolCenter "
         + "x:[" + direction[0] + "]:"
         + "y:[" + direction[1] + "]:"
         + "z:[" + direction[2] + "]:");
@@ -2572,6 +2563,7 @@ if (true) {
     this.speed = speed * 0.5f;
     this.speed_unit = speed / 5f * 0.5f;
     this.speed_max = speed + 0.03f * 0.5f;
+    this.speed_min = this.speed_unit * 2f;
     this.cohesion_speed = speed * 2f * 0.5f;
     this.sv_speed = speed;
   }
