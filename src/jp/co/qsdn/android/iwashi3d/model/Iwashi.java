@@ -100,11 +100,12 @@ public class Iwashi implements Model {
   /*=========================================================================*/
   /* スピード                                                                */
   /*=========================================================================*/
-  private float speed = 0.020f * 0.5f;
-  private float speed_unit = speed / 5f * 0.5f;
-  private float speed_max = 0.050f * 0.5f;
+  public static final float DEFAULT_SPEED = 0.036f;
+  private float speed = DEFAULT_SPEED * 0.5f;
+  private float speed_unit = DEFAULT_SPEED / 5f * 0.5f;
+  private float speed_max = DEFAULT_SPEED * 3f * 0.5f;
   private float speed_min = speed_unit;
-  private float cohesion_speed = speed * 2f * 0.5f;
+  private float cohesion_speed = speed * 5f * 0.5f;
   private float sv_speed = speed;
 
   private int iwashiNo = 0;
@@ -1637,10 +1638,10 @@ public class Iwashi implements Model {
     return true;
   }
   public boolean doAlignment1(Iwashi target) {
-    return _doAlignment(target, 3000);
+    return _doAlignment(target, 2000);
   }
   public boolean doAlignment2(Iwashi target) {
-    return _doAlignment(target, 6000);
+    return _doAlignment(target, 4000);
   }
   public boolean _doAlignment(Iwashi target, int per) {
     if (this.schoolCount < 3) {
@@ -2618,9 +2619,9 @@ public class Iwashi implements Model {
   public void setSpeed(float speed) {
     this.speed = speed * 0.5f;
     this.speed_unit = speed / 5f * 0.5f;
-    this.speed_max = speed + 0.03f * 0.5f;
+    this.speed_max = speed * 3f * 0.5f;
     this.speed_min = this.speed_unit * 2f;
-    this.cohesion_speed = speed * 2f * 0.5f;
+    this.cohesion_speed = speed * 5f * 0.5f;
     this.sv_speed = speed;
   }
   

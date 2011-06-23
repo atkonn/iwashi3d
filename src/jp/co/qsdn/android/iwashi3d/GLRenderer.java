@@ -59,7 +59,7 @@ public class GLRenderer {
 
   private GLRenderer(Context context) {
     iwashi_count = Prefs.getInstance(context).getIwashiCount();
-    iwashi_speed = ((float)Prefs.getInstance(context).getIwashiSpeed() / 50f) * 0.04f;
+    iwashi_speed = ((float)Prefs.getInstance(context).getIwashiSpeed() / 50f) * Iwashi.DEFAULT_SPEED;
     enableIwashiBoids = Prefs.getInstance(context).getIwashiBoids();
     cameraDistance = (float)Prefs.getInstance(context).getCameraDistance();
     cameraMode = Prefs.getInstance(context).getCameraMode();
@@ -324,7 +324,7 @@ if (false) {
       return;
     }
     int _iwashi_count = Prefs.getInstance(context).getIwashiCount();
-    float _iwashi_speed = ((float)Prefs.getInstance(context).getIwashiSpeed() / 50f) * 0.04f;
+    float _iwashi_speed = ((float)Prefs.getInstance(context).getIwashiSpeed() / 50f) * Iwashi.DEFAULT_SPEED;
     boolean _iwashi_boids = Prefs.getInstance(context).getIwashiBoids();
     boolean _camera_mode = Prefs.getInstance(context).getCameraMode();
     float _camera_distance = (float)Prefs.getInstance(context).getCameraDistance();
