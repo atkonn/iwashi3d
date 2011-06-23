@@ -396,10 +396,12 @@ if (false){
         + "yPixelOffset:[" + yPixelOffset + "]:");
     }
     synchronized(this) {
-      if (xOffset >= 0.0f && xOffset <= 1.0f) {
-        float offset = xOffset - 0.5f;
-        baseAngle = offset * (-180f);
-      }
+      float xx = (float)xPixelOffset / 480f;
+      baseAngle = xx * 180f + 90f;
+//      if (xOffset >= 0.0f && xOffset <= 1.0f) {
+//        float offset = xOffset - 0.5f;
+//        baseAngle = offset * (-180f);
+//      }
     }
     if (_debug) {
       Log.d(TAG, 
