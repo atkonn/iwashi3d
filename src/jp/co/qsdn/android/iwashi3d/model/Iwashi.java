@@ -47,8 +47,9 @@ public class Iwashi implements Model {
    */
   private Iwashi[] species;
   private double separate_dist  = 5.0d * scale * 0.5d;
-  private double alignment_dist = 25.0d * scale * 0.5d;
-  private double school_dist    = 50.0d * scale * 0.5d;
+  private double alignment_dist1= 15.0d * scale * 0.5d;
+  private double alignment_dist2= 30.0d * scale * 0.5d;
+  private double school_dist    = 60.0d * scale * 0.5d;
   private double cohesion_dist  = 100.0d * scale * 0.5d;
   private float[] schoolCenter = {0f,0f,0f};
   private int schoolCount = 0;
@@ -71,7 +72,7 @@ public class Iwashi implements Model {
   private float[] mScratch4f = new float[4];
   private float[] mScratch4f_1 = new float[4];
   private float[] mScratch4f_2 = new float[4];
-  private Iwashi[] mScratch3Iwashi = new Iwashi[3];
+  private Iwashi[] mScratch4Iwashi = new Iwashi[4];
 
 
   /*=========================================================================*/
@@ -1550,9 +1551,6 @@ public class Iwashi implements Model {
     }
 
 
-    //ByteBuffer vbb = ByteBuffer.allocateDirect(IwashiData.vertices.length * 4);
-    //vbb.order(ByteOrder.nativeOrder());
-    //mVertexBuffer = vbb.asFloatBuffer();
     mVertexBuffer.position(0);
     mVertexBuffer.put(IwashiData.vertices);
     mVertexBuffer.position(0);
@@ -1638,8 +1636,13 @@ public class Iwashi implements Model {
     turnSeparation(target);
     return true;
   }
-  public boolean doAlignment(Iwashi target) {
-    int per = 3000;
+  public boolean doAlignment1(Iwashi target) {
+    return _doAlignment(target, 3000);
+  }
+  public boolean doAlignment2(Iwashi target) {
+    return _doAlignment(target, 6000);
+  }
+  public boolean _doAlignment(Iwashi target, int per) {
     if (this.schoolCount < 3) {
       /* 3匹以上群れてなければ高確率でCohesion/Schoolへ */
       per = 9000; 
@@ -1747,10 +1750,12 @@ public class Iwashi implements Model {
    */
   public Iwashi[] getTarget() {
     float targetDistanceS = 10000f;
-    float targetDistanceA = 10000f;
+    float targetDistanceA1 = 10000f;
+    float targetDistanceA2 = 10000f;
     float targetDistanceC = 10000f;
     int targetS = 9999;
-    int targetA = 9999;
+    int targetA1 = 9999;
+    int targetA2 = 9999;
     int targetC = 9999;
     /* alignment数をカウント */
     this.schoolCount = 0;
@@ -1779,7 +1784,7 @@ public class Iwashi implements Model {
         }
         continue;
       }
-      if (dist < alignment_dist) {
+      if (dist < alignment_dist1) {
         {
           /* alignmentの位置にいれば、それだけでカウント */
           this.schoolCount++;
@@ -1787,7 +1792,7 @@ public class Iwashi implements Model {
           schoolCenter[1] += species[ii].getY();;
           schoolCenter[2] += species[ii].getZ();;
         }
-        if (targetDistanceA > dist) {
+        if (targetDistanceA1 > dist) {
           synchronized (mScratch4f_1) {
             synchronized (mScratch4f_2) {
               mScratch4f_1[0] = getDirectionX();
@@ -1798,8 +1803,35 @@ public class Iwashi implements Model {
               mScratch4f_2[2] = species[ii].getZ() - getZ();
               float degree = CoordUtil.includedAngle(mScratch4f_1, mScratch4f_2, 3);
               if (degree <= 150f && degree >= 0f) {
-                targetDistanceA = dist;
-                targetA = ii;
+                targetDistanceA1 = dist;
+                targetA1 = ii;
+              }
+            }
+          }
+        }
+        continue;
+      }
+      if (dist < alignment_dist2) {
+        {
+          /* alignmentの位置にいれば、それだけでカウント */
+          this.schoolCount++;
+          schoolCenter[0] += species[ii].getX();;
+          schoolCenter[1] += species[ii].getY();;
+          schoolCenter[2] += species[ii].getZ();;
+        }
+        if (targetDistanceA2 > dist) {
+          synchronized (mScratch4f_1) {
+            synchronized (mScratch4f_2) {
+              mScratch4f_1[0] = getDirectionX();
+              mScratch4f_1[1] = getDirectionY();
+              mScratch4f_1[2] = getDirectionZ();
+              mScratch4f_2[0] = species[ii].getX() - getX();
+              mScratch4f_2[1] = species[ii].getY() - getY();
+              mScratch4f_2[2] = species[ii].getZ() - getZ();
+              float degree = CoordUtil.includedAngle(mScratch4f_1, mScratch4f_2, 3);
+              if (degree <= 150f && degree >= 0f) {
+                targetDistanceA2 = dist;
+                targetA2 = ii;
               }
             }
           }
@@ -1839,24 +1871,30 @@ public class Iwashi implements Model {
       schoolCenter[2] = schoolCenter[2] / (float)schoolCount;
     }
     if (targetS != 9999) {
-      mScratch3Iwashi[0] = species[targetS];
+      mScratch4Iwashi[0] = species[targetS];
     }
     else {
-      mScratch3Iwashi[0] = null;
+      mScratch4Iwashi[0] = null;
     }
-    if (targetA != 9999) {
-      mScratch3Iwashi[1] = species[targetA];
+    if (targetA1 != 9999) {
+      mScratch4Iwashi[1] = species[targetA1];
     }
     else {
-      mScratch3Iwashi[1] = null;
+      mScratch4Iwashi[1] = null;
+    }
+    if (targetA2 != 9999) {
+      mScratch4Iwashi[2] = species[targetA2];
+    }
+    else {
+      mScratch4Iwashi[2] = null;
     }
     if (targetC != 9999) {
-      mScratch3Iwashi[2] = species[targetC];
+      mScratch4Iwashi[3] = species[targetC];
     }
     else {
-      mScratch3Iwashi[2] = null;
+      mScratch4Iwashi[3] = null;
     }
-    return mScratch3Iwashi;
+    return mScratch4Iwashi;
   }
   /**
    * どの方向に進むか考える
@@ -1924,37 +1962,55 @@ public class Iwashi implements Model {
           target[0] = null;
           target[1] = null;
           target[2] = null;
+          target[3] = null;
           return;
         }
       }
       if (target[1] != null) {
         // alignment
-        if (doAlignment(target[1])) {
+        if (doAlignment1(target[1])) {
           target[0] = null;
           target[1] = null;
           target[2] = null;
+          target[3] = null;
+          return;
+        }
+      }
+      if (target[2] != null) {
+        // alignment
+        if (doAlignment2(target[2])) {
+          target[0] = null;
+          target[1] = null;
+          target[2] = null;
+          target[3] = null;
           return;
         }
       }
       if (schoolCount >= 3) {
         if (doSchoolCenter()) {
           update_speed();
+          target[0] = null;
+          target[1] = null;
+          target[2] = null;
+          target[3] = null;
           return;
         }
       }
-      if (target[2] != null) {
+      if (target[3] != null) {
         // cohesion
-        if (doCohesion(target[2])) {
+        if (doCohesion(target[3])) {
           update_speed();
           target[0] = null;
           target[1] = null;
           target[2] = null;
+          target[3] = null;
           return;
         }
       }
       target[0] = null;
       target[1] = null;
       target[2] = null;
+      target[3] = null;
     }
 
     if (this.rand.nextInt(10000) <= adjustTick(9500)) {
