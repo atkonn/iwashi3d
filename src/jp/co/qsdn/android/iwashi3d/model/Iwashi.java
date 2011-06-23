@@ -134,6 +134,22 @@ public class Iwashi implements Model {
     position[0] = this.rand.nextFloat() * 8f - 4f;
     position[1] = this.rand.nextFloat() * 8f - 4f;
     position[2] = this.rand.nextFloat() * 4f - 2f;
+
+    // 初期方向セット
+    x_angle = rand.nextFloat() * 45f - 22.5f;
+    y_angle = rand.nextFloat() * 360f;
+    coordUtil.setMatrixRotateZ(x_angle);
+    synchronized (mScratch4f_1) {
+      synchronized (mScratch4f_2) {
+        coordUtil.affine(-1.0f,0.0f, 0.0f, mScratch4f_1);
+        coordUtil.setMatrixRotateY(y_angle);
+        coordUtil.affine(mScratch4f_1[0],mScratch4f_1[1], mScratch4f_1[2], mScratch4f_2);
+        direction[0] = mScratch4f_2[0];
+        direction[1] = mScratch4f_2[1];
+        direction[2] = mScratch4f_2[2];
+      }
+    }
+    // 鰯番号セット
     iwashiNo = ii;
   }
 
