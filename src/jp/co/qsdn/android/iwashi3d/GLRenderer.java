@@ -28,9 +28,8 @@ import jp.co.qsdn.android.iwashi3d.model.Wave;
 import jp.co.qsdn.android.iwashi3d.setting.Prefs;
 import jp.co.qsdn.android.iwashi3d.util.CoordUtil;
 
-//public class GLRenderer implements GLSurfaceView.Renderer {
 public class GLRenderer {
-  private static final boolean _debug = false;
+  private static final boolean _debug = true;
   private static final String TAG = GLRenderer.class.getName();
   private static final int MAX_IWASHI_COUNT = 50;
   private final Background background = new Background();
@@ -403,7 +402,10 @@ if (false){
       }
     }
     if (_debug) {
-      Log.d(TAG, "end onOffsetsChanged()");
+      Log.d(TAG, 
+          "end onOffsetsChanged():" 
+        + "new baseAngle:[" + baseAngle + "]"
+      );
     }
   }
 

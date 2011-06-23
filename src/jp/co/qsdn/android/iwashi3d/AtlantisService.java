@@ -85,9 +85,6 @@ public class AtlantisService extends WallpaperService {
       else {
       }
       super.onDestroy();
-//      getExecutor().shutdownNow();
-//      drawCommand = null;
-//      executor = null;
       System.gc();
       if (_debug) Log.d(TAG, "end onDestroy() [" + this + "]");
     }
@@ -335,10 +332,10 @@ public class AtlantisService extends WallpaperService {
     public void onOffsetsChanged(final float xOffset, final float yOffset,
                                  final float xOffsetStep, final float yOffsetStep,
                                  final int xPixelOffset, final int yPixelOffset) {
-//      if (_debug) Log.d(TAG, "start onOffsetsChanged()");
+      if (_debug) Log.d(TAG, "start onOffsetsChanged()");
       super.onOffsetsChanged(xOffset, yOffset, xOffsetStep, yOffsetStep, xPixelOffset, yPixelOffset);
       if (xOffsetStep == 0.0f && yOffsetStep == 0.0f) {
-//        if (_debug) Log.d(TAG, "end onOffsetChanged() no execute");
+        if (_debug) Log.d(TAG, "end onOffsetChanged() no execute");
         return;
       }
       Runnable offsetsChangedCommand = new Runnable() {
@@ -351,7 +348,7 @@ public class AtlantisService extends WallpaperService {
         };
       };
       getExecutor().execute(offsetsChangedCommand);
-//      if (_debug) Log.d(TAG, "end onOffsetChanged()");
+      if (_debug) Log.d(TAG, "end onOffsetChanged()");
     }
     
     @Override  
