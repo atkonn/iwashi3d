@@ -479,89 +479,47 @@ if (false){
       
     }
 
-    if (nx > Aquarium.max_x.floatValue() - 0.2f) {
-      nx = Aquarium.max_x - 0.2f;
-    }
-    if (ny > Aquarium.max_y.floatValue() - 0.2f) {
-      ny = Aquarium.max_y - 0.2f;
-    }
-    if (nz > Aquarium.max_z.floatValue() - 0.2f) {
-      nz = Aquarium.max_z - 0.2f;
-    }
-    if (nx < Aquarium.min_x.floatValue() + 0.2f) {
-      nx = Aquarium.min_x + 0.2f;
-    }
-    if (ny < Aquarium.min_y.floatValue() + 0.2f) {
-      ny = Aquarium.min_y + 0.2f;
-    }
-    if (nz < Aquarium.min_z.floatValue() + 0.2f) {
-      nz = Aquarium.min_z + 0.2f;
+    {
+      float tmp = 0f;
+      if (nx > Aquarium.max_x.floatValue() - 0.2f) {
+        tmp = (Aquarium.max_x.floatValue() - 0.2f) / nx;
+        nx *= tmp;
+        ny *= tmp;
+        nz *= tmp;
+      }
+      if (ny > Aquarium.max_y.floatValue() - 0.2f) {
+        tmp = (Aquarium.max_y.floatValue() - 0.2f) / ny;
+        nx *= tmp;
+        ny *= tmp;
+        nz *= tmp;
+      }
+      if (nz > Aquarium.max_z.floatValue() - 0.2f) {
+        tmp = (Aquarium.max_z.floatValue() - 0.2f) / nz;
+        nx *= tmp;
+        ny *= tmp;
+        nz *= tmp;
+      }
+      if (nx < Aquarium.min_x.floatValue() + 0.2f) {
+        tmp = (Aquarium.min_x.floatValue() + 0.2f) / nx;
+        nx *= tmp;
+        ny *= tmp;
+        nz *= tmp;
+      }
+      if (ny < Aquarium.min_y.floatValue() + 0.2f) {
+        tmp = (Aquarium.min_y.floatValue() + 0.2f) / ny;
+        nx *= tmp;
+        ny *= tmp;
+        nz *= tmp;
+      }
+      if (nz < Aquarium.min_z.floatValue() + 0.2f) {
+        tmp = (Aquarium.min_z.floatValue() + 0.2f) / nz;
+        nx *= tmp;
+        ny *= tmp;
+        nz *= tmp;
+      }
     }
     baitManager.addBait(nx,ny,nz);
 
-//    if (baseAngle > 0.0f) {
-//      if (nz > Aquarium.max_x - 0.2f) {
-//        nz = Aquarium.max_x - 0.2f;
-//      }
-//      if (nz < Aquarium.min_x + 0.2f) {
-//        nz = Aquarium.min_x + 0.2f;
-//      }
-//      if (ny > Aquarium.max_y - 0.2f) {
-//        ny = Aquarium.max_y - 0.2f;
-//      }
-//      if (ny < Aquarium.min_y + 0.2f) {
-//        ny = Aquarium.min_y + 0.2f;
-//      }
-//      if (nx > Aquarium.max_z - 0.2f) {
-//        nx = Aquarium.max_z - 0.2f; 
-//      }
-//      if (nx < Aquarium.min_z + 0.2f) {
-//        nx = Aquarium.min_z + 0.2f; 
-//      }
-//      baitManager.addBait(-nz,ny,nx);
-//    }
-//    else if (baseAngle < 0.0f) {
-//      if (nz > Aquarium.max_x - 0.2f) {
-//        nz = Aquarium.max_x - 0.2f;
-//      }
-//      if (nz < Aquarium.min_x + 0.2f) {
-//        nz = Aquarium.min_x + 0.2f;
-//      }
-//      if (ny > Aquarium.max_y - 0.2f) {
-//        ny = Aquarium.max_y - 0.2f;
-//      }
-//      if (ny < Aquarium.min_y + 0.2f) {
-//        ny = Aquarium.min_y + 0.2f;
-//      }
-//      if (nx > Aquarium.max_z - 0.2f) {
-//        nx = Aquarium.max_z - 0.2f; 
-//      }
-//      if (nx < Aquarium.min_z + 0.2f) {
-//        nx = Aquarium.min_z + 0.2f; 
-//      }
-//      baitManager.addBait(nz,ny,-nx);
-//    }
-//    else {
-//      if (nx > Aquarium.max_x - 0.2f) {
-//        nx = Aquarium.max_x - 0.2f;
-//      }
-//      if (nx < Aquarium.min_x + 0.2f) {
-//        nx = Aquarium.min_x + 0.2f;
-//      }
-//      if (ny > Aquarium.max_y - 0.2f) {
-//        ny = Aquarium.max_y - 0.2f;
-//      }
-//      if (ny < Aquarium.min_y + 0.2f) {
-//        ny = Aquarium.min_y + 0.2f;
-//      }
-//      if (nz > Aquarium.max_z - 0.2f) {
-//        nz = Aquarium.max_z - 0.2f; 
-//      }
-//      if (nz < Aquarium.min_z + 0.2f) {
-//        nz = Aquarium.min_z + 0.2f; 
-//      }
-//      baitManager.addBait(nx,ny,nz);
-//    }
 
     if (_debug) Log.d(TAG, "end onCommand");
   }
