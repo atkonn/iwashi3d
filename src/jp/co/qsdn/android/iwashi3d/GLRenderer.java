@@ -73,6 +73,7 @@ public class GLRenderer {
       iwashi[ii].setEnableBoids(enableIwashiBoids);
       iwashi[ii].setSpecies(iwashi);
       iwashi[ii].setSpeed(iwashi_speed);
+      iwashi[ii].setIwashiCount(iwashi_count);
       iwashi[ii].setBaitManager(baitManager);
     }
 /*DEBUG*/
@@ -341,6 +342,9 @@ if (false){
     if (_iwashi_count != iwashi_count) {
       synchronized (this) {
         iwashi_count = _iwashi_count;
+        for (int ii=0; ii<MAX_IWASHI_COUNT; ii++) {
+          iwashi[ii].setIwashiCount(iwashi_count);
+        }
       }
     }
     if (_iwashi_speed != iwashi_speed) {

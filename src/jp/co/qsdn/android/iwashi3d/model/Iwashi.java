@@ -44,6 +44,7 @@ public class Iwashi implements Model {
   private Random rand = null;
   public static final float GL_IWASHI_SCALE = 0.65f;
   private float size = 10f * scale * GL_IWASHI_SCALE;
+  private int iwashiCount;
   /*
    * 仲間、同種
    */
@@ -1709,14 +1710,6 @@ public class Iwashi implements Model {
     if (this.rand.nextInt(10000) <= adjustTick(3000)) {
       return false;
     }
-    if (schoolCount < 3) {
-      return false;
-    }
-    if (debug) {
-      if (iwashiNo == 0) {
-        Log.d(TAG, "doSchoolCenter");
-      }
-    }
     setStatus(STATUS.TO_SCHOOL_CENTER);
     aimSchoolCenter();
     return true;
@@ -1980,7 +1973,7 @@ public class Iwashi implements Model {
           return;
         }
       }
-      if (schoolCount >= 3) {
+      if (schoolCount >= (iwashiCount / 2)) {
         if (doSchoolCenter()) {
           if (traceBOIDS && iwashiNo == 0) Log.d(TAG, "Cohesion(to School)");
           update_speed();
@@ -2900,5 +2893,25 @@ public class Iwashi implements Model {
   public void setSize(float size)
   {
       this.size = size;
+  }
+  
+  /**
+   * Get iwashiCount.
+   *
+   * @return iwashiCount as int.
+   */
+  public int getIwashiCount()
+  {
+      return iwashiCount;
+  }
+  
+  /**
+   * Set iwashiCount.
+   *
+   * @param iwashiCount the value to set.
+   */
+  public void setIwashiCount(int iwashiCount)
+  {
+      this.iwashiCount = iwashiCount;
   }
 }
