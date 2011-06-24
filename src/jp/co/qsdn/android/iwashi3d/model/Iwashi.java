@@ -55,6 +55,7 @@ public class Iwashi implements Model {
   private double school_dist    = 70.0d * scale * (double)GL_IWASHI_SCALE;
   private double cohesion_dist  = 110.0d * scale * (double)GL_IWASHI_SCALE;
   private float[] schoolCenter = {0f,0f,0f};
+  private float[] schoolDir = {0f,0f,0f};
   private int schoolCount = 0;
   private int alignmentCount = 0;
 
@@ -1753,6 +1754,9 @@ public class Iwashi implements Model {
     this.schoolCenter[0] = 0f;
     this.schoolCenter[1] = 0f;
     this.schoolCenter[2] = 0f;
+    this.schoolDir[0] = 0f;
+    this.schoolDir[1] = 0f;
+    this.schoolDir[2] = 0f;
     for (int ii=0; ii<species.length; ii++) {
       float dist = 0f;
       if (ii < iwashiNo) {
@@ -1780,9 +1784,12 @@ public class Iwashi implements Model {
           /* alignmentの位置にいれば、それだけでカウント */
           this.alignmentCount++;
           this.schoolCount++;
-          schoolCenter[0] += species[ii].getX();;
-          schoolCenter[1] += species[ii].getY();;
-          schoolCenter[2] += species[ii].getZ();;
+          schoolCenter[0] += species[ii].getX();
+          schoolCenter[1] += species[ii].getY();
+          schoolCenter[2] += species[ii].getZ();
+          schoolDir[0] += species[ii].getDirectionX();
+          schoolDir[1] += species[ii].getDirectionY();
+          schoolDir[2] += species[ii].getDirectionZ();
         }
         if (targetDistanceA1 > dist) {
           synchronized (mScratch4f_1) {
@@ -1811,6 +1818,9 @@ public class Iwashi implements Model {
           schoolCenter[0] += species[ii].getX();;
           schoolCenter[1] += species[ii].getY();;
           schoolCenter[2] += species[ii].getZ();;
+          schoolDir[0] += species[ii].getDirectionX();
+          schoolDir[1] += species[ii].getDirectionY();
+          schoolDir[2] += species[ii].getDirectionZ();
         }
         if (targetDistanceA2 > dist) {
           synchronized (mScratch4f_1) {
@@ -1837,6 +1847,9 @@ public class Iwashi implements Model {
           schoolCenter[0] += species[ii].getX();;
           schoolCenter[1] += species[ii].getY();;
           schoolCenter[2] += species[ii].getZ();;
+          schoolDir[0] += species[ii].getDirectionX();
+          schoolDir[1] += species[ii].getDirectionY();
+          schoolDir[2] += species[ii].getDirectionZ();
         }
         if (targetDistanceC > dist) {
           synchronized (mScratch4f_1) {
@@ -1861,6 +1874,10 @@ public class Iwashi implements Model {
       schoolCenter[0] = schoolCenter[0] / (float)schoolCount;
       schoolCenter[1] = schoolCenter[1] / (float)schoolCount;
       schoolCenter[2] = schoolCenter[2] / (float)schoolCount;
+      schoolDir[0] /= (float)schoolCount;
+      schoolDir[1] /= (float)schoolCount;
+      schoolDir[2] /= (float)schoolCount;
+      CoordUtil.normalize3fv(schoolDir);
     }
     if (targetS != 9999) {
       mScratch4Iwashi[0] = species[targetS];
@@ -2315,15 +2332,6 @@ public class Iwashi implements Model {
       v_y = mScratch4f_1[1];
       v_z = mScratch4f_1[2];
     }
-//    /* 順方向へのベクトルを算出 */
-//    float v_x = (target.getX() - getX());
-//    float v_y = (target.getY() - getY());
-//    float v_z = (target.getZ() - getZ());
-//    if (v_x == 0f && v_y == 0f && v_z == 0f) {
-//      v_x = target.getDirection()[0];
-//      v_y = target.getDirection()[1];
-//      v_z = target.getDirection()[2];
-//    }
     if (debug) {
       Log.d(TAG, "向かいたい方向"
        + " x:[" + v_x + "]:"
@@ -2454,9 +2462,53 @@ public class Iwashi implements Model {
     if (debug) {
       Log.d(TAG, "start aimSchoolCenter ");
     }
-    float v_x = (schoolCenter[0] - getX());
-    float v_y = (schoolCenter[1] - getY());
-    float v_z = (schoolCenter[2] - getZ());
+
+    float v_x = 0f;
+    float v_y = 0f;
+    float v_z = 0f;
+    synchronized (mScratch4f_1) {
+      /*=======================================================================*/
+      /* 向かいたいschoolの方向取得                                            */
+      /*=======================================================================*/
+      mScratch4f_1[0] = schoolDir[0];
+      mScratch4f_1[1] = schoolDir[1];
+      mScratch4f_1[2] = schoolDir[2];
+      CoordUtil.normalize3fv(mScratch4f_1);
+      synchronized (mScratch4f_2) {
+        /*=====================================================================*/
+        /* 自分から見て、ターゲットの方向を算出                                */
+        /*=====================================================================*/
+        mScratch4f_2[0] = schoolCenter[0] - getX();
+        mScratch4f_2[1] = schoolCenter[1] - getY();
+        mScratch4f_2[2] = schoolCenter[2] - getZ();
+        CoordUtil.normalize3fv(mScratch4f_2);
+        /*=====================================================================*/
+        /* ややターゲットに近づきたいので x2                                   */
+        /*=====================================================================*/
+        mScratch4f_2[0] *= 2f;
+        mScratch4f_2[1] *= 2f;
+        mScratch4f_2[2] *= 2f;
+        /*=====================================================================*/
+        /* 足し込む                                                            */
+        /*=====================================================================*/
+        mScratch4f_1[0] += mScratch4f_2[0];
+        mScratch4f_1[1] += mScratch4f_2[1];
+        mScratch4f_1[2] += mScratch4f_2[2];
+      }
+      /*=====================================================================*/
+      /* 平均算出                                                            */
+      /*=====================================================================*/
+      mScratch4f_1[0] /= 3f;
+      mScratch4f_1[1] /= 3f;
+      mScratch4f_1[2] /= 3f;
+
+      v_x = mScratch4f_1[0];
+      v_y = mScratch4f_1[1];
+      v_z = mScratch4f_1[2];
+    }
+    //float v_x = (schoolCenter[0] - getX());
+    //float v_y = (schoolCenter[1] - getY());
+    //float v_z = (schoolCenter[2] - getZ());
 
     /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
     float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
