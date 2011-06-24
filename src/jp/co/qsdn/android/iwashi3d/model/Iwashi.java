@@ -1973,7 +1973,7 @@ public class Iwashi implements Model {
           return;
         }
       }
-      if (schoolCount >= (iwashiCount / 2)) {
+      if (schoolCount >= (iwashiCount / 4)) {
         if (doSchoolCenter()) {
           if (traceBOIDS && iwashiNo == 0) Log.d(TAG, "Cohesion(to School)");
           update_speed();
