@@ -1646,11 +1646,6 @@ public class Iwashi implements Model {
     /*===================================================================*/
     /* セパレーション領域にターゲットがいる場合                          */
     /*===================================================================*/
-    if (debug) {
-      if (iwashiNo == 0) {
-        Log.d(TAG, "doSeparation");
-      }
-    }
     setStatus(STATUS.SEPARATE);
     turnSeparation(target);
     return true;
@@ -2159,22 +2154,49 @@ public class Iwashi implements Model {
     }
   }
   public void turnSeparation(Iwashi target) {
-    if (debug) {
-      Log.d(TAG, "start turnSeparate");
-    }
-    /*=======================================================================*/
-    /* ターゲットのいる方向とは逆の方向を算出                                */
-    /*=======================================================================*/
-    float v_x = (target.getX() - getX()) * -1f;
-    float v_y = (target.getY() - getY()) * -1f;
-    float v_z = (target.getZ() - getZ()) * -1f;
-    if (v_x == 0f && v_y == 0f && v_z == 0f) {
+    if (debug) { Log.d(TAG, "start turnSeparation"); }
+    float v_x = 0f;
+    float v_y = 0f;
+    float v_z = 0f;
+    synchronized (mScratch4f_1) {
+      /*=======================================================================*/
+      /* Separationしたいターゲットの方向取得                                  */
+      /*=======================================================================*/
+      mScratch4f_1[0] = target.getDirectionX();
+      mScratch4f_1[1] = target.getDirectionY();
+      mScratch4f_1[2] = target.getDirectionZ();
+      CoordUtil.normalize3fv(mScratch4f_1);
+      synchronized (mScratch4f_2) {
+        /*=====================================================================*/
+        /* ターゲットから見て、自分の方向を算出                                */
+        /*=====================================================================*/
+        mScratch4f_2[0] = getX() - target.getX();
+        mScratch4f_2[1] = getY() - target.getY();
+        mScratch4f_2[2] = getZ() - target.getZ();
+        CoordUtil.normalize3fv(mScratch4f_2);
+        /*=====================================================================*/
+        /* ややターゲットの方向に沿いたいので、x2                              */
+        /*=====================================================================*/
+        mScratch4f_1[0] *= 2f;
+        mScratch4f_1[1] *= 2f;
+        mScratch4f_1[2] *= 2f;
+        /*=====================================================================*/
+        /* 足し込む                                                            */
+        /*=====================================================================*/
+        mScratch4f_1[0] += mScratch4f_2[0];
+        mScratch4f_1[1] += mScratch4f_2[1];
+        mScratch4f_1[2] += mScratch4f_2[2];
+      }
       /*=====================================================================*/
-      /* もし、算出できないのであれば、ターゲットの方向とは逆方向            */
+      /* 平均算出                                                            */
       /*=====================================================================*/
-      v_x = target.getDirection()[0] * -1;
-      v_y = target.getDirection()[1] * -1;
-      v_z = target.getDirection()[2] * -1;
+      mScratch4f_1[0] /= 3f;
+      mScratch4f_1[1] /= 3f;
+      mScratch4f_1[2] /= 3f;
+
+      v_x = mScratch4f_1[0];
+      v_y = mScratch4f_1[1];
+      v_z = mScratch4f_1[2];
     }
     if (debug) {
       Log.d(TAG, "向かいたい方向"
@@ -2222,7 +2244,7 @@ public class Iwashi implements Model {
        + " x:[" + direction[0] + "]:"
        + " y:[" + direction[1] + "]:"
        + " z:[" + direction[2] + "]:");
-      Log.d(TAG, "end turnSeparate");
+      Log.d(TAG, "end turnSeparation");
     }
   }
   public void turnAlignment(Iwashi target) {
