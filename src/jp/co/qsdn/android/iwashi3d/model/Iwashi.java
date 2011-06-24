@@ -1717,7 +1717,7 @@ public class Iwashi implements Model {
   }
   public void update_speed() {
     sv_speed = speed;
-    if (getStatus() == STATUS.COHESION) {
+    if (getStatus() == STATUS.COHESION || getStatus() == STATUS.TO_SCHOOL_CENTER || getStatus() == STATUS.TO_BAIT) {
       speed = cohesion_speed;
       return;
     }
@@ -1913,7 +1913,7 @@ public class Iwashi implements Model {
     if (prevTime != 0) {
       tick = nowTime - prevTime;
     }
-    if (getStatus() == STATUS.COHESION) {
+    if (getStatus() == STATUS.COHESION || getStatus() == STATUS.TO_SCHOOL_CENTER || getStatus() == STATUS.TO_BAIT) {
       /* 元に戻す */
       speed = sv_speed;
     }
