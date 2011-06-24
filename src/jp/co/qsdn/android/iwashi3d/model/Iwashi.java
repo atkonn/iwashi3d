@@ -24,6 +24,7 @@ import jp.co.qsdn.android.iwashi3d.BaitManager;
 import jp.co.qsdn.android.iwashi3d.util.CoordUtil;
 
 public class Iwashi implements Model {
+  private static final boolean traceBOIDS = true;
   private static final boolean debug = false;
   private static final String TAG = Iwashi.class.getName();
   private static final long BASE_TICK = 17852783L;
@@ -101,7 +102,7 @@ public class Iwashi implements Model {
   /*=========================================================================*/
   /* スピード                                                                */
   /*=========================================================================*/
-  public static final float DEFAULT_SPEED = 0.036f;
+  public static final float DEFAULT_SPEED = 0.0216f;
   private float speed = DEFAULT_SPEED * 0.5f;
   private float speed_unit = DEFAULT_SPEED / 5f * 0.5f;
   private float speed_max = DEFAULT_SPEED * 3f * 0.5f;
@@ -1933,13 +1934,9 @@ public class Iwashi implements Model {
       /*=====================================================================*/
       /* 水槽からはみ出てる                                                  */
       /*=====================================================================*/
-      if (debug) {
-        if (iwashiNo == 0) {
-          Log.d(TAG, "doAquariumCenter");
-        }
-      }
       setStatus(STATUS.TO_CENTER);
       aimAquariumCenter();
+      if (traceBOIDS && iwashiNo == 0) Log.d(TAG, "to Aquarium Center");
       update_speed();
       return;
     }
@@ -1950,11 +1947,7 @@ public class Iwashi implements Model {
     if (bait != null) {
       if (this.rand.nextInt(10000) <= adjustTick(5500)) {
         if (aimBait(bait)) {
-          if (debug) {
-            if (iwashiNo == 0) {
-              Log.d(TAG, "doBait");
-            }
-          }
+          if (traceBOIDS && iwashiNo == 0) Log.d(TAG, "to Bait");
           setStatus(STATUS.TO_BAIT);
           update_speed();
           return;
@@ -1976,6 +1969,7 @@ public class Iwashi implements Model {
       Iwashi[] target = getTarget();
       if (target[0] != null) {
         if (doSeparation(target[0])) {
+          if (traceBOIDS && iwashiNo == 0) Log.d(TAG, "Separate");
           update_speed();
           target[0] = null;
           target[1] = null;
@@ -1987,6 +1981,7 @@ public class Iwashi implements Model {
       if (target[1] != null) {
         // alignment
         if (doAlignment1(target[1])) {
+          if (traceBOIDS && iwashiNo == 0) Log.d(TAG, "Alignment-1");
           target[0] = null;
           target[1] = null;
           target[2] = null;
@@ -1997,6 +1992,7 @@ public class Iwashi implements Model {
       if (target[2] != null) {
         // alignment
         if (doAlignment2(target[2])) {
+          if (traceBOIDS && iwashiNo == 0) Log.d(TAG, "Alignment-2");
           target[0] = null;
           target[1] = null;
           target[2] = null;
@@ -2006,6 +2002,7 @@ public class Iwashi implements Model {
       }
       if (schoolCount >= 3) {
         if (doSchoolCenter()) {
+          if (traceBOIDS && iwashiNo == 0) Log.d(TAG, "Cohesion(to School)");
           update_speed();
           target[0] = null;
           target[1] = null;
@@ -2017,6 +2014,7 @@ public class Iwashi implements Model {
       if (target[3] != null) {
         // cohesion
         if (doCohesion(target[3])) {
+          if (traceBOIDS && iwashiNo == 0) Log.d(TAG, "Cohesion(normal)");
           update_speed();
           target[0] = null;
           target[1] = null;
@@ -2032,16 +2030,13 @@ public class Iwashi implements Model {
     }
 
     if (this.rand.nextInt(10000) <= adjustTick(9500)) {
+      if (traceBOIDS && iwashiNo == 0) Log.d(TAG, "Nop");
       // 変更なし
       return;
     }
-    if (debug) {
-      if (iwashiNo == 0) {
-        Log.d(TAG, "doNormal");
-      }
-    }
     setStatus(STATUS.NORMAL);
     turn();
+    if (traceBOIDS && iwashiNo == 0) Log.d(TAG, "Normal");
     update_speed();
   }
 
