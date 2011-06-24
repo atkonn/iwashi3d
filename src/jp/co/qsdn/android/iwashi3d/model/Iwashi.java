@@ -48,9 +48,9 @@ public class Iwashi implements Model {
   private Iwashi[] species;
   private double separate_dist  = 5.0d * scale * 0.5d;
   private double alignment_dist1= 15.0d * scale * 0.5d;
-  private double alignment_dist2= 30.0d * scale * 0.5d;
-  private double school_dist    = 60.0d * scale * 0.5d;
-  private double cohesion_dist  = 100.0d * scale * 0.5d;
+  private double alignment_dist2= 35.0d * scale * 0.5d;
+  private double school_dist    = 70.0d * scale * 0.5d;
+  private double cohesion_dist  = 110.0d * scale * 0.5d;
   private float[] schoolCenter = {0f,0f,0f};
   private int schoolCount = 0;
 
