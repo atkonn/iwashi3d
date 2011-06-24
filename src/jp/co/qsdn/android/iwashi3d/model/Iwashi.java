@@ -1658,7 +1658,7 @@ public class Iwashi implements Model {
     return _doAlignment(target, 4000);
   }
   public boolean _doAlignment(Iwashi target, int per) {
-    if (this.schoolCount < 3) {
+    if (this.alignmentCount < 3) {
       /* 3匹以上群れてなければ高確率でCohesion/Schoolへ */
       per = 9000; 
     }
@@ -1679,24 +1679,7 @@ public class Iwashi implements Model {
     return true;
   }
   public int adjustTick(int val) {
-    if (debug) {
-      if (iwashiNo == 0) {
-        Log.d(TAG, "prev " + val);
-      }
-    }
-    int ret = (int)((float)val * ((float)tick / (float)BASE_TICK));
-    if (tick / BASE_TICK >= 2) {
-      ret = (int)((float)val * 1.2f);
-    }
-    if (ret >= 10000) {
-      ret = 9900;
-    }
-    if (debug) {
-      if (iwashiNo == 0) {
-        Log.d(TAG, "aflter " + ret);
-      }
-    }
-    return ret;
+    return val;
   }
   public boolean doCohesion(Iwashi target) {
     /*===================================================================*/
@@ -1772,6 +1755,7 @@ public class Iwashi implements Model {
     int targetA2 = 9999;
     int targetC = 9999;
     /* alignment数をカウント */
+    this.alignmentCount = 0;
     this.schoolCount = 0;
     this.schoolCenter[0] = 0f;
     this.schoolCenter[1] = 0f;
@@ -1801,6 +1785,7 @@ public class Iwashi implements Model {
       if (dist < alignment_dist1) {
         {
           /* alignmentの位置にいれば、それだけでカウント */
+          this.alignmentCount++;
           this.schoolCount++;
           schoolCenter[0] += species[ii].getX();;
           schoolCenter[1] += species[ii].getY();;
@@ -1828,6 +1813,7 @@ public class Iwashi implements Model {
       if (dist < alignment_dist2) {
         {
           /* alignmentの位置にいれば、それだけでカウント */
+          this.alignmentCount++;
           this.schoolCount++;
           schoolCenter[0] += species[ii].getX();;
           schoolCenter[1] += species[ii].getY();;
