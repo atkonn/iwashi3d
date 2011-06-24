@@ -55,6 +55,7 @@ public class Iwashi implements Model {
   private double cohesion_dist  = 110.0d * scale * (double)GL_IWASHI_SCALE;
   private float[] schoolCenter = {0f,0f,0f};
   private int schoolCount = 0;
+  private int alignmentCount = 0;
 
   private enum STATUS {
     TO_CENTER, /* 画面の真ん中へ向かい中 */
@@ -1698,10 +1699,14 @@ public class Iwashi implements Model {
     return ret;
   }
   public boolean doCohesion(Iwashi target) {
-    /* 鰯は結構な確率でCohesionするものと思われる */
+    /*===================================================================*/
+    /* 鰯は結構な確率でCohesionするものと思われる                        */
+    /*===================================================================*/
     if (getStatus() == STATUS.COHESION) {
       if (this.rand.nextInt(10000) <= adjustTick(500)) {
-        /* 前回COHESIONである場合今回もCOHESIONである可能性は高い */
+        /*===============================================================*/
+        /* 前回COHESIONである場合今回もCOHESIONである可能性は高い        */
+        /*===============================================================*/
         return false;
       }
     }
@@ -1713,11 +1718,6 @@ public class Iwashi implements Model {
     /*===================================================================*/
     /* コアージョン領域にターゲットがいる場合                            */
     /*===================================================================*/
-    if (debug) {
-      if (iwashiNo == 0) {
-        Log.d(TAG, "doCohesion ("+schoolCount+")");
-      }
-    }
     setStatus(STATUS.COHESION);
     turnCohesion(target);
     return true;
@@ -1869,8 +1869,7 @@ public class Iwashi implements Model {
               mScratch4f_2[1] = species[ii].getY() - getY();
               mScratch4f_2[2] = species[ii].getZ() - getZ();
               float degree = CoordUtil.includedAngle(mScratch4f_1, mScratch4f_2, 3);
-              if (degree <= 90f && degree >= 0f) {
-                /* おおむね前方だったら */
+              if (degree <= 150f && degree >= 0f) {
                 targetDistanceC = dist;
                 targetC = ii;
               }
@@ -2293,18 +2292,59 @@ public class Iwashi implements Model {
     }
   }
   public void turnCohesion(Iwashi target) {
-    if (debug) {
-      Log.d(TAG, "start turnCohesion");
+    if (debug) { Log.d(TAG, "start turnCohesion"); }
+    float v_x = 0f;
+    float v_y = 0f;
+    float v_z = 0f;
+    synchronized (mScratch4f_1) {
+      /*=======================================================================*/
+      /* Separationしたいターゲットの方向取得                                  */
+      /*=======================================================================*/
+      mScratch4f_1[0] = target.getDirectionX();
+      mScratch4f_1[1] = target.getDirectionY();
+      mScratch4f_1[2] = target.getDirectionZ();
+      CoordUtil.normalize3fv(mScratch4f_1);
+      synchronized (mScratch4f_2) {
+        /*=====================================================================*/
+        /* 自分から見て、ターゲットの方向を算出                                */
+        /*=====================================================================*/
+        mScratch4f_2[0] = target.getX() - getX();
+        mScratch4f_2[1] = target.getY() - getY();
+        mScratch4f_2[2] = target.getZ() - getZ();
+        CoordUtil.normalize3fv(mScratch4f_2);
+        /*=====================================================================*/
+        /* ややターゲットに近づきたいので x2                                   */
+        /*=====================================================================*/
+        mScratch4f_2[0] *= 2f;
+        mScratch4f_2[1] *= 2f;
+        mScratch4f_2[2] *= 2f;
+        /*=====================================================================*/
+        /* 足し込む                                                            */
+        /*=====================================================================*/
+        mScratch4f_1[0] += mScratch4f_2[0];
+        mScratch4f_1[1] += mScratch4f_2[1];
+        mScratch4f_1[2] += mScratch4f_2[2];
+      }
+      /*=====================================================================*/
+      /* 平均算出                                                            */
+      /*=====================================================================*/
+      mScratch4f_1[0] /= 3f;
+      mScratch4f_1[1] /= 3f;
+      mScratch4f_1[2] /= 3f;
+
+      v_x = mScratch4f_1[0];
+      v_y = mScratch4f_1[1];
+      v_z = mScratch4f_1[2];
     }
-    /* 順方向へのベクトルを算出 */
-    float v_x = (target.getX() - getX());
-    float v_y = (target.getY() - getY());
-    float v_z = (target.getZ() - getZ());
-    if (v_x == 0f && v_y == 0f && v_z == 0f) {
-      v_x = target.getDirection()[0];
-      v_y = target.getDirection()[1];
-      v_z = target.getDirection()[2];
-    }
+//    /* 順方向へのベクトルを算出 */
+//    float v_x = (target.getX() - getX());
+//    float v_y = (target.getY() - getY());
+//    float v_z = (target.getZ() - getZ());
+//    if (v_x == 0f && v_y == 0f && v_z == 0f) {
+//      v_x = target.getDirection()[0];
+//      v_y = target.getDirection()[1];
+//      v_z = target.getDirection()[2];
+//    }
     if (debug) {
       Log.d(TAG, "向かいたい方向"
        + " x:[" + v_x + "]:"
