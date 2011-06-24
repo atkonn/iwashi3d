@@ -41,16 +41,17 @@ public class Iwashi implements Model {
   private boolean enableBoids = true;
   public float[] distances = new float[100];
   private Random rand = null;
-  private float size = 10f * scale * 0.7f;
+  public static final float GL_IWASHI_SCALE = 0.65f;
+  private float size = 10f * scale * GL_IWASHI_SCALE;
   /*
    * 仲間、同種
    */
   private Iwashi[] species;
-  private double separate_dist  = 5.0d * scale * 0.5d;
-  private double alignment_dist1= 15.0d * scale * 0.5d;
-  private double alignment_dist2= 35.0d * scale * 0.5d;
-  private double school_dist    = 70.0d * scale * 0.5d;
-  private double cohesion_dist  = 110.0d * scale * 0.5d;
+  private double separate_dist  = 5.0d * scale * (double)GL_IWASHI_SCALE;
+  private double alignment_dist1= 15.0d * scale * (double)GL_IWASHI_SCALE;
+  private double alignment_dist2= 35.0d * scale * (double)GL_IWASHI_SCALE;
+  private double school_dist    = 70.0d * scale * (double)GL_IWASHI_SCALE;
+  private double cohesion_dist  = 110.0d * scale * (double)GL_IWASHI_SCALE;
   private float[] schoolCenter = {0f,0f,0f};
   private int schoolCount = 0;
 
@@ -1621,7 +1622,7 @@ public class Iwashi implements Model {
       gl10.glMaterialf(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, 64f);
     }
     gl10.glTranslatef(getX(),getY(),getZ());
-    gl10.glScalef(0.7f,0.7f,0.7f);
+    gl10.glScalef(GL_IWASHI_SCALE,GL_IWASHI_SCALE,GL_IWASHI_SCALE);
 
     gl10.glRotatef(y_angle, 0.0f, 1.0f, 0.0f);
     gl10.glRotatef(x_angle * -1f, 0.0f, 0.0f, 1.0f);
