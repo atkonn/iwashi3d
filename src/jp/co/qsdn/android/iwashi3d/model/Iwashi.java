@@ -105,7 +105,7 @@ public class Iwashi implements Model {
   /*=========================================================================*/
   /* スピード                                                                */
   /*=========================================================================*/
-  public static final float DEFAULT_SPEED = 0.1728f;
+  public static final float DEFAULT_SPEED = 0.01728f;
   private float speed = DEFAULT_SPEED * 0.5f;
   private float speed_unit = DEFAULT_SPEED / 5f * 0.5f;
   private float speed_max = DEFAULT_SPEED * 3f * 0.5f;
