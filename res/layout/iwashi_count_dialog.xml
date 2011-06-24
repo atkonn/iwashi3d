@@ -25,4 +25,20 @@
     android:max="40"
     android:progress="10"
   />
+  <LinearLayout
+    android:id="@+id/dummy"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingTop="20dp"
+    android:paddingBottom="5dp"
+  >
+    <Button
+      android:id="@+id/to_default_button"
+      android:layout_width="fill_parent"
+      android:text="@string/to_default_button"
+      android:layout_height="wrap_content"
+    />
+  </LinearLayout>
+
 </LinearLayout>

@@ -13,6 +13,7 @@ import android.util.Log;
 
 import android.view.View;
 
+import android.widget.Button;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -64,6 +65,15 @@ public class IwashiSpeedDialog
           public void onStopTrackingTouch(SeekBar seekBar) {
             nowSpeedView.setText(label + (seekBar.getProgress() + MIN));
           }
+      });
+      final SeekBar __seekBar = seekBar;
+      Button button = (Button)view.findViewById(R.id.to_default_button);
+      button.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          __seekBar.setProgress(Prefs.DEFAULT_IWASHI_SPEED - MIN);
+          nowSpeedView.setText(label + (__seekBar.getProgress() + MIN));
+        }
       });
     }
     return view;
