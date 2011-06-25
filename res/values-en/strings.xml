@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="app_name">School of Sardines</string>
-  <string name="service_name">School of Sardine</string>
+  <string name="service_name">School of Sardines</string>
   <string name="description">3D live wallpaper of sardines that used BOIDS algorithm</string>
   <string name="author">QSDN,Inc.</string>
   <string name="version">version 1.0.0</string>
@@ -23,12 +23,12 @@
   <string name="dialog_iwashi_speed_label">Speed of sardines:</string>
 
   <string name="title_preference_iwashi">Settings of sardines</string>
-  <string name="summary_setting">When number of sardines and movement speed are changed, please selects this. </string>
+  <string name="summary_setting">Please choose this so that you change the number of sardine or speed.</string>
 
   <string name="key_preference_iwashi_boids">iwashi_boids</string>
-  <string name="title_preference_iwashi_boids">"School of fish" function</string>
-  <string name="summary_on_preference_iwashi_boids">Disable to "school of fish" function.</string>
-  <string name="summary_off_preference_iwashi_boids">Enable to "school of fish" function.</string>
+  <string name="title_preference_iwashi_boids">"School of sardines" function</string>
+  <string name="summary_on_preference_iwashi_boids">Disable to "school of sardines" function.</string>
+  <string name="summary_off_preference_iwashi_boids">Enable to "school of sardines" function.</string>
 
   <string name="key_about_us">about_us</string>
   <string name="text_about_us">about</string>
@@ -39,7 +39,7 @@
   <string name="text_about_ok_button">OK</string>
 
   <string name="about_description">Explanation:\n
-This is 3D live Wallpaper simulating a school of sardine which used BOIDS algorithm.\n
+This is 3D live Wallpaper simulating a school of sardines which used BOIDS algorithm.\n
 \n
 Features:\n
 1) This simulates "a school of sardines".
