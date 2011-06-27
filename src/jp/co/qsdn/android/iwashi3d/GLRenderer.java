@@ -31,7 +31,7 @@ import jp.co.qsdn.android.iwashi3d.util.CoordUtil;
 public class GLRenderer {
   private static final boolean _debug = true;
   private static final String TAG = GLRenderer.class.getName();
-  private static final int MAX_IWASHI_COUNT = 50;
+  private static final int MAX_IWASHI_COUNT = 100;
   private final Background background = new Background();
   private final Ground ground = new Ground();
   private final Wave wave = new Wave();
@@ -618,11 +618,11 @@ if (false){
 
       {
         setupFog2(gl10);
-        for (int ii=0; ii<iwashi_count; ii++) {
-          if (iwashi[ii].getY() >= Aquarium.max_y / 3.0f * 2.0f) {
-            iwashi[ii].draw(gl10);
-          }
-        }
+//        for (int ii=0; ii<iwashi_count; ii++) {
+//          if (iwashi[ii].getY() >= Aquarium.max_y / 3.0f * 2.0f) {
+//            iwashi[ii].draw(gl10);
+//          }
+//        }
         setupFog(gl10);
       }
       gl10.glPopMatrix();
