@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<PreferenceScreen 
+  xmlns:android="http://schemas.android.com/apk/res/android">
+  <PreferenceCategory android:title="@string/title_preference_iwashi">
+    <jp.co.qsdn.android.iwashi3d.setting.IwashiCountDialog
+      android:title="@string/title_preference_iwashi_count"
+      android:summary="@string/summary_preference_iwashi_count"
+      android:dialogTitle="@string/dialog_title_iwashi_count"
+      android:dialogMessage="@string/dialog_message_iwashi_count"
+      android:dialogLayout="@layout/iwashi_count_dialog"
+    />
+    <jp.co.qsdn.android.iwashi3d.setting.IwashiSpeedDialog
+      android:title="@string/title_preference_iwashi_speed"
+      android:summary="@string/summary_preference_iwashi_speed"
+      android:dialogTitle="@string/dialog_title_iwashi_speed"
+      android:dialogMessage="@string/dialog_message_iwashi_speed"
+      android:dialogLayout="@layout/iwashi_speed_dialog"
+    />
+    <CheckBoxPreference   
+      android:key="@string/key_preference_iwashi_boids"
+      android:title="@string/title_preference_iwashi_boids"
+      android:summaryOn="@string/summary_on_preference_iwashi_boids"  
+      android:summaryOff="@string/summary_off_preference_iwashi_boids"
+      android:defaultValue="true"
+    />
+    <CheckBoxPreference   
+      android:key="@string/key_preference_camera_mode"
+      android:title="@string/title_preference_camera_mode"
+      android:summaryOn="@string/summary_on_preference_camera_mode"  
+      android:summaryOff="@string/summary_off_preference_camera_mode"
+      android:defaultValue="false"
+    />
+    <jp.co.qsdn.android.iwashi3d.setting.ChangeCameraDialog
+      android:title="@string/title_preference_change_camera"
+      android:summary="@string/summary_preference_change_camera"
+      android:dialogTitle="@string/dialog_title_change_camera"
+      android:dialogMessage="@string/dialog_message_change_camera"
+      android:dialogLayout="@layout/change_camera_dialog"
+    />
+  </PreferenceCategory>
+</PreferenceScreen>

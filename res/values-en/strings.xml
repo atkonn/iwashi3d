@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">School of Sardines</string>
+  <string name="service_name">School of Sardines</string>
+  <string name="description">3D live wallpaper of sardines that used BOIDS algorithm</string>
+  <string name="author">QSDN,Inc.</string>
+  <string name="version">version 1.0.0</string>
+  <string name="copyright">Copyright (c) 2011 QSDN,Inc. All rights reserved.</string>
+
+  <string name="setting_title">Settings</string>
+  <string name="key_preference_iwashi_count">iwashi_count</string>
+  <string name="title_preference_iwashi_count">Number of sardines</string>
+  <string name="summary_preference_iwashi_count">The number of sardines that display it is specified. </string>
+  <string name="dialog_title_iwashi_count" >How many sardines?</string>
+  <string name="dialog_message_iwashi_count" >Please select the number of sardines that display it. </string>
+  <string name="dialog_iwashi_count_label">Number of sardines:</string>
+
+  <string name="key_preference_iwashi_speed">iwashi_speed</string>
+  <string name="title_preference_iwashi_speed">Speed of sardines</string>
+  <string name="summary_preference_iwashi_speed">The passing speed that is basic of the sardine is specified. </string>
+  <string name="dialog_title_iwashi_speed" >Speed of sardines</string>
+  <string name="dialog_message_iwashi_speed" >Please select the passing speed where the sardine swims. </string>
+  <string name="dialog_iwashi_speed_label">Speed of sardines:</string>
+
+  <string name="title_preference_iwashi">Settings of sardines</string>
+  <string name="summary_setting">Please choose this so that you change the number of sardine or speed.</string>
+
+  <string name="key_preference_iwashi_boids">iwashi_boids</string>
+  <string name="title_preference_iwashi_boids">"School of sardines" function</string>
+  <string name="summary_on_preference_iwashi_boids">Disable to "school of sardines" function.</string>
+  <string name="summary_off_preference_iwashi_boids">Enable to "school of sardines" function.</string>
+
+  <string name="key_about_us">about_us</string>
+  <string name="text_about_us">about</string>
+  <string name="key_preference_ok_button">ok_button</string>
+  <string name="text_preference_ok_button">OK</string>
+
+  <string name="about_title">about School of sardines</string>
+  <string name="text_about_ok_button">OK</string>
+
+  <string name="about_description">Explanation:\n
+This is 3D live Wallpaper simulating a school of sardines which used BOIDS algorithm.\n
+\n
+Features:\n
+1) This simulates "a school of sardines".
+2) You can increase the number of sardine to 100 of them.\n
+\tHowever, this becomes very slow when you increased them
+3) You can change the speed that the sardine swims.\n
+4) Sardine comes there when you touched screen.\n
+5) You can enable "a school of sardine" function.\n
+You can disable "a school of sardine" function.\n
+6) You can change distance from a viewpoint to the center of the aquarium.\n
+7) There is a viewpoint mode of the sardine. You seem to have become the sardine.\n
+\n
+Requirement:\n
+1) After Android2.1.\n
+2) OpenGL ES 1.0.\n
+3) Over 3MB Heep memory area.\n
+\n
+Tested machines:\n
+1) SHARP IS05\n
+2) HTC Desire\n
+\n
+ChangeLog:\n
+iwashi3d (1.0.0) stable; urgency=low\n
+\n
+  * First Release\n
+\n
+ -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Sat, 02 Apr 2011 17:35:24 +0900\n
+\n
+Copyright:\n
+  * Copyright (c) 2011 QSDN,Inc. All right reserved.\n
+  * Copyright (c) 2011 Atsushi Konno All right reserved.\n
+License:\n
+  * Apache Software License 2.0.
+</string>
+  <string name="key_preference_camera_mode">camera_mode</string>
+  <string name="title_preference_camera_mode">Sardine View Mode</string>
+  <string name="summary_on_preference_camera_mode">Sardine View Mode is running.</string>
+  <string name="summary_off_preference_camera_mode">Normal View Mode is running.</string>
+
+  <string name="title_preference_change_camera">Change Viewpoint</string>
+  <string name="summary_preference_change_camera">This changes it of the distance from a viewpoint to a school of sardine.</string>
+  <string name="dialog_title_change_camera">Change Viewpoint</string>
+  <string name="dialog_message_change_camera">Please appoint the distance to a school of sardine</string>
+  <string name="dialog_camera_distance_label">Distance:</string>
+
+  <string name="to_default_button">reset</string>
+</resources>
