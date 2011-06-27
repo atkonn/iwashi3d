@@ -31,7 +31,7 @@ import jp.co.qsdn.android.iwashi3d.util.CoordUtil;
 public class GLRenderer {
   private static final boolean _debug = true;
   private static final String TAG = GLRenderer.class.getName();
-  private static final int MAX_IWASHI_COUNT = 50;
+  private static final int MAX_IWASHI_COUNT = 100;
   private final Background background = new Background();
   private final Ground ground = new Ground();
   private final Wave wave = new Wave();
@@ -538,12 +538,13 @@ if (false){
     gl10.glPushMatrix(); 
 
     // 画面をクリアする
-    gl10.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT | GL10.GL_STENCIL_BUFFER_BIT);
+    //gl10.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT | GL10.GL_STENCIL_BUFFER_BIT);
+    gl10.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
     // モデルの位置を決める
     gl10.glMatrixMode(GL10.GL_MODELVIEW);
     gl10.glLoadIdentity();
-    gl10.glDisable(GL10.GL_STENCIL_TEST);
+//    gl10.glDisable(GL10.GL_STENCIL_TEST);
 
 
     // カメラ
@@ -573,7 +574,7 @@ if (false){
     setupLighting2(gl10);
     setupLighting1(gl10);
 
-    gl10.glDisable(GL10.GL_STENCIL_TEST);
+//    gl10.glDisable(GL10.GL_STENCIL_TEST);
     gl10.glDisable(GL10.GL_DEPTH_TEST);
 
     synchronized (this) {
@@ -589,47 +590,46 @@ if (false){
     
     // model
     // リフレクションの描画
-    synchronized (this) {
+//    synchronized (this) {
       wave.draw(gl10);
-      //ステンシルテストの有効化
-      gl10.glColorMask(false,false,false,false);
-      gl10.glDepthMask(false);
-      gl10.glEnable(GL10.GL_STENCIL_TEST);
-
-      gl10.glStencilOp(GL10.GL_REPLACE,GL10.GL_REPLACE,GL10.GL_REPLACE);
-      gl10.glStencilFunc(GL10.GL_ALWAYS,1,~0);
-      wave.draw(gl10);
-      {
-        gl10.glPushMatrix();
-        gl10.glStencilOp(GL10.GL_KEEP, GL10.GL_KEEP, GL10.GL_INCR);
-        gl10.glStencilFunc(GL10.GL_EQUAL, 1, ~0);
-        gl10.glRotatef(-baseAngle, 0.0f, 1.0f, 0.0f);
-        wave.drawForStencil(gl10);
-        gl10.glPopMatrix();
-      }
-      gl10.glColorMask(true,true,true,true);
-      gl10.glDepthMask(true);
-      gl10.glStencilOp(GL10.GL_KEEP, GL10.GL_KEEP, GL10.GL_KEEP);
-      gl10.glStencilFunc(GL10.GL_EQUAL, 2, ~0);
-      gl10.glPushMatrix();
-      gl10.glScalef(1.0f,-1.0f,1.0f);
-      gl10.glTranslatef(0f,-Aquarium.max_y+Aquarium.min_y-0.5f,0f);
-      gl10.glPushMatrix();
-
-      {
-        setupFog2(gl10);
-        for (int ii=0; ii<iwashi_count; ii++) {
-          if (iwashi[ii].getY() >= Aquarium.max_y / 3.0f * 2.0f) {
-            iwashi[ii].draw(gl10);
-          }
-        }
-        setupFog(gl10);
-      }
-      gl10.glPopMatrix();
-      gl10.glPopMatrix();
-
-      gl10.glDisable(GL10.GL_STENCIL_TEST);
-    }
+//      //ステンシルテストの有効化
+//      gl10.glColorMask(false,false,false,false);
+//      gl10.glDepthMask(false);
+//      gl10.glEnable(GL10.GL_STENCIL_TEST);
+//      gl10.glStencilOp(GL10.GL_REPLACE,GL10.GL_REPLACE,GL10.GL_REPLACE);
+//      gl10.glStencilFunc(GL10.GL_ALWAYS,1,~0);
+//      wave.draw(gl10);
+//      {
+//        gl10.glPushMatrix();
+//        gl10.glStencilOp(GL10.GL_KEEP, GL10.GL_KEEP, GL10.GL_INCR);
+//        gl10.glStencilFunc(GL10.GL_EQUAL, 1, ~0);
+//        gl10.glRotatef(-baseAngle, 0.0f, 1.0f, 0.0f);
+//        wave.drawForStencil(gl10);
+//        gl10.glPopMatrix();
+//      }
+//      gl10.glColorMask(true,true,true,true);
+//      gl10.glDepthMask(true);
+//      gl10.glStencilOp(GL10.GL_KEEP, GL10.GL_KEEP, GL10.GL_KEEP);
+//      gl10.glStencilFunc(GL10.GL_EQUAL, 2, ~0);
+//      gl10.glPushMatrix();
+//      gl10.glScalef(1.0f,-1.0f,1.0f);
+//      gl10.glTranslatef(0f,-Aquarium.max_y+Aquarium.min_y-0.5f,0f);
+//      gl10.glPushMatrix();
+//
+//      {
+//        setupFog2(gl10);
+//        for (int ii=0; ii<iwashi_count; ii++) {
+//          if (iwashi[ii].getY() >= Aquarium.max_y / 3.0f * 2.0f) {
+//            iwashi[ii].draw(gl10);
+//          }
+//        }
+//        setupFog(gl10);
+//      }
+//      gl10.glPopMatrix();
+//     gl10.glPopMatrix();
+//
+//      gl10.glDisable(GL10.GL_STENCIL_TEST);
+//    }
     gl10.glEnable(GL10.GL_DEPTH_TEST);
     synchronized (this) {
       for (int ii=0; ii<iwashi_count; ii++) {

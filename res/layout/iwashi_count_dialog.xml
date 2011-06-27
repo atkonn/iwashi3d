@@ -22,7 +22,7 @@
     android:id="@+id/seek"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:max="40"
+    android:max="90"
     android:progress="10"
   />
   <LinearLayout
