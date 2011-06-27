@@ -73,6 +73,7 @@ Copyright:\n
   * Copyright (c) 2011 Atsushi Konno All right reserved.\n
 License:\n
   * Apache Software License 2.0.
+    - see https://github.com/atkonn/iwashi3d
 </string>
   <string name="key_preference_camera_mode">camera_mode</string>
   <string name="title_preference_camera_mode">Sardine View Mode</string>

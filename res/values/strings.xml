@@ -73,7 +73,7 @@ iwashi3d (1.0.0) stable; urgency=low\n
   * Copyright (c) 2011 Atsushi Konno All right reserved.\n
 \n
 ★ライセンス:\n
-  * ソースコードはApache Software License 2.0に基づいて公開しています。\n
+  * ソースコードはhttps://github.com/atkonn/iwashi3dにてApache Software License 2.0に基づいて公開しています。\n
 </string>
   <string name="key_preference_camera_mode">camera_mode</string>
   <string name="title_preference_camera_mode">鰯視点モード</string>
