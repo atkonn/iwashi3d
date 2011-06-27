@@ -146,7 +146,7 @@ if (false) {
     gl10.glClearDepthf(1.0f);
 
     // ステンシルのクリア
-    gl10.glClearStencil(0);
+//    gl10.glClearStencil(0);
 
     if (_debug) Log.d(TAG, "end onSurfaceCreated()");
   }
