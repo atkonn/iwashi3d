@@ -49,17 +49,14 @@ public class IwashiCountDialog
       nowCountView.setText(label + (seekBar.getProgress() + MIN));
       seekBar.setOnSeekBarChangeListener(
         new OnSeekBarChangeListener() {
-          // トラッキング開始時に呼び出されます
           @Override
           public void onStartTrackingTouch(SeekBar seekBar) {
             nowCountView.setText(label + (seekBar.getProgress() + MIN));
           }
-          // トラッキング中に呼び出されます
           @Override
           public void onProgressChanged(SeekBar seekBar, int progress, boolean fromTouch) {
             nowCountView.setText(label + (seekBar.getProgress() + MIN));
           }
-          // トラッキング終了時に呼び出されます
           @Override
           public void onStopTrackingTouch(SeekBar seekBar) {
             nowCountView.setText(label + (seekBar.getProgress() + MIN));

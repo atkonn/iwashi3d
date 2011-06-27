@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2011 QSDN,Inc.
+ * Copyright (C) 2011 Atsushi Konno
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package jp.co.qsdn.android.iwashi3d;
 
 import android.app.Notification;
@@ -18,15 +34,15 @@ public class AtlantisNotification {
 
   private static Notification createNotification(Context context) {
     Notification notification = new Notification(
-      R.drawable.smallicon,    // ステータスに置くスモールアイコン
-      "",                                        // アイコン横のツールテキスト無し
-      System.currentTimeMillis()                 // システム時刻
+      R.drawable.smallicon,
+      "",
+      System.currentTimeMillis()
     );
     PendingIntent pi = PendingIntent.getActivity(
         context,
-        0,                                             // requestCode
+        0,
         new Intent(context, SettingActivity.class),
-        0                                              // Default flags
+        0 
     );
     notification.setLatestEventInfo(
         context,
@@ -43,9 +59,6 @@ public class AtlantisNotification {
     return notification;
   }
 
-  //1. ステータスバーに通知
-  // 1-1. ブロードキャストレシーバーから起動時に呼び出す
-  // 1-2. アプリの終了時に呼び出す
   public static void putNotice(Context context) {
     NotificationManager nm = (NotificationManager)
        context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -53,8 +66,6 @@ public class AtlantisNotification {
     nm.notify(AtlantisNotification.NOTIFICATION_ID, notification);
   }
 
-  //2. ステータスバーから削除
-  // 2-1. アプリの起動時に呼び出す
   public static void removeNotice(Context context) {
     NotificationManager nm = (NotificationManager)
       context.getSystemService(Context.NOTIFICATION_SERVICE);
