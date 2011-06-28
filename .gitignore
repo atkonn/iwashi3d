@@ -2,3 +2,4 @@ bin
 gen
 tools
 local.properties
+qsdn.keystore
