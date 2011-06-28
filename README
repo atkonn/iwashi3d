@@ -12,13 +12,9 @@ You can disable "a school of sardine" function.
 7) There is a viewpoint mode of the sardine. You seem to have become the sardine.
 
 Requirement:
-1) Android2.1 or Upper.
+1) Android2.1 or later.
 2) OpenGL ES 1.0.
 3) Over 3MB Heep memory area.
-
-Tested machines:
-1) SHARP IS05
-2) HTC Desire
 
 ChangeLog:
 iwashi3d (1.0.0) stable; urgency=low
