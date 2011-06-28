@@ -57,10 +57,6 @@ Requirement:\n
 2) OpenGL ES 1.0.\n
 3) Over 3MB Heep memory area.\n
 \n
-Tested machines:\n
-1) SHARP IS05\n
-2) HTC Desire\n
-\n
 ChangeLog:\n
 iwashi3d (1.0.0) stable; urgency=low\n
 \n
