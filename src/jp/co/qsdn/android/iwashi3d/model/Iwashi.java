@@ -40,7 +40,7 @@ import jp.co.qsdn.android.iwashi3d.BaitManager;
 import jp.co.qsdn.android.iwashi3d.util.CoordUtil;
 
 public class Iwashi implements Model {
-  private static final boolean traceBOIDS = true;
+  private static final boolean traceBOIDS = false;
   private static final boolean debug = false;
   private static final String TAG = Iwashi.class.getName();
   private static final long BASE_TICK = 17852783L;
