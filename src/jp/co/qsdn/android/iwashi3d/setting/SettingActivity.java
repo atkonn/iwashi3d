@@ -48,7 +48,6 @@ public class SettingActivity extends PreferenceActivity {
     super.onResume();
     AdView adGoogle = (AdView)this.findViewById(R.id.ad);
     AdRequest adr = new AdRequest();
-    adr.setTesting(true);
     adGoogle.loadAd(adr);
   }
   @Override
