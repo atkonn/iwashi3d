@@ -34,17 +34,29 @@ import android.view.View;
 
 import android.widget.Button;
 
+import com.google.ads.AdRequest;
+import com.google.ads.AdView;
+
 import jp.co.qsdn.android.iwashi3d.R;
 
 
 public class SettingActivity extends PreferenceActivity {
   private static final String TAG = SettingActivity.class.getName();
 
+  @Override 
+  protected void onResume() {
+    super.onResume();
+    AdView adGoogle = (AdView)this.findViewById(R.id.ad);
+    AdRequest adr = new AdRequest();
+    adr.setTesting(true);
+    adGoogle.loadAd(adr);
+  }
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.setting);
     addPreferencesFromResource(R.xml.setting);
+
 
     {
       boolean b = Prefs.getInstance(this).getIwashiBoids();

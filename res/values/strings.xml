@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="title">鰯の群れ</string>
   <string name="app_name">鰯の群れ</string>
   <string name="service_name">鰯の群れ</string>
   <string name="description">Boidsアルゴリズムを使った鰯の群れ3Dライブ壁紙</string>

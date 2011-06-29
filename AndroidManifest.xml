@@ -39,6 +39,8 @@
         <category android:name="android.intent.category.DEFAULT" />
       </intent-filter>
     </activity>
+    <activity android:name="com.google.ads.AdActivity"
+              android:configChanges="keyboard|keyboardHidden|orientation"/>
     <receiver android:name="AtlantisBroadcastReceiver">
       <intent-filter>
         <action android:name="android.intent.action.BOOT_COMPLETED"/>
@@ -49,4 +51,8 @@
   <uses-feature android:name="android.software.live_wallpaper" />
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
   <uses-permission android:name="android.permission.BIND_WALLPAPER"/>
+
+  <!-- for AdMob -->
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 </manifest> 

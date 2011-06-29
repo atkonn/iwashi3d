@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <string name="title">School of Sardines</string>
   <string name="app_name">School of Sardines</string>
   <string name="service_name">School of Sardines</string>
   <string name="description">3D live wallpaper of sardines that used BOIDS algorithm</string>
