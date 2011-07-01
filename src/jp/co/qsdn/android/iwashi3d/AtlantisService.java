@@ -17,6 +17,7 @@
 package jp.co.qsdn.android.iwashi3d;
 
 import android.content.Context;
+import android.content.Intent;
 
 import android.os.Bundle;
 
@@ -25,6 +26,8 @@ import android.service.wallpaper.WallpaperService;
 import android.util.Log;
 
 import android.view.SurfaceHolder;
+
+import android.widget.Toast;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -41,7 +44,6 @@ import javax.microedition.khronos.opengles.GL10;
 import jp.co.qsdn.android.iwashi3d.GLRenderer;
 import jp.co.qsdn.android.iwashi3d.util.MatrixTrackingGL;
 
-import android.content.Intent;
 
 
 public class AtlantisService extends WallpaperService {
@@ -120,21 +122,25 @@ public class AtlantisService extends WallpaperService {
           /* OpenGLの初期化 */
           int counter = 0;
           while(true) {
-            Log.d(TAG, "start EGLContext.getEGL()");
+            if (_debug) Log.d(TAG, "start EGLContext.getEGL()");
             exitEgl();
             egl10 = (EGL10) EGLContext.getEGL();
-            Log.d(TAG, "end EGLContext.getEGL()");
-            Log.d(TAG, "start eglGetDisplay");
+
+            if (_debug) Log.d(TAG, "end EGLContext.getEGL()");
+            if (_debug) Log.d(TAG, "start eglGetDisplay");
             eglDisplay = egl10.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
-            Log.d(TAG, "end eglGetDisplay");
+            if (_debug) Log.d(TAG, "end eglGetDisplay");
             if (eglDisplay == null || EGL10.EGL_NO_DISPLAY.equals(eglDisplay)) {
-              Log.d(TAG, "eglGetDisplayがEGL_NO_DISPLAY [" + AtlantisService.getErrorString(egl10.eglGetError()) + "]");
+              String errStr = AtlantisService.getErrorString(egl10.eglGetError());
+              if (_debug) Log.d(TAG, "eglGetDisplayがEGL_NO_DISPLAY [" + errStr + "]");
               exitEgl();
               if (++counter >= AtlantisService.RETRY_COUNT) {
                 Log.e(TAG, "egl10.eglCreateContextがEGL_NO_DISPLAY");
-                throw new RuntimeException("OpenGL Error(EGL_NO_DISPLAY)");
+                throw new RuntimeException("OpenGL Error(EGL_NO_DISPLAY) "
+                  + errStr + ": "
+                );
               }     
-              Log.d(TAG, "RETRY");
+              if (_debug) Log.d(TAG, "RETRY");
               System.gc();
               waitNano();
               continue;
@@ -144,13 +150,16 @@ public class AtlantisService extends WallpaperService {
             }
             int[] version = new int[2];
             if (! egl10.eglInitialize(eglDisplay, version)) {
-              Log.d(TAG, "egl10.eglInitializeがfalse [" + AtlantisService.getErrorString(egl10.eglGetError()) + "]");
+              String errStr = AtlantisService.getErrorString(egl10.eglGetError());
+              if (_debug) Log.d(TAG, "egl10.eglInitializeがfalse [" + errStr + "]");
               exitEgl();
               if (++counter >= AtlantisService.RETRY_COUNT) {
                 Log.e(TAG,"egl10.eglInitializeがfalse");
-                throw new RuntimeException("OpenGL Error(eglInitialize)");
+                throw new RuntimeException("OpenGL Error(eglInitialize) "
+                  + errStr + ": "
+                );
               }
-              Log.d(TAG,"RETRY");
+              if (_debug) Log.d(TAG,"RETRY");
               System.gc();
               waitNano();
               continue;
@@ -174,11 +183,14 @@ public class AtlantisService extends WallpaperService {
             /*-----------------------------------------------------------------*/
             if (numConfig[0] == 0) {
               if (_debug) Log.d(TAG, "numConfig[0]=" + numConfig[0] + "");
-              /* どうすっかね・・・ */
               Log.e(TAG,"eglChooseConfig失敗:"
                  + "numConfig:[" + numConfig[0] + "]");
+              String errStr = AtlantisService.getErrorString(egl10.eglGetError());
+              errStr += " eglChooseConfig numConfig == 0 ";
               exitEgl();
-              throw new RuntimeException("OpenGL Error");
+              throw new RuntimeException("OpenGL Error "
+                + errStr + " :"
+              );
             }
 
             EGLConfig config = configs[0];
@@ -188,13 +200,16 @@ public class AtlantisService extends WallpaperService {
             /*-----------------------------------------------------------------*/
             eglContext = egl10.eglCreateContext(eglDisplay, config, EGL10.EGL_NO_CONTEXT, null); 
             if (eglContext == null || EGL10.EGL_NO_CONTEXT.equals(eglContext)) {
-              Log.d(TAG, "egl10.eglCreateContext == EGL_NO_CONTEXT [" + AtlantisService.getErrorString(egl10.eglGetError()) + "]");
+              String errStr = AtlantisService.getErrorString(egl10.eglGetError());
+              if (_debug) Log.d(TAG, "egl10.eglCreateContext == EGL_NO_CONTEXT [" + errStr + "]");
               exitEgl();
               if (++counter >= AtlantisService.RETRY_COUNT) {
                 Log.e(TAG, "egl10.eglCreateContextがEGL_NO_CONTEXT");
-                throw new RuntimeException("OpenGL Error(EGL_NO_CONTEXT)");
+                throw new RuntimeException("OpenGL Error(EGL_NO_CONTEXT) "
+                  + errStr + " :"
+                );
               }
-              Log.d(TAG, "RETRY");
+              if (_debug) Log.d(TAG, "RETRY");
               System.gc();
               waitNano();
               continue;
@@ -205,36 +220,42 @@ public class AtlantisService extends WallpaperService {
             /*-----------------------------------------------------------------*/
             eglSurface = egl10.eglCreateWindowSurface(eglDisplay, config, holder, null);
             if (eglSurface == null || EGL10.EGL_NO_SURFACE.equals(eglSurface)) {
-              Log.d(TAG, "egl10.eglCreateWindowSurface == EGL_NO_SURFACE [" + AtlantisService.getErrorString(egl10.eglGetError()) + "]");
+              String errStr = AtlantisService.getErrorString(egl10.eglGetError());
+              if (_debug) Log.d(TAG, "egl10.eglCreateWindowSurface == EGL_NO_SURFACE [" + errStr + "]");
               exitEgl();
               if (++counter >= AtlantisService.RETRY_COUNT) {
                 Log.e(TAG, "egl10.eglCreateWindowSurfaceがEGL_NO_SURFACE");
-                throw new RuntimeException("OpenGL Error(EGL_NO_SURFACE)");
+                throw new RuntimeException("OpenGL Error(EGL_NO_SURFACE) "
+                  + errStr + " :"
+                );
               }
-              Log.e(TAG, "RETRY");
+              if (_debug) Log.e(TAG, "RETRY");
               System.gc();
               waitNano();
               continue;
             }
-            Log.d(TAG, "eglCreateWindowSurface done.");
+            if (_debug) Log.d(TAG, "eglCreateWindowSurface done.");
             /*-----------------------------------------------------------------*/
             /* EGLContextとEGLSurfaceを関連付ける(アタッチ)                    */
             /*-----------------------------------------------------------------*/
             if (! egl10.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext)) {
-              Log.d(TAG, "egl10.eglMakeCurrent == false [" + AtlantisService.getErrorString(egl10.eglGetError()) + "]");
+              String errStr = AtlantisService.getErrorString(egl10.eglGetError());
+              if (_debug) Log.d(TAG, "egl10.eglMakeCurrent == false [" + errStr + "]");
               exitEgl();
               if (++counter >= AtlantisService.RETRY_COUNT) {
                 Log.e(TAG,"egl10.eglMakeCurrentがfalse");
-                throw new RuntimeException("OpenGL Error(eglMakeCurrent)");
+                throw new RuntimeException("OpenGL Error(eglMakeCurrent) "
+                  + errStr + " :"
+                );
               }
-              Log.d(TAG,"RETRY");
+              if (_debug) Log.d(TAG,"RETRY");
               System.gc();
               waitNano();
               continue;
             }
             
-            Log.d(TAG, "eglMakeCurrent done.");
-            Log.d(TAG, "now create gl10 object");
+            if (_debug) Log.d(TAG, "eglMakeCurrent done.");
+            if (_debug) Log.d(TAG, "now create gl10 object");
   
             gl10 = new MatrixTrackingGL((GL10) (eglContext.getGL()));
    
@@ -245,7 +266,7 @@ public class AtlantisService extends WallpaperService {
             synchronized (glRenderer) {
               glRenderer.onSurfaceCreated(gl10, config, getApplicationContext());
             }
-            Log.d(TAG, "EGL initalize done.");
+            if (_debug) Log.d(TAG, "EGL initalize done.");
             mInitialized = true;
             if (drawCommand == null) {
               drawCommand = new Runnable() {
@@ -481,8 +502,7 @@ public class AtlantisService extends WallpaperService {
     case EGL11.EGL_CONTEXT_LOST:
       return "EGL_CONTEXT_LOST";
     default:
-      return "OTHER";
+      return "OTHER err:[" + err + "]";
     }
   }
-
 }
