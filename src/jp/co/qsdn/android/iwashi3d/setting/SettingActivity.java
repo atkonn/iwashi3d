@@ -42,6 +42,7 @@ import jp.co.qsdn.android.iwashi3d.R;
 
 public class SettingActivity extends PreferenceActivity {
   private static final String TAG = SettingActivity.class.getName();
+  private static final boolean debug = false;
 
   @Override 
   protected void onResume() {
@@ -122,13 +123,13 @@ public class SettingActivity extends PreferenceActivity {
 
   @Override
   protected void onDestroy() {
-    Log.d(TAG, "start onDestroy");
+    if (debug) Log.d(TAG, "start onDestroy");
     boolean b = getPreferenceManager().getSharedPreferences().getBoolean(Prefs.KEY_IWASHI_BOIDS, Prefs.DEFAULT_IWASHI_BOIDS);
     Prefs.getInstance(this).setIwashiBoids(b);
     b = getPreferenceManager().getSharedPreferences().getBoolean(Prefs.KEY_CAMERA_MODE, Prefs.DEFAULT_CAMERA_MODE);
     Prefs.getInstance(this).setCameraMode(b);
     super.onDestroy();
-    Log.d(TAG, "end onDestroy");
+    if (debug) Log.d(TAG, "end onDestroy");
   }
 
 

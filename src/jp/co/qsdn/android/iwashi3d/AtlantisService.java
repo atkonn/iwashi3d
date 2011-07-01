@@ -48,7 +48,7 @@ import jp.co.qsdn.android.iwashi3d.util.MatrixTrackingGL;
 
 public class AtlantisService extends WallpaperService {
   private static final String TAG = AtlantisService.class.getName();
-  private static final boolean _debug = true;
+  private static final boolean _debug = false;
   private static final int RETRY_COUNT = 3;
 
   private class AtlantisEngine extends Engine {
@@ -115,7 +115,7 @@ public class AtlantisService extends WallpaperService {
         @Override
         public void run() {
           if (mInitialized) {
-            Log.d(TAG, "already Initialized(surfaceCreatedCommand)");
+            if (_debug) Log.d(TAG, "already Initialized(surfaceCreatedCommand)");
             return;
           }
           boolean ret;
@@ -125,7 +125,6 @@ public class AtlantisService extends WallpaperService {
             if (_debug) Log.d(TAG, "start EGLContext.getEGL()");
             exitEgl();
             egl10 = (EGL10) EGLContext.getEGL();
-
             if (_debug) Log.d(TAG, "end EGLContext.getEGL()");
             if (_debug) Log.d(TAG, "start eglGetDisplay");
             eglDisplay = egl10.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
@@ -214,7 +213,7 @@ public class AtlantisService extends WallpaperService {
               waitNano();
               continue;
             }
-            Log.d(TAG, "eglCreateContext done.");
+            if (_debug) Log.d(TAG, "eglCreateContext done.");
             /*-----------------------------------------------------------------*/
             /* 取得したEGLDisplayとEGLConfigでEGLSurface作成                   */
             /*-----------------------------------------------------------------*/
@@ -314,7 +313,7 @@ public class AtlantisService extends WallpaperService {
         if (!getExecutor().awaitTermination(60, TimeUnit.SECONDS)) {
           getExecutor().shutdownNow();
           if (!getExecutor().awaitTermination(60, TimeUnit.SECONDS)) {
-            Log.d(TAG,"ExecutorService did not terminate....");
+            if (_debug) Log.d(TAG,"ExecutorService did not terminate....");
             getExecutor().shutdownNow();
             Thread.currentThread().interrupt();
           }
@@ -421,54 +420,54 @@ public class AtlantisService extends WallpaperService {
       return ret;
     }  
     public void exitEgl() {
-      Log.d(TAG, "start exitEgl");
+      if (_debug) Log.d(TAG, "start exitEgl");
       if (egl10 != null) {
         if (eglDisplay != null && ! eglDisplay.equals(EGL10.EGL_NO_DISPLAY)) {
           if (! egl10.eglMakeCurrent(eglDisplay, EGL10.EGL_NO_SURFACE,
                                            EGL10.EGL_NO_SURFACE,
                                            EGL10.EGL_NO_CONTEXT)) {
-            Log.d(TAG, "eglMakeCurrentがfalse [" + AtlantisService.getErrorString(egl10.eglGetError()) + "]");
+            Log.e(TAG, "eglMakeCurrentがfalse [" + AtlantisService.getErrorString(egl10.eglGetError()) + "]");
           }
        
           if (eglSurface != null && ! eglSurface.equals(EGL10.EGL_NO_SURFACE)) {
             if (! egl10.eglDestroySurface(eglDisplay, eglSurface)) {
-              Log.d(TAG, "eglDestroySurfaceがfalse [" + AtlantisService.getErrorString(egl10.eglGetError()) + "]");
+              Log.e(TAG, "eglDestroySurfaceがfalse [" + AtlantisService.getErrorString(egl10.eglGetError()) + "]");
             }
             eglSurface = null;
           }
           if (eglContext != null && ! eglContext.equals(EGL10.EGL_NO_CONTEXT)) {
             if (! egl10.eglDestroyContext(eglDisplay, eglContext)) {
-              Log.d(TAG, "eglDestroyContextがfalse [" + AtlantisService.getErrorString(egl10.eglGetError()) + "]");
+              Log.e(TAG, "eglDestroyContextがfalse [" + AtlantisService.getErrorString(egl10.eglGetError()) + "]");
             }
             eglContext = null;
           }
           if (! egl10.eglTerminate(eglDisplay)) {
-            Log.d(TAG, "eglTerminateがfalse [" + AtlantisService.getErrorString(egl10.eglGetError()) + "]");
+            Log.e(TAG, "eglTerminateがfalse [" + AtlantisService.getErrorString(egl10.eglGetError()) + "]");
           }
           eglDisplay = null;
         }
         egl10 = null;
       }
-      Log.d(TAG, "end exitEgl");
+      if (_debug) Log.d(TAG, "end exitEgl");
     }
   }
   @Override
   public Engine onCreateEngine() {
     if (_debug) Log.d(TAG, "start onCreateEngine()");
     AtlantisEngine engine = new AtlantisEngine();
-    Log.d(TAG, "engine:[" + engine + "]");
+    if (_debug) Log.d(TAG, "engine:[" + engine + "]");
     if (_debug) Log.d(TAG, "end onCreateEngine()");
     return engine;
   }
 
   public void waitNano() {
-    Log.d(TAG, "start waitNano");
+    if (_debug) Log.d(TAG, "start waitNano");
     try { 
       //TimeUnit.NANOSECONDS.sleep(5000);
       TimeUnit.SECONDS.sleep(5);
     } catch (InterruptedException e) {
     }
-    Log.d(TAG, "end waitNano");
+    if (_debug) Log.d(TAG, "end waitNano");
   }
 
   public static String getErrorString(int err) {

@@ -45,7 +45,7 @@ import jp.co.qsdn.android.iwashi3d.setting.Prefs;
 import jp.co.qsdn.android.iwashi3d.util.CoordUtil;
 
 public class GLRenderer {
-  private static final boolean _debug = true;
+  private static final boolean _debug = false;
   private static final String TAG = GLRenderer.class.getName();
   private static final int MAX_IWASHI_COUNT = 100;
   private final Background background = new Background();
@@ -104,12 +104,12 @@ if (false) {
   }
   
   public static GLRenderer getInstance(Context context) {
-    Log.d(TAG, "start getInstance()");
+    if (_debug) Log.d(TAG, "start getInstance()");
     if (glRenderer == null) {
-      Log.d(TAG, "new GLRenderer");
+      if (_debug) Log.d(TAG, "new GLRenderer");
       glRenderer = new GLRenderer(context);
     }
-    Log.d(TAG, "end getInstance()");
+    if (_debug) Log.d(TAG, "end getInstance()");
     return glRenderer;
   }
 

@@ -23,6 +23,7 @@ import javax.microedition.khronos.opengles.GL11;
 
 public class CoordUtil {
   private static final String TAG = CoordUtil.class.getName();
+  private static final boolean _debug = false;
 
   protected float[][] matrix = null;
 
@@ -342,14 +343,16 @@ public class CoordUtil {
     float bottom = -top;
     float left = aspect * bottom;
     float right = -left;
-    Log.d(TAG, 
-        "left:[" + left + "]:"
-      + "right:[" + right + "]:"
-      + "bottom:[" + bottom + "]:"
-      + "top:[" + top + "]:"
-      + "zNear:[" + zNear + "]:"
-      + "zFar:[" + zFar + "]:"
-    );
+    if (_debug) {
+      Log.d(TAG, 
+          "left:[" + left + "]:"
+        + "right:[" + right + "]:"
+        + "bottom:[" + bottom + "]:"
+        + "top:[" + top + "]:"
+        + "zNear:[" + zNear + "]:"
+        + "zFar:[" + zFar + "]:"
+      );
+    }
 
 
     gl10.glFrustumf(left, right, bottom, top, zNear, zFar);
