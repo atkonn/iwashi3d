@@ -163,12 +163,7 @@ public class AtlantisService extends WallpaperService {
               waitNano();
               continue;
             }
-            int[] configSpec = { EGL10.EGL_RED_SIZE, 4,
-                                 EGL10.EGL_GREEN_SIZE, 4,
-                                 EGL10.EGL_BLUE_SIZE,4,
-                                 EGL10.EGL_DEPTH_SIZE, 16,
-//                                 EGL10.EGL_STENCIL_SIZE, 1,
-                                 EGL10.EGL_NONE };
+            int[] configSpec = { EGL10.EGL_NONE };
 
             EGLConfig[] configs = new EGLConfig[1];
             int[] numConfig = new int[1];
