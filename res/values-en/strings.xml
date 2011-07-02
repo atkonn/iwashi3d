@@ -59,6 +59,13 @@ Requirement:\n
 3) Over 3MB Heep memory area.\n
 \n
 ChangeLog:\n
+Iwashi3d (1.0.2) stable; urgency=low\n
+\n
+  * Changed EGL Config Spec.\n
+      - set EGL_NONE only (temporary setting)\n
+\n
+ -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Sun, 03 Jul 2011 08:24:33 +0900\n
+\n
 Iwashi3d (1.0.1) stable; urgency=low\n
 \n
   * Updated ChangeLog\n

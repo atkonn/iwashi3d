@@ -1,3 +1,10 @@
+Iwashi3d (1.0.2) stable; urgency=low
+
+  * Changed EGL Config Spec.
+    - set EGL_NONE only (temporary setting)
+
+ -- Atsushi Konno <konno@qsdn.co.jp>  Sun, 03 Jul 2011 08:24:33 +0900
+
 Iwashi3d (1.0.1) stable; urgency=low
 
   * Updated ChangeLog
