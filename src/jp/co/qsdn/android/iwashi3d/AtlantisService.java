@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import javax.microedition.khronos.egl.EGL10;
@@ -105,6 +106,27 @@ public class AtlantisService extends WallpaperService {
       super.onDestroy();
       System.gc();
       if (_debug) Log.d(TAG, "end onDestroy() [" + this + "]");
+    }
+
+
+    private void doExecute(Runnable command) {
+      while(true) {
+        try {
+          getExecutor().execute(command);
+        }
+        catch (RejectedExecutionException e) {
+          if (getExecutor().isShutdown()) {
+            // ignore
+          }
+          else {
+            Log.e(TAG, "command execute failure", e);
+            waitNano();
+            System.gc();
+            continue;
+          }
+        }
+        break;
+      }
     }
 
     @Override
@@ -271,18 +293,18 @@ public class AtlantisService extends WallpaperService {
                     }
                     egl10.eglSwapBuffers(eglDisplay, eglSurface);
                     if (!getExecutor().isShutdown() && isVisible() && egl10.eglGetError() != EGL11.EGL_CONTEXT_LOST) {
-                      getExecutor().execute(drawCommand);
+                      doExecute(drawCommand);
                     }
                   }
                 }
               };
-              getExecutor().execute(drawCommand);
+              doExecute(drawCommand);
             }
             break;
           }
         }
       };
-      getExecutor().execute(surfaceCreatedCommand);
+      doExecute(surfaceCreatedCommand);
       if (_debug) Log.d(TAG, "end onSurfaceCreated() [" + this + "]");
     }
 
@@ -302,7 +324,7 @@ public class AtlantisService extends WallpaperService {
           mInitialized = false;
         }
       };
-      getExecutor().execute(surfaceDestroyedCommand);
+      doExecute(surfaceDestroyedCommand);
       getExecutor().shutdown();
       try {
         if (!getExecutor().awaitTermination(60, TimeUnit.SECONDS)) {
@@ -338,7 +360,7 @@ public class AtlantisService extends WallpaperService {
           }
         };
       };
-      getExecutor().execute(surfaceChangedCommand);
+      doExecute(surfaceChangedCommand);
       if (_debug) Log.d(TAG, "end onSurfaceChanged() [" + this + "]");
     }
  
@@ -354,7 +376,7 @@ public class AtlantisService extends WallpaperService {
             glRenderer.updateSetting(getApplicationContext());
           }
         }
-        getExecutor().execute(drawCommand);
+        doExecute(drawCommand);
       }
       if (_debug) Log.d(TAG, "end onVisibilityChanged()");
     }
@@ -378,7 +400,7 @@ public class AtlantisService extends WallpaperService {
           }
         };
       };
-      getExecutor().execute(offsetsChangedCommand);
+      doExecute(offsetsChangedCommand);
       if (_debug) Log.d(TAG, "end onOffsetChanged()");
     }
     
@@ -408,7 +430,7 @@ public class AtlantisService extends WallpaperService {
              }
            }
          };
-         getExecutor().execute(onCommandCommand);
+         doExecute(onCommandCommand);
       }  
       Bundle ret = super.onCommand(action, x, y, z, extras, resultRequested);
       if (_debug) Log.d(TAG, "end onCommand");
