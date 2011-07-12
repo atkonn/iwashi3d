@@ -5,7 +5,7 @@
   <string name="service_name">School of Sardines</string>
   <string name="description">3D live wallpaper of sardines that used BOIDS algorithm</string>
   <string name="author">QSDN,Inc.</string>
-  <string name="version">version 1.0.3</string>
+  <string name="version">version 1.0.4</string>
   <string name="copyright">Copyright (c) 2011 QSDN,Inc. All rights reserved.</string>
 
   <string name="setting_title">Settings</string>
@@ -59,6 +59,13 @@ Requirement:\n
 3) Over 3MB Heep memory area.\n
 \n
 ChangeLog:\n
+Iwashi3d (1.0.4) stable; urgency=low\n
+\n
+  * Fixed Bug.\n
+      - When the view mode of sardines, a bug in the direction of the gaze is abnormal\n
+\n
+ -- Atsushi Konno <konno@qsdn.co.jp>  Wed, 13 Jul 2011 04:50:03 +0900\n
+\n
 Iwashi3d (1.0.3) stable; urgency=low\n
 \n
   * Fixed Bug.\n
