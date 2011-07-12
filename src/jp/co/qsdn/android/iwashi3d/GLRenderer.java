@@ -566,12 +566,16 @@ if (false){
     // カメラ
     if (cameraMode) {
       /* 鰯視点モード */
-      float c_x = iwashi[0].getX() - iwashi[0].getDirectionX() * (cameraDistance/5.0f);
-      float c_y = iwashi[0].getY() - iwashi[0].getDirectionY() * (cameraDistance/5.0f);
-      float c_z = iwashi[0].getZ() - iwashi[0].getDirectionZ() * (cameraDistance/5.0f);
+      float c_x = iwashi[0].getX();
+      float c_y = iwashi[0].getY();
+      float c_z = iwashi[0].getZ();
       CoordUtil.lookAt(gl10,
-                    c_x, c_y, c_z,
-                    iwashi[0].getDirectionX(),iwashi[0].getDirectionY(),iwashi[0].getDirectionZ(),
+                    c_x - iwashi[0].getDirectionX(), 
+                    c_y - iwashi[0].getDirectionY(),
+                    c_z - iwashi[0].getDirectionZ(),
+                    c_x + iwashi[0].getDirectionX(),
+                    c_y + iwashi[0].getDirectionY(),
+                    c_z + iwashi[0].getDirectionZ(),
                     0,1,0);
     }
     else {
@@ -649,7 +653,9 @@ if (false){
     gl10.glEnable(GL10.GL_DEPTH_TEST);
     synchronized (this) {
       for (int ii=0; ii<iwashi_count; ii++) {
-        iwashi[ii].draw(gl10);
+        if (cameraMode == false || (cameraMode == true && ii != 0)) {
+          iwashi[ii].draw(gl10);
+        }
       }
     }
     gl10.glDisable(GL10.GL_DEPTH_TEST);

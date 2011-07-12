@@ -3,6 +3,8 @@ Iwashi3d (1.0.4) stable; urgency=low
   * Fixed Bug.
     - When the view mode of sardines, a bug in the direction of the gaze is
       abnormal
+  * Changed Features.
+    - When the view mode of sardines, not draw sardine with No.0.
 
  -- Atsushi Konno <konno@qsdn.co.jp>  Wed, 13 Jul 2011 04:50:03 +0900
 
