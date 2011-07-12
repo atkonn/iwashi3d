@@ -17,11 +17,43 @@ Requirement:
 3) Over 3MB Heep memory area.
 
 ChangeLog:
-iwashi3d (1.0.0) stable; urgency=low
+Iwashi3d (1.0.4) stable; urgency=low
 
-  * First Release
+  * Fixed Bug.
+    - When the view mode of sardines, a bug in the direction of the gaze is
+      abnormal
+  * Changed Features.
+    - When the view mode of sardines, not draw sardine with No.0.
 
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Sat, 02 Apr 2011 17:35:24 +0900
+ -- Atsushi Konno <konno@qsdn.co.jp>  Wed, 13 Jul 2011 04:50:03 +0900
+
+Iwashi3d (1.0.3) stable; urgency=low
+
+  * Fixed Bug.
+    - no check for RejectedExecuteException
+
+ -- Atsushi Konno <konno@qsdn.co.jp>  Mon, 04 Jul 2011 09:33:38 +0900
+
+Iwashi3d (1.0.2) stable; urgency=low
+
+  * Changed EGL Config Spec.
+    - set EGL_NONE only (temporary setting)
+
+ -- Atsushi Konno <konno@qsdn.co.jp>  Sun, 03 Jul 2011 08:24:33 +0900
+
+Iwashi3d (1.0.1) stable; urgency=low
+
+  * Updated ChangeLog
+  * No-OP debug log.
+  * Added more information with RE
+
+ -- Atsushi Konno <konno@qsdn.co.jp>  Fri, 01 Jul 2011 20:24:35 +0900
+
+Iwashi3d (1.0.0) stable; urgency=low
+
+  * Initial release.
+
+ -- Atsushi Konno <konno@qsdn.co.jp>  Thu Jun 30 04:15:17 2011 +0900
 
 Copyright:
   * Copyright (c) 2011 QSDN,Inc. All right reserved.
