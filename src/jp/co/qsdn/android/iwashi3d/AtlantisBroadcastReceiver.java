@@ -16,9 +16,13 @@
  */
 package jp.co.qsdn.android.iwashi3d;
 
+import android.app.WallpaperInfo;
+import android.app.WallpaperManager;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+
 import android.util.Log;
 
 public class AtlantisBroadcastReceiver extends BroadcastReceiver {
@@ -32,8 +36,23 @@ public class AtlantisBroadcastReceiver extends BroadcastReceiver {
     if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
       if (_debug) Log.d(TAG,"ACTION_BOOT_COMPLETED受信");
       // 端末ブート完了時にアプリアイコンを置く
-      AtlantisNotification.putNotice(context);
+      if (isRunning(context)) {
+        AtlantisNotification.putNotice(context);
+      }
     }
     if (_debug) Log.d(TAG,"end onReceive");
+  }
+
+  protected boolean isRunning(Context context) {
+    WallpaperManager wallpaperManager = (WallpaperManager)context.getSystemService(Context.WALLPAPER_SERVICE);
+
+    WallpaperInfo wallpaperInfo = wallpaperManager.getWallpaperInfo();
+    if (wallpaperInfo != null) {
+      if (_debug) Log.d(TAG, "serviceName:[" + wallpaperInfo.getServiceName() + "]");
+      if ("jp.co.qsdn.android.iwashi3d.AtlantisService".equals(wallpaperInfo.getServiceName())) {
+        return true;
+      }
+    }
+    return false;
   }
 }
