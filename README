@@ -16,7 +16,18 @@ Requirement:
 2) OpenGL ES 1.0.
 3) Over 3MB Heep memory area.
 
+Bugs and Todo:
+1) crash with samsung fascinate.
+2) too slow. choppy.
+
 ChangeLog:
+iwashi3d (1.0.5) stable; urgency=low
+
+  * Fixed Bug.
+    - not start, but it puts on the status bar
+
+ -- Atsushi Konno <konno@qsdn.co.jp>  Thu, 14 Jul 2011 03:53:58 +0900
+
 Iwashi3d (1.0.4) stable; urgency=low
 
   * Fixed Bug.
