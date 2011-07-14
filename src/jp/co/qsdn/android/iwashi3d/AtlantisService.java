@@ -128,6 +128,35 @@ public class AtlantisService extends WallpaperService {
         break;
       }
     }
+    int[][] configSpec = {
+      {  
+        // RGB565 color 
+        EGL10.EGL_RED_SIZE,  5,
+        EGL10.EGL_GREEN_SIZE,6, 
+        EGL10.EGL_BLUE_SIZE, 5, 
+        EGL10.EGL_ALPHA_SIZE,   EGL10.EGL_DONT_CARE, 
+        EGL10.EGL_DEPTH_SIZE,   24,
+        EGL10.EGL_STENCIL_SIZE, EGL10.EGL_DONT_CARE,
+        //  window (and not a pixmap or a pbuffer)
+        EGL10.EGL_SURFACE_TYPE, EGL10.EGL_WINDOW_BIT, 
+        EGL10.EGL_NONE ,
+      },
+      {
+        // RGB565 color 
+        EGL10.EGL_RED_SIZE, 5, 
+        EGL10.EGL_GREEN_SIZE,6, 
+        EGL10.EGL_BLUE_SIZE,5, 
+        EGL10.EGL_ALPHA_SIZE,   EGL10.EGL_DONT_CARE, 
+        EGL10.EGL_DEPTH_SIZE,   16,
+        EGL10.EGL_STENCIL_SIZE, EGL10.EGL_DONT_CARE,
+        //  window (and not a pixmap or a pbuffer)
+        EGL10.EGL_SURFACE_TYPE, EGL10.EGL_WINDOW_BIT, 
+        EGL10.EGL_NONE ,
+      },
+      {
+        EGL10.EGL_NONE,
+      }
+    };
 
     @Override
     public void onSurfaceCreated(final SurfaceHolder holder) {
@@ -185,7 +214,8 @@ public class AtlantisService extends WallpaperService {
               waitNano();
               continue;
             }
-            int[] configSpec = { EGL10.EGL_NONE };
+//            int[] configSpec = { EGL10.EGL_NONE };
+
 
             EGLConfig[] configs = new EGLConfig[1];
             int[] numConfig = new int[1];
@@ -193,7 +223,7 @@ public class AtlantisService extends WallpaperService {
             /*-----------------------------------------------------------------*/
             /* 条件に見合うEGLConfigを取得                                     */
             /*-----------------------------------------------------------------*/
-            egl10.eglChooseConfig(eglDisplay, configSpec, configs, 1, numConfig);
+            egl10.eglChooseConfig(eglDisplay, configSpec[counter], configs, 1, numConfig);
             /*-----------------------------------------------------------------*/
             /* もしEGLConfigが取得できなければ                                 */
             /*-----------------------------------------------------------------*/
