@@ -332,6 +332,7 @@ public class AtlantisService extends WallpaperService {
             }
             break;
           }
+          Log.d(TAG, "selected config spec for opengl is No." + counter);
         }
       };
       doExecute(surfaceCreatedCommand);
