@@ -40,6 +40,7 @@ import javax.microedition.khronos.opengles.GL11;
 import jp.co.qsdn.android.iwashi3d.model.Background;
 import jp.co.qsdn.android.iwashi3d.model.Ground;
 import jp.co.qsdn.android.iwashi3d.model.Iwashi;
+import jp.co.qsdn.android.iwashi3d.model.IwashiData;
 import jp.co.qsdn.android.iwashi3d.model.Wave;
 import jp.co.qsdn.android.iwashi3d.setting.Prefs;
 import jp.co.qsdn.android.iwashi3d.util.CoordUtil;
@@ -79,6 +80,8 @@ public class GLRenderer {
     enableIwashiBoids = Prefs.getInstance(context).getIwashiBoids();
     cameraDistance = (float)Prefs.getInstance(context).getCameraDistance();
     cameraMode = Prefs.getInstance(context).getCameraMode();
+
+    IwashiData.init();
     
 
     iwashi = new Iwashi[MAX_IWASHI_COUNT];
@@ -548,6 +551,7 @@ if (false){
   }
 
 
+  long tickCounter = 0;
   public synchronized void onDrawFrame(GL10 gl10) {
     setupFog(gl10);
     gl10.glMatrixMode(GL10.GL_MODELVIEW);
@@ -599,7 +603,7 @@ if (false){
 
     synchronized (this) {
       for (int ii=0; ii<iwashi_count; ii++) {
-        iwashi[ii].calc();
+        iwashi[ii].calc(tickCounter);
       }
     }
 
@@ -662,6 +666,8 @@ if (false){
     gl10.glPopMatrix(); 
             
     gl10.glPopMatrix();
+
+    tickCounter++;
   }
 
   public void onDestroy() {
