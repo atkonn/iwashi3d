@@ -172,6 +172,7 @@ public class AtlantisService extends WallpaperService {
           boolean ret;
           /* OpenGLの初期化 */
           int counter = 0;
+          int specCounter = 0;
           while(true) {
             if (_debug) Log.d(TAG, "start EGLContext.getEGL()");
             exitEgl();
@@ -214,7 +215,6 @@ public class AtlantisService extends WallpaperService {
               waitNano();
               continue;
             }
-//            int[] configSpec = { EGL10.EGL_NONE };
 
 
             EGLConfig[] configs = new EGLConfig[1];
@@ -223,7 +223,7 @@ public class AtlantisService extends WallpaperService {
             /*-----------------------------------------------------------------*/
             /* 条件に見合うEGLConfigを取得                                     */
             /*-----------------------------------------------------------------*/
-            egl10.eglChooseConfig(eglDisplay, configSpec[counter], configs, 1, numConfig);
+            egl10.eglChooseConfig(eglDisplay, configSpec[specCounter++], configs, 1, numConfig);
             /*-----------------------------------------------------------------*/
             /* もしEGLConfigが取得できなければ                                 */
             /*-----------------------------------------------------------------*/
