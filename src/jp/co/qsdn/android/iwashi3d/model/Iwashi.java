@@ -43,8 +43,7 @@ public class Iwashi implements Model {
   private static final boolean traceBOIDS = false;
   private static final boolean debug = false;
   private static final String TAG = Iwashi.class.getName();
-  private static final long BASE_TICK = 17852783L;
-  //private static final long BASE_TICK = 85327146L;
+  private static final long BASE_TICK = 15136719L;
   private static boolean mTextureLoaded = false;
   private final FloatBuffer mTextureBuffer;  
   private final FloatBuffer mNormalBuffer;  
@@ -568,11 +567,16 @@ public class Iwashi implements Model {
       }
     }
 
-    if (true) {
-      double div = 100d / (double)iwashiCount;
-      int divi = (int)Math.ceil(div/1.5d);
-      if (divi != 1 && finTick % (divi) != 0) {
-        return;
+    {
+      if (tick != 0) {
+        /*===================================================================*/
+        /* 10匹のときは3回に1回のペースでthinkしたい                         */
+        /*===================================================================*/
+        double div = (BASE_TICK * 3) / tick;
+        int divi = (int)Math.ceil(div);
+        if (divi > 1 && finTick % divi != 0) {
+          return;
+        }
       }
     }
     if (getStatus() == STATUS.COHESION || getStatus() == STATUS.TO_SCHOOL_CENTER || getStatus() == STATUS.TO_BAIT) {
