@@ -551,7 +551,6 @@ if (false){
   }
 
 
-  long tickCounter = 0;
   public synchronized void onDrawFrame(GL10 gl10) {
     setupFog(gl10);
     gl10.glMatrixMode(GL10.GL_MODELVIEW);
@@ -603,7 +602,7 @@ if (false){
 
     synchronized (this) {
       for (int ii=0; ii<iwashi_count; ii++) {
-        iwashi[ii].calc(tickCounter);
+        iwashi[ii].calc();
       }
     }
 
@@ -667,7 +666,6 @@ if (false){
             
     gl10.glPopMatrix();
 
-    tickCounter++;
   }
 
   public void onDestroy() {

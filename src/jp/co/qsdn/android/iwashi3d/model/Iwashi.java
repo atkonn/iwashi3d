@@ -44,6 +44,7 @@ public class Iwashi implements Model {
   private static final boolean debug = false;
   private static final String TAG = Iwashi.class.getName();
   private static final long BASE_TICK = 17852783L;
+  //private static final long BASE_TICK = 85327146L;
   private static boolean mTextureLoaded = false;
   private final FloatBuffer mTextureBuffer;  
   private final FloatBuffer mNormalBuffer;  
@@ -121,8 +122,7 @@ public class Iwashi implements Model {
   /*=========================================================================*/
   /* スピード                                                                */
   /*=========================================================================*/
-  public static final float DEFAULT_SPEED = 0.01728f;
-  //public static final float DEFAULT_SPEED = 0.0001728f;
+  public static final float DEFAULT_SPEED = 0.03456f;
   private float speed = DEFAULT_SPEED * 0.5f;
   private float speed_unit = DEFAULT_SPEED / 5f * 0.5f;
   private float speed_max = DEFAULT_SPEED * 3f * 0.5f;
@@ -196,9 +196,9 @@ public class Iwashi implements Model {
     return mTextureLoaded;
   }
 
-  public void calc(long tickCounter) {
+  public void calc() {
     synchronized (this) {
-      think(tickCounter);
+      think();
       move();
     }
   }
@@ -248,7 +248,14 @@ public class Iwashi implements Model {
     gl10.glRotatef(x_angle * -1f, 0.0f, 0.0f, 1.0f);
 
     gl10.glColor4f(1,1,1,1);
-    gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, IwashiData.mVertexBuffer[Math.abs((finTick++ / 2) % 40)]);
+    {
+      double div = 100d / (double)iwashiCount;
+      int divi = (int)Math.ceil(div);
+      if (divi == 0) {
+        divi = 1;
+      }
+      gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, IwashiData.mVertexBuffer[Math.abs(finTick++ / divi / 3) % 40]);
+    }
     gl10.glNormalPointer(GL10.GL_FLOAT, 0, mNormalBuffer);
     gl10.glEnable(GL10.GL_TEXTURE_2D);
     gl10.glBindTexture(GL10.GL_TEXTURE_2D, textureIds[0]);
@@ -341,7 +348,7 @@ public class Iwashi implements Model {
       // 変更なし
       return;
     }
-    speed += (this.rand.nextFloat() * (speed_unit * 2f) / 2f);
+    speed += ((this.rand.nextFloat() * (speed_unit * 2f) / 2f) * ((float)iwashiCount/100f));
     if (speed <= speed_min) {
       speed = speed_min;
     }
@@ -522,14 +529,10 @@ public class Iwashi implements Model {
   /**
    * どの方向に進むか考える
    */
-  public void think(long tickCounter) {
+  public void think() {
     long nowTime = System.nanoTime();
     if (prevTime != 0) {
       tick = nowTime - prevTime;
-    }
-    if (getStatus() == STATUS.COHESION || getStatus() == STATUS.TO_SCHOOL_CENTER || getStatus() == STATUS.TO_BAIT) {
-      /* 元に戻す */
-      speed = sv_speed;
     }
     prevTime = nowTime;
     if (  (Aquarium.min_x.floatValue() >= position[0] || Aquarium.max_x.floatValue() <= position[0])
@@ -538,6 +541,9 @@ public class Iwashi implements Model {
       /*=====================================================================*/
       /* 水槽からはみ出てる                                                  */
       /*=====================================================================*/
+      if (getStatus() == STATUS.COHESION || getStatus() == STATUS.TO_SCHOOL_CENTER || getStatus() == STATUS.TO_BAIT) {
+        speed = sv_speed;
+      }
       setStatus(STATUS.TO_CENTER);
       aimAquariumCenter();
       if (traceBOIDS && iwashiNo == 0) Log.d(TAG, "to Aquarium Center");
@@ -552,11 +558,26 @@ public class Iwashi implements Model {
       if (this.rand.nextInt(10000) <= adjustTick(5500)) {
         if (aimBait(bait)) {
           if (traceBOIDS && iwashiNo == 0) Log.d(TAG, "to Bait");
+          if (getStatus() == STATUS.COHESION || getStatus() == STATUS.TO_SCHOOL_CENTER || getStatus() == STATUS.TO_BAIT) {
+            speed = sv_speed;
+          }
           setStatus(STATUS.TO_BAIT);
           update_speed();
           return;
         }
       }
+    }
+
+    if (true) {
+      double div = 100d / (double)iwashiCount;
+      int divi = (int)Math.ceil(div/1.5d);
+      if (divi != 1 && finTick % (divi) != 0) {
+        return;
+      }
+    }
+    if (getStatus() == STATUS.COHESION || getStatus() == STATUS.TO_SCHOOL_CENTER || getStatus() == STATUS.TO_BAIT) {
+      /* 元に戻す */
+      speed = sv_speed;
     }
 
     if (getEnableBoids()) {
