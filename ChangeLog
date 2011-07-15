@@ -1,3 +1,10 @@
+iwashi3d (1.0.6) stable; urgency=low
+
+  * Fixed Bug.
+    - Changed Config Spec to initialize OpenGL.
+
+ -- Atsushi Konno <konno@qsdn.co.jp>  Fri, 15 Jul 2011 14:06:55 +0900
+
 iwashi3d (1.0.5) stable; urgency=low
 
   * Fixed Bug.
