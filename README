@@ -21,6 +21,13 @@ Bugs and Todo:
 2) too slow. choppy.
 
 ChangeLog:
+iwashi3d (1.0.7) stable; urgency=low
+
+  * Improved.
+    - very slow and choppy.
+
+ -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Fri, 15 Jul 2011 19:06:25 +0900
+
 iwashi3d (1.0.6) stable; urgency=low
 
   * Fixed Bug.
