@@ -1,3 +1,11 @@
+iwashi3d (1.0.8) stable; urgency=low
+
+  * Fixed Bug.
+    - When the number was 0 obtained in the config spec in config, fix bugs
+      that do not retry
+
+ -- konno <konno@qsdn.co.jp>  Sun, 17 Jul 2011 19:44:52 +0900
+
 iwashi3d (1.0.7) stable; urgency=low
 
   * Improved.
