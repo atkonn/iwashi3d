@@ -229,14 +229,18 @@ public class AtlantisService extends WallpaperService {
             /*-----------------------------------------------------------------*/
             if (numConfig[0] == 0) {
               if (_debug) Log.d(TAG, "numConfig[0]=" + numConfig[0] + "");
-              Log.e(TAG,"eglChooseConfig失敗:"
-                 + "numConfig:[" + numConfig[0] + "]");
               String errStr = AtlantisService.getErrorString(egl10.eglGetError());
               errStr += " eglChooseConfig numConfig == 0 ";
+              Log.e(TAG,"eglChooseConfig失敗:"
+                 + "numConfig:[" + numConfig[0] + "] errStr:[" + errStr + "]");
               exitEgl();
-              throw new RuntimeException("OpenGL Error "
-                + errStr + " :"
-              );
+              if (++counter >= AtlantisService.RETRY_COUNT) {
+                Log.e(TAG,"eglChooseConfig失敗:"
+                   + "numConfig:[" + numConfig[0] + "] errStr:[" + errStr + "]");
+                throw new RuntimeException("OpenGL Error "
+                  + errStr + " :"
+                );
+              }
             }
 
             EGLConfig config = configs[0];
