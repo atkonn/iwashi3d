@@ -231,12 +231,12 @@ public class AtlantisService extends WallpaperService {
               if (_debug) Log.d(TAG, "numConfig[0]=" + numConfig[0] + "");
               String errStr = AtlantisService.getErrorString(egl10.eglGetError());
               errStr += " eglChooseConfig numConfig == 0 ";
-              Log.e(TAG,"eglChooseConfig失敗:"
-                 + "numConfig:[" + numConfig[0] + "] errStr:[" + errStr + "]");
+              errStr += " numConfig:[" + numConfig[0] + "]:";
+              errStr += " configSpec:[" + (specCounter - 1) + "]:";
+              Log.e(TAG,"eglChooseConfig失敗:" + errStr);
               exitEgl();
               if (++counter >= AtlantisService.RETRY_COUNT) {
-                Log.e(TAG,"eglChooseConfig失敗:"
-                   + "numConfig:[" + numConfig[0] + "] errStr:[" + errStr + "]");
+                Log.e(TAG,"eglChooseConfig失敗:" + errStr);
                 throw new RuntimeException("OpenGL Error "
                   + errStr + " :"
                 );
