@@ -37,6 +37,7 @@ import javax.microedition.khronos.opengles.GL10;
 import jp.co.qsdn.android.iwashi3d.Aquarium;
 import jp.co.qsdn.android.iwashi3d.Bait;
 import jp.co.qsdn.android.iwashi3d.BaitManager;
+import jp.co.qsdn.android.iwashi3d.GLRenderer;
 import jp.co.qsdn.android.iwashi3d.util.CoordUtil;
 
 public class Iwashi implements Model {
@@ -55,7 +56,7 @@ public class Iwashi implements Model {
   private long seed = 0;
   private BaitManager baitManager;
   private boolean enableBoids = true;
-  public float[] distances = new float[100];
+  public float[] distances = new float[GLRenderer.MAX_IWASHI_COUNT];
   private Random rand = null;
   public static final float GL_IWASHI_SCALE = 0.65f;
   private float size = 10f * scale * GL_IWASHI_SCALE;
@@ -248,7 +249,7 @@ public class Iwashi implements Model {
 
     gl10.glColor4f(1,1,1,1);
     {
-      double div = 100d / (double)iwashiCount;
+      double div = ((double)GLRenderer.MAX_IWASHI_COUNT) / (double)iwashiCount;
       int divi = (int)Math.ceil(div);
       if (divi == 0) {
         divi = 1;
