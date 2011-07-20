@@ -62,9 +62,9 @@ Boidsアルゴリズムを使った鰯の群れをシミュレートする3Dラ�
 ★変更履歴:\n
 jinbei3d (1.0.0) stable; urgency=low\n
 \n
-  * First Release\n
+  * Initial release.\n
 \n
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Sat, 02 Apr 2011 17:35:24 +0900\n
+ -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Wed, 20 Jul 2011 22:41:23 +0900\n
 \n
 ★著作権表示:\n
   * Copyright (c) 2011 株式会社QSDN All right reserved.\n

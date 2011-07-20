@@ -62,9 +62,9 @@ Requirement:\n
 ChangeLog:\n
 jinbei3d (1.0.0) stable; urgency=low\n
 \n
-  * First Release\n
+  * Initial release.\n
 \n
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Sat, 02 Apr 2011 17:35:24 +0900\n
+ -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Wed, 20 Jul 2011 22:41:23 +0900\n
 \n
 Copyright:\n
   * Copyright (c) 2011 QSDN,Inc. All right reserved.\n
