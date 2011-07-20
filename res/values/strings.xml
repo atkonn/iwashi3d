@@ -5,7 +5,7 @@
   <string name="service_name">鰯の群れ</string>
   <string name="description">Boidsアルゴリズムを使った鰯の群れ3Dライブ壁紙</string>
   <string name="author">株式会社QSDN</string>
-  <string name="version">version 1.0.8</string>
+  <string name="version">version 1.0.10</string>
   <string name="copyright">Copyright © 2011 QSDN,Inc. All rights reserved.</string>
 
   <string name="setting_title">設定</string>
@@ -59,6 +59,23 @@ Boidsアルゴリズムを使った鰯の群れをシミュレートする3Dラ�
 ※頂点データ・テクスチャをメモリ上に読み込むため、メモリを大量消費します。\n
 \n
 ★変更履歴:\n
+iwashi3d (1.0.10) stable; urgency=low\n
+\n
+  * Fixed bug\n
+      - changed slightly when changing the number of\n
+        sardine movement.\n
+  * Changed ADS.\n
+      - To prevent them from pressing the wrong.\n
+\n
+ -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Thu, 21 Jul 2011 01:28:17 +0900\n
+\n
+iwashi3d (1.0.9) stable; urgency=low\n
+\n
+  * Fixed Bug.\n
+      - Correct mistakes had been downgraded.\n
+\n
+ -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Sun, 17 Jul 2011 19:55:48 +0900\n
+\n
 iwashi3d (1.0.8) stable; urgency=low\n
 \n
   * Fixed Bug.\n

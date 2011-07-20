@@ -59,6 +59,23 @@ Requirement:\n
 3) Over 3MB Heep memory area.\n
 \n
 ChangeLog:\n
+iwashi3d (1.0.10) stable; urgency=low\n
+\n
+  * Fixed bug\n
+      - changed slightly when changing the number of\n
+        sardine movement.\n
+  * Changed ADS.\n
+      - To prevent them from pressing the wrong.\n
+\n
+ -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Thu, 21 Jul 2011 01:28:17 +0900\n
+\n
+iwashi3d (1.0.9) stable; urgency=low\n
+\n
+  * Fixed Bug.\n
+      - Correct mistakes had been downgraded.\n
+\n
+ -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Sun, 17 Jul 2011 19:55:48 +0900\n
+\n
 iwashi3d (1.0.8) stable; urgency=low\n
 \n
   * Fixed Bug.\n

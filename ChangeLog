@@ -1,3 +1,20 @@
+iwashi3d (1.0.10) stable; urgency=low
+
+  * Fixed bug
+    - changed slightly when changing the number of
+      sardine movement.
+  * Changed ADS.
+      - To prevent them from pressing the wrong.
+
+ -- Atsushi Konno <konno@qsdn.co.jp>  Thu, 21 Jul 2011 01:28:17 +0900
+
+iwashi3d (1.0.9) stable; urgency=low
+
+  * Fixed Bug.
+    - Correct mistakes had been downgraded.
+
+ -- konno <konno@qsdn.co.jp>  Sun, 17 Jul 2011 19:55:48 +0900
+
 iwashi3d (1.0.8) stable; urgency=low
 
   * Fixed Bug.
