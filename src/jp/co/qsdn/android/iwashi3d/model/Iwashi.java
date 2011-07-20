@@ -568,18 +568,6 @@ public class Iwashi implements Model {
       }
     }
 
-    {
-      if (tick != 0) {
-        /*===================================================================*/
-        /* 10匹のときは3回に1回のペースでthinkしたい                         */
-        /*===================================================================*/
-        double div = (BASE_TICK * 3) / tick;
-        int divi = (int)Math.ceil(div);
-        if (divi > 1 && finTick % divi != 0) {
-          return;
-        }
-      }
-    }
     if (getStatus() == STATUS.COHESION || getStatus() == STATUS.TO_SCHOOL_CENTER || getStatus() == STATUS.TO_BAIT) {
       /* 元に戻す */
       speed = sv_speed;

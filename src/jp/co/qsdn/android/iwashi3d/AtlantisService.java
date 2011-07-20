@@ -58,6 +58,7 @@ public class AtlantisService extends WallpaperService {
     private int height = 0;
     private boolean binded = false;
     private boolean mInitialized = false;
+    private long BASE_TICK = 45410157L;
 
     /* EGL関連は毎回再作成？？ */
     private MatrixTrackingGL gl10 = null;
@@ -323,7 +324,15 @@ public class AtlantisService extends WallpaperService {
                 public void run() {
                   if (mInitialized && glRenderer != null && gl10 != null) {
                     synchronized (glRenderer) {
+                      long nowTime = System.nanoTime();
+                      if (nowTime - glRenderer.prevTick < BASE_TICK) {
+                        try {
+                          TimeUnit.NANOSECONDS.sleep(nowTime - glRenderer.prevTick);
+                        } catch (InterruptedException e) {
+                        }
+                      }
                       glRenderer.onDrawFrame(gl10);
+                      glRenderer.prevTick = nowTime;
                     }
                     egl10.eglSwapBuffers(eglDisplay, eglSurface);
                     if (!getExecutor().isShutdown() && isVisible() && egl10.eglGetError() != EGL11.EGL_CONTEXT_LOST) {

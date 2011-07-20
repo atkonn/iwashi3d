@@ -64,6 +64,7 @@ public class GLRenderer {
   private float zFar = 50.0f;
   private float zNear = 1.0f;
   private float perspectiveAngle = 45.0f;
+  public long prevTick = 0L;
 
   private BaitManager baitManager = new BaitManager();
   private float baseAngle = 0f;
