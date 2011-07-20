@@ -5,19 +5,24 @@
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
   android:orientation="vertical">
+  <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/ads_title"
+  />
+  <com.google.ads.AdView  
+    android:id="@+id/ad"  
+    android:layout_width="fill_parent"  
+    android:layout_height="70dip"  
+    ads:adUnitId="a14e0b46ae93faf"  
+    ads:adSize="BANNER"  
+    ads:loadAdOnCreate="true"
+  />  
   <ListView
     android:id="@android:id/list"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_weight="1" />
-  <com.google.ads.AdView  
-    android:id="@+id/ad"  
-    android:layout_width="fill_parent"  
-    android:layout_height="wrap_content"  
-    ads:adUnitId="a14e0b46ae93faf"  
-    ads:adSize="BANNER"  
-    ads:loadAdOnCreate="true"
-  />  
   <LinearLayout 
     android:layout_width="fill_parent"
     android:background="#aaaaaa" 

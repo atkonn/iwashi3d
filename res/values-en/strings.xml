@@ -144,4 +144,6 @@ License:\n
   <string name="dialog_camera_distance_label">Distance:</string>
 
   <string name="to_default_button">reset</string>
+
+  <string name="ads_title">Ads.</string>
 </resources>

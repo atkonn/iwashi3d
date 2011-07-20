@@ -145,4 +145,6 @@ iwashi3d (1.0.0) stable; urgency=low\n
   <string name="dialog_camera_distance_label">群れまでの距離：</string>
 
   <string name="to_default_button">初期値に戻す</string>
+
+  <string name="ads_title">広告</string>
 </resources>
