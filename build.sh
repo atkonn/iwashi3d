@@ -1,3 +1,3 @@
 ant clean
 ant debug
-adb uninstall jp.co.qsdn.android.iwashi3d && adb install bin/iwashi3d-debug.apk
+adb uninstall jp.co.qsdn.android.jinbei3d && adb install bin/jinbei3d-debug.apk

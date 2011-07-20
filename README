@@ -3,84 +3,24 @@ This is 3D live Wallpaper simulating a school of sardines which used BOIDS algor
 Features:
 1) This simulates "a school of sardines".
 2) You can increase the number of sardine to 100 of them.
-   However, this becomes very slow when you increased them
 3) You can change the speed that the sardine swims.
-4) Sardine comes there when you touched screen.
-5) You can enable "a school of sardine" function.
+4) You can change the speed that the whale shark swims.
+5) Sardine comes there when you touched screen.
+6) You can enable "a school of sardine" function.
 You can disable "a school of sardine" function.
-6) You can change distance from a viewpoint to the center of the aquarium.
-7) There is a viewpoint mode of the sardine. You seem to have become the sardine.
+7) You can change distance from a viewpoint to the center of the aquarium.
+8) There is a viewpoint mode of a sardine or a viewpoint mode of a whale shark. 
+You seem to have become a sardine or a whale shark.
 
 Requirement:
-1) Android2.1 or later.
+1) After Android2.1.
 2) OpenGL ES 1.0.
 3) Over 3MB Heep memory area.
-
-Bugs and Todo:
-1) crash with samsung fascinate.
-2) too slow. choppy.
-
-ChangeLog:
-iwashi3d (1.0.7) stable; urgency=low
-
-  * Improved.
-    - very slow and choppy.
-
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Fri, 15 Jul 2011 19:06:25 +0900
-
-iwashi3d (1.0.6) stable; urgency=low
-
-  * Fixed Bug.
-    - Changed Config Spec to initialize OpenGL.
-
- -- Atsushi Konno <konno@qsdn.co.jp>  Fri, 15 Jul 2011 14:06:55 +0900
-
-iwashi3d (1.0.5) stable; urgency=low
-
-  * Fixed Bug.
-    - not start, but it puts on the status bar
-
- -- Atsushi Konno <konno@qsdn.co.jp>  Thu, 14 Jul 2011 03:53:58 +0900
-
-Iwashi3d (1.0.4) stable; urgency=low
-
-  * Fixed Bug.
-    - When the view mode of sardines, a bug in the direction of the gaze is
-      abnormal
-  * Changed Features.
-    - When the view mode of sardines, not draw sardine with No.0.
-
- -- Atsushi Konno <konno@qsdn.co.jp>  Wed, 13 Jul 2011 04:50:03 +0900
-
-Iwashi3d (1.0.3) stable; urgency=low
-
-  * Fixed Bug.
-    - no check for RejectedExecuteException
-
- -- Atsushi Konno <konno@qsdn.co.jp>  Mon, 04 Jul 2011 09:33:38 +0900
-
-Iwashi3d (1.0.2) stable; urgency=low
-
-  * Changed EGL Config Spec.
-    - set EGL_NONE only (temporary setting)
-
- -- Atsushi Konno <konno@qsdn.co.jp>  Sun, 03 Jul 2011 08:24:33 +0900
-
-Iwashi3d (1.0.1) stable; urgency=low
-
-  * Updated ChangeLog
-  * No-OP debug log.
-  * Added more information with RE
-
- -- Atsushi Konno <konno@qsdn.co.jp>  Fri, 01 Jul 2011 20:24:35 +0900
-
-Iwashi3d (1.0.0) stable; urgency=low
-
-  * Initial release.
-
- -- Atsushi Konno <konno@qsdn.co.jp>  Thu Jun 30 04:15:17 2011 +0900
 
 Copyright:
   * Copyright (c) 2011 QSDN,Inc. All right reserved.
   * Copyright (c) 2011 Atsushi Konno All right reserved.
 
+License:
+  * Apache Software License 2.0.
+    - see https://github.com/atkonn/jinbei3d

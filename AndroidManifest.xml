@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="jp.co.qsdn.android.iwashi3d"
-  android:versionCode="9"
-  android:versionName="1.0.8">
+  package="jp.co.qsdn.android.jinbei3d"
+  android:versionCode="1"
+  android:versionName="1.0.0">
   <application
     android:icon="@drawable/icon"
     android:label="@string/app_name"
@@ -20,7 +20,7 @@
         android:resource="@xml/wallpaper" />
     </service>
     <activity
-      android:name="jp.co.qsdn.android.iwashi3d.setting.SettingActivity"
+      android:name="jp.co.qsdn.android.jinbei3d.setting.SettingActivity"
       android:label="@string/setting_title"
       android:launchMode="singleTask">
       <intent-filter>
@@ -30,7 +30,7 @@
       </intent-filter>
     </activity>
     <activity
-      android:name="jp.co.qsdn.android.iwashi3d.setting.AboutActivity"
+      android:name="jp.co.qsdn.android.jinbei3d.setting.AboutActivity"
       android:label="@string/about_title"
       android:launchMode="singleTask">
       <intent-filter>
@@ -55,5 +55,4 @@
   <!-- for AdMob -->
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-
 </manifest> 

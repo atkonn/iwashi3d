@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="title">School of Sardines</string>
-  <string name="app_name">School of Sardines</string>
-  <string name="service_name">School of Sardines</string>
-  <string name="description">3D live wallpaper of sardines that used BOIDS algorithm</string>
+  <string name="title">Whale shark and sardines</string>
+  <string name="app_name">Whale shark and sardines</string>
+  <string name="service_name">Whale shark and sardines</string>
+  <string name="description">3D live wallpaper that used BOIDS algorithm</string>
   <string name="author">QSDN,Inc.</string>
-  <string name="version">version 1.0.8</string>
+  <string name="version">version 1.0.0</string>
   <string name="copyright">Copyright (c) 2011 QSDN,Inc. All rights reserved.</string>
 
   <string name="setting_title">Settings</string>
@@ -43,15 +43,16 @@
 This is 3D live Wallpaper simulating a school of sardines which used BOIDS algorithm.\n
 \n
 Features:\n
-1) This simulates "a school of sardines".
+1) This simulates "a school of sardines".\n
 2) You can increase the number of sardine to 100 of them.\n
-\tHowever, this becomes very slow when you increased them
 3) You can change the speed that the sardine swims.\n
-4) Sardine comes there when you touched screen.\n
-5) You can enable "a school of sardine" function.\n
+4) You can change the speed that the whale shark swims.\n
+5) Sardine comes there when you touched screen.\n
+6) You can enable "a school of sardine" function.\n
 You can disable "a school of sardine" function.\n
-6) You can change distance from a viewpoint to the center of the aquarium.\n
-7) There is a viewpoint mode of the sardine. You seem to have become the sardine.\n
+7) You can change distance from a viewpoint to the center of the aquarium.\n
+8) There is a viewpoint mode of a sardine or a viewpoint mode of a whale shark. \n
+You seem to have become a sardine or a whale shark.\n
 \n
 Requirement:\n
 1) After Android2.1.\n
@@ -59,67 +60,7 @@ Requirement:\n
 3) Over 3MB Heep memory area.\n
 \n
 ChangeLog:\n
-iwashi3d (1.0.8) stable; urgency=low\n
-\n
-  * Fixed Bug.\n
-    - When the number was 0 obtained in the config spec in config, fix bugs\n
-      that do not retry\n
-\n
- -- konno &lt;konno@qsdn.co.jp&gt;  Sun, 17 Jul 2011 19:44:52 +0900\n
-\n
-iwashi3d (1.0.7) stable; urgency=low\n
-\n
-  * Improved.\n
-    - very slow and choppy.\n
-\n
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Fri, 15 Jul 2011 19:06:25 +0900\n
-\n
-iwashi3d (1.0.6) stable; urgency=low\n
-\n
-  * Fixed Bug.\n
-    - Changed Config Spec to initialize OpenGL.\n
-\n
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Fri, 15 Jul 2011 14:06:55 +0900\n
-\n
-iwashi3d (1.0.5) stable; urgency=low\n
-\n
-  * Fixed Bug.\n
-    - not start, but it puts on the status bar\n
-\n
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Thu, 14 Jul 2011 03:53:58 +0900\n
-\n
-Iwashi3d (1.0.4) stable; urgency=low\n
-\n
-  * Fixed Bug.\n
-      - When the view mode of sardines, a bug in the direction of the gaze is abnormal\n
-  * Changed Features.\n
-      - When the view mode of sardines, not draw sardine with No.0.\n
-\n
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Wed, 13 Jul 2011 04:50:03 +0900\n
-\n
-Iwashi3d (1.0.3) stable; urgency=low\n
-\n
-  * Fixed Bug.\n
-      - no check for RejectedExecuteException\n
-\n
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Mon, 04 Jul 2011 09:33:38 +0900\n
-\n
-Iwashi3d (1.0.2) stable; urgency=low\n
-\n
-  * Changed EGL Config Spec.\n
-      - set EGL_NONE only (temporary setting)\n
-\n
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Sun, 03 Jul 2011 08:24:33 +0900\n
-\n
-Iwashi3d (1.0.1) stable; urgency=low\n
-\n
-  * Updated ChangeLog\n
-  * No-OP debug log.\n
-  * Added more information with crash\n
-\n
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Fri, 01 Jul 2011 20:24:35 +0900\n
-\n
-iwashi3d (1.0.0) stable; urgency=low\n
+jinbei3d (1.0.0) stable; urgency=low\n
 \n
   * First Release\n
 \n
@@ -128,14 +69,14 @@ iwashi3d (1.0.0) stable; urgency=low\n
 Copyright:\n
   * Copyright (c) 2011 QSDN,Inc. All right reserved.\n
   * Copyright (c) 2011 Atsushi Konno All right reserved.\n
+\n
 License:\n
   * Apache Software License 2.0.
-    - see https://github.com/atkonn/iwashi3d
+    - see https://github.com/atkonn/jinbei3d
+\n
 </string>
   <string name="key_preference_camera_mode">camera_mode</string>
-  <string name="title_preference_camera_mode">Sardine View Mode</string>
-  <string name="summary_on_preference_camera_mode">Sardine View Mode is running.</string>
-  <string name="summary_off_preference_camera_mode">Normal View Mode is running.</string>
+  <string name="title_preference_camera_mode">View Mode</string>
 
   <string name="title_preference_change_camera">Change Viewpoint</string>
   <string name="summary_preference_change_camera">This changes it of the distance from a viewpoint to a school of sardine.</string>
@@ -144,4 +85,27 @@ License:\n
   <string name="dialog_camera_distance_label">Distance:</string>
 
   <string name="to_default_button">reset</string>
+
+
+<!-- JINBEI -->
+  <string name="title_preference_jinbei">Settings of Whale shark</string>
+
+  <string name="key_preference_jinbei_speed">jinbei_speed</string>
+  <string name="title_preference_jinbei_speed">Speed of Whale shark</string>
+  <string name="summary_preference_jinbei_speed">The passing speed that is basic of Whale shark is specified.</string>
+  <string name="dialog_title_jinbei_speed" >Speed of Whale shark</string>
+  <string name="dialog_message_jinbei_speed" >Please select the passing speed where whale skark swims.</string>
+  <string name="dialog_jinbei_speed_label">Speed of Whale shark:</string>
+
+  <string name="title_preference_other">Other settings</string>
+
+  <string name="camera_mode1">Sardine View Mode</string>
+  <string name="camera_mode2">Whale shark View Mode</string>
+  <string name="camera_mode3">None</string>
+
+  <string name="summary_preference_change_camera_mode">You can set the view from the perspective of the sardine and a whale shark.</string>
+  <string name="dialog_title_change_camera_mode">Viewpoint setting</string>
+  <string name="dialog_message_change_camera_mode">Please select viewpoint.</string>
+
+  <string name="ads_title">Ads</string>
 </resources>

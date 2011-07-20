@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="title">鰯の群れ</string>
-  <string name="app_name">鰯の群れ</string>
-  <string name="service_name">鰯の群れ</string>
-  <string name="description">Boidsアルゴリズムを使った鰯の群れ3Dライブ壁紙</string>
+  <string name="title">甚平鮫と鰯</string>
+  <string name="app_name">甚平鮫と鰯</string>
+  <string name="service_name">甚平鮫と鰯</string>
+  <string name="description">Boidsアルゴリズムを使った鰯の群れ3Dライブ壁紙(ジンベイザメ付き)</string>
   <string name="author">株式会社QSDN</string>
-  <string name="version">version 1.0.8</string>
+  <string name="version">version 1.0.0</string>
   <string name="copyright">Copyright © 2011 QSDN,Inc. All rights reserved.</string>
 
   <string name="setting_title">設定</string>
@@ -41,16 +41,17 @@
   <string name="text_about_ok_button">戻る</string>
   <string name="about_description">★説明:\n
 Boidsアルゴリズムを使った鰯の群れをシミュレートする3Dライブ壁紙です。 \n
+(ジンベイザメ付き)\n
 \n
 ★特徴:\n
 1) 「群れ」をシミュレートします。\n
 2) イワシの数は最大100匹まで設定可能です。\n
-\t(※注意:増やすと遅くなります。）\n
 3) イワシの泳ぐスピードを変更できます。\n
-4) 画面をタッチするとイワシが寄ってきます。\n
-5) 群れ機能を無効/有効切り替えることが可能です。\n
-6) 視点から水槽の中心までの距離を変更可。\n
-7) イワシの視点モードをONにすることによって、イワシになった気になれるかも！？\n
+4) ジンベイザメの泳ぐスピードを変更できます。\n
+5) 画面をタッチするとイワシが寄ってきます。\n
+6) 群れ機能を無効/有効切り替えることが可能です。\n
+7) 視点から水槽の中心までの距離を変更可。\n
+8) イワシ／ジンベイザメの視点モードをONにすることによって、イワシ／ジンベイザメになった気になれるかも！？\n
 \n
 ★要件:\n
 1) ライブ壁紙が設定できるAndroid2.1以降のスマートフォン。\n
@@ -59,67 +60,7 @@ Boidsアルゴリズムを使った鰯の群れをシミュレートする3Dラ�
 ※頂点データ・テクスチャをメモリ上に読み込むため、メモリを大量消費します。\n
 \n
 ★変更履歴:\n
-iwashi3d (1.0.8) stable; urgency=low\n
-\n
-  * Fixed Bug.\n
-    - When the number was 0 obtained in the config spec in config, fix bugs\n
-      that do not retry\n
-\n
- -- konno &lt;konno@qsdn.co.jp&gt;  Sun, 17 Jul 2011 19:44:52 +0900\n
-\n
-iwashi3d (1.0.7) stable; urgency=low\n
-\n
-  * Improved.\n
-    - very slow and choppy.\n
-\n
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Fri, 15 Jul 2011 19:06:25 +0900\n
-\n
-iwashi3d (1.0.6) stable; urgency=low\n
-\n
-  * Fixed Bug.\n
-    - Changed Config Spec to initialize OpenGL.\n
-\n
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Fri, 15 Jul 2011 14:06:55 +0900\n
-\n
-iwashi3d (1.0.5) stable; urgency=low\n
-\n
-  * Fixed Bug.\n
-    - not start, but it puts on the status bar\n
-\n
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Thu, 14 Jul 2011 03:53:58 +0900\n
-\n
-Iwashi3d (1.0.4) stable; urgency=low\n
-\n
-  * Fixed Bug.\n
-      - When the view mode of sardines, a bug in the direction of the gaze is abnormal\n
-  * Changed Features.\n
-      - When the view mode of sardines, not draw sardine with No.0.\n
-\n
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Wed, 13 Jul 2011 04:50:03 +0900\n
-\n
-Iwashi3d (1.0.3) stable; urgency=low\n
-\n
-  * Fixed Bug.\n
-      - no check for RejectedExecuteException\n
-\n
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Mon, 04 Jul 2011 09:33:38 +0900\n
-\n
-Iwashi3d (1.0.2) stable; urgency=low\n
-\n
-  * Changed EGL Config Spec.\n
-      - set EGL_NONE only (temporary setting)\n
-\n
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Sun, 03 Jul 2011 08:24:33 +0900\n
-\n
-Iwashi3d (1.0.1) stable; urgency=low\n
-\n
-  * Updated ChangeLog\n
-  * No-OP debug log.\n
-  * Added more information with crash\n
-\n
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Fri, 01 Jul 2011 20:24:35 +0900\n
-\n
-iwashi3d (1.0.0) stable; urgency=low\n
+jinbei3d (1.0.0) stable; urgency=low\n
 \n
   * First Release\n
 \n
@@ -130,13 +71,11 @@ iwashi3d (1.0.0) stable; urgency=low\n
   * Copyright (c) 2011 Atsushi Konno All right reserved.\n
 \n
 ★ライセンス:\n
-  * ソースコードはhttps://github.com/atkonn/iwashi3dにてApache Software License 2.0に基づいて公開しています。\n
-    詳細はhttps://github.com/atkonn/iwashi3dを参照してください。\n
+  * ソースコードはhttps://github.com/atkonn/jinbei3dにてApache Software License 2.0に基づいて公開しています。\n
+    詳細はhttps://github.com/atkonn/jinbei3dを参照してください。\n
 </string>
   <string name="key_preference_camera_mode">camera_mode</string>
-  <string name="title_preference_camera_mode">鰯視点モード</string>
-  <string name="summary_on_preference_camera_mode">鰯視点モード選択中</string>
-  <string name="summary_off_preference_camera_mode">通常モード選択中</string>
+  <string name="title_preference_camera_mode">視点変更</string>
 
   <string name="title_preference_change_camera">視点の位置変更</string>
   <string name="summary_preference_change_camera">視点の位置を群れから遠くしたり、近くしたりします</string>
@@ -145,4 +84,25 @@ iwashi3d (1.0.0) stable; urgency=low\n
   <string name="dialog_camera_distance_label">群れまでの距離：</string>
 
   <string name="to_default_button">初期値に戻す</string>
+
+<!-- ここからJINBEI -->
+  <string name="title_preference_jinbei">ジンベイザメ設定</string>
+
+  <string name="key_preference_jinbei_speed">jinbei_speed</string>
+  <string name="title_preference_jinbei_speed">ジンベイザメのスピード</string>
+  <string name="summary_preference_jinbei_speed">ジンベイザメの基本となる移動速度を指定します</string>
+  <string name="dialog_title_jinbei_speed" >ジンベイザメのスピード</string>
+  <string name="dialog_message_jinbei_speed" >ジンベイザメの泳ぐ移動速度を選択してください。</string>
+  <string name="dialog_jinbei_speed_label">ジンベイザメのスピード：</string>
+
+  <string name="title_preference_other">その他設定</string>
+
+  <string name="camera_mode1">鰯視点</string>
+  <string name="camera_mode2">ジンベイザメ視点</string>
+  <string name="camera_mode3">通常視点</string>
+
+  <string name="summary_preference_change_camera_mode">鰯からの視点、ジンベイザメからの視点に設定できます</string>
+  <string name="dialog_title_change_camera_mode">視点変更</string>
+  <string name="dialog_message_change_camera_mode">視点を選択してください。</string>
+  <string name="ads_title">広告</string>
 </resources>

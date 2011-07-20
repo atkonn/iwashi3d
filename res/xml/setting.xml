@@ -2,14 +2,14 @@
 <PreferenceScreen 
   xmlns:android="http://schemas.android.com/apk/res/android">
   <PreferenceCategory android:title="@string/title_preference_iwashi">
-    <jp.co.qsdn.android.iwashi3d.setting.IwashiCountDialog
+    <jp.co.qsdn.android.jinbei3d.setting.IwashiCountDialog
       android:title="@string/title_preference_iwashi_count"
       android:summary="@string/summary_preference_iwashi_count"
       android:dialogTitle="@string/dialog_title_iwashi_count"
       android:dialogMessage="@string/dialog_message_iwashi_count"
       android:dialogLayout="@layout/iwashi_count_dialog"
     />
-    <jp.co.qsdn.android.iwashi3d.setting.IwashiSpeedDialog
+    <jp.co.qsdn.android.jinbei3d.setting.IwashiSpeedDialog
       android:title="@string/title_preference_iwashi_speed"
       android:summary="@string/summary_preference_iwashi_speed"
       android:dialogTitle="@string/dialog_title_iwashi_speed"
@@ -23,14 +23,25 @@
       android:summaryOff="@string/summary_off_preference_iwashi_boids"
       android:defaultValue="true"
     />
-    <CheckBoxPreference   
-      android:key="@string/key_preference_camera_mode"
-      android:title="@string/title_preference_camera_mode"
-      android:summaryOn="@string/summary_on_preference_camera_mode"  
-      android:summaryOff="@string/summary_off_preference_camera_mode"
-      android:defaultValue="false"
+  </PreferenceCategory>
+  <PreferenceCategory android:title="@string/title_preference_jinbei">
+    <jp.co.qsdn.android.jinbei3d.setting.JinbeiSpeedDialog
+      android:title="@string/title_preference_jinbei_speed"
+      android:summary="@string/summary_preference_jinbei_speed"
+      android:dialogTitle="@string/dialog_title_jinbei_speed"
+      android:dialogMessage="@string/dialog_message_jinbei_speed"
+      android:dialogLayout="@layout/jinbei_speed_dialog"
     />
-    <jp.co.qsdn.android.iwashi3d.setting.ChangeCameraDialog
+  </PreferenceCategory>
+  <PreferenceCategory android:title="@string/title_preference_other">
+    <jp.co.qsdn.android.jinbei3d.setting.ChangeCameraModeDialog
+      android:title="@string/title_preference_camera_mode"
+      android:summary="@string/summary_preference_change_camera_mode"
+      android:dialogTitle="@string/dialog_title_change_camera_mode"
+      android:dialogMessage="@string/dialog_message_change_camera_mode"
+      android:dialogLayout="@layout/change_camera_mode_dialog"
+    />
+    <jp.co.qsdn.android.jinbei3d.setting.ChangeCameraDialog
       android:title="@string/title_preference_change_camera"
       android:summary="@string/summary_preference_change_camera"
       android:dialogTitle="@string/dialog_title_change_camera"
