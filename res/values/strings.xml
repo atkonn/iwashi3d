@@ -72,7 +72,10 @@ jinbei3d (1.0.0) stable; urgency=low\n
 \n
 ★ライセンス:\n
   * ソースコードはhttps://github.com/atkonn/jinbei3dにてApache Software License 2.0に基づいて公開しています。\n
-    詳細はhttps://github.com/atkonn/jinbei3dを参照してください。\n
+\t詳細は
+https://github.com/atkonn/iwashi3d/tree/jinbei3d
+を参照してください。\n
+\n
 </string>
   <string name="key_preference_camera_mode">camera_mode</string>
   <string name="title_preference_camera_mode">視点変更</string>
