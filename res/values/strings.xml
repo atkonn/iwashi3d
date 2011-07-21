@@ -5,7 +5,7 @@
   <string name="service_name">School of Sardines</string>
   <string name="description">3D live wallpaper of sardines that used BOIDS algorithm</string>
   <string name="author">QSDN,Inc.</string>
-  <string name="version">version 1.0.10</string>
+  <string name="version">version 1.0.11</string>
   <string name="copyright">Copyright (c) 2011 QSDN,Inc. All rights reserved.</string>
 
   <string name="setting_title">Settings</string>
@@ -59,6 +59,13 @@ Requirement:\n
 3) Over 3MB Heep memory area.\n
 \n
 ChangeLog:\n
+iwashi3d (1.0.11) stable; urgency=low\n
+\n
+  * Changed default language\n
+    - Japanese to English\n
+\n
+ -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Thu, 21 Jul 2011 23:40:04 +0900\n
+\n
 iwashi3d (1.0.10) stable; urgency=low\n
 \n
   * Fixed bug\n
