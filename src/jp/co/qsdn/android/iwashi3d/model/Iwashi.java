@@ -68,7 +68,7 @@ public class Iwashi implements Model {
   private Iwashi[] species;
   private double separate_dist  = 10.0d * scale * (double)GL_IWASHI_SCALE;
   private double alignment_dist = 30.0d * scale * (double)GL_IWASHI_SCALE;
-  private double cohesion_dist  = 110.0d * scale * (double)GL_IWASHI_SCALE;
+  private double cohesion_dist  = 50.0d * scale * (double)GL_IWASHI_SCALE;
   private float[] schoolCenter = {0f,0f,0f};
   private float[] schoolDir = {0f,0f,0f};
   private int schoolCount = 0;
@@ -80,7 +80,7 @@ public class Iwashi implements Model {
     NORMAL,    /* ランダム */
   };
 
-  /** 現在の行動中の行動 */
+  /** current status */
   private STATUS status = STATUS.NORMAL;
 
 
@@ -94,6 +94,9 @@ public class Iwashi implements Model {
   private float nextSpeed = 0.0f;
   private int nextSpeedCount = 0;
   private int nextDirectionCount = 0;
+
+  /** Weight of separation process */
+  private static final int SEPARATION_WEIGHT = 10;
 
 
   /*=========================================================================*/
@@ -253,14 +256,7 @@ public class Iwashi implements Model {
     gl10.glRotatef(x_angle * -1f, 0.0f, 0.0f, 1.0f);
 
     gl10.glColor4f(1,1,1,1);
-    {
-      double div = ((double)GLRenderer.MAX_IWASHI_COUNT) / (double)iwashiCount;
-      int divi = (int)Math.ceil(div);
-      if (divi == 0) {
-        divi = 1;
-      }
-      gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, IwashiData.mVertexBuffer[Math.abs(finTick++ / divi / 3) % 36]);
-    }
+    gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, IwashiData.mVertexBuffer[Math.abs(finTick++ / 3) % IwashiData.mVertexBuffer.length]);
     gl10.glNormalPointer(GL10.GL_FLOAT, 0, mNormalBuffer);
     gl10.glEnable(GL10.GL_TEXTURE_2D);
     gl10.glBindTexture(GL10.GL_TEXTURE_2D, textureIds[0]);
@@ -402,7 +398,8 @@ public class Iwashi implements Model {
       if (dist < separate_dist) {
         calcSeparation(species[ii]);
       }
-      else if (dist < alignment_dist) {
+
+      if (dist < alignment_dist) {
         synchronized (mScratch4f_1) {
           synchronized (mScratch4f_2) {
             mScratch4f_1[0] = getDirectionX();
@@ -487,54 +484,34 @@ public class Iwashi implements Model {
     return true;
   }
 
+  /**
+   * I do it with one's direction that I looked at from a target 
+   * as a direction doing separate.
+   * @param target I appoint the sardine which wants to be separated as Iwashi Object.
+   */
   public void calcSeparation(Iwashi target) {
     float v_x = 0f;
     float v_y = 0f;
     float v_z = 0f;
     synchronized (mScratch4f_1) {
-      /*=======================================================================*/
-      /* Separationしたいターゲットの方向取得                                  */
-      /*=======================================================================*/
-      mScratch4f_1[0] = target.getDirectionX();
-      mScratch4f_1[1] = target.getDirectionY();
-      mScratch4f_1[2] = target.getDirectionZ();
-      CoordUtil.normalize3fv(mScratch4f_1);
       synchronized (mScratch4f_2) {
-        /*=====================================================================*/
-        /* ターゲットから見て、自分の方向を算出                                */
-        /*=====================================================================*/
         mScratch4f_2[0] = getX() - target.getX();
         mScratch4f_2[1] = getY() - target.getY();
         mScratch4f_2[2] = getZ() - target.getZ();
         CoordUtil.normalize3fv(mScratch4f_2);
-        /*=====================================================================*/
-        /* 足し込む                                                            */
-        /*=====================================================================*/
-        mScratch4f_1[0] += mScratch4f_2[0];
-        mScratch4f_1[1] += mScratch4f_2[1];
-        mScratch4f_1[2] += mScratch4f_2[2];
       }
-      /*=====================================================================*/
-      /* 平均算出                                                            */
-      /*=====================================================================*/
-      mScratch4f_1[0] /= 2f;
-      mScratch4f_1[1] /= 2f;
-      mScratch4f_1[2] /= 2f;
-
-      v_x = mScratch4f_1[0];
-      v_y = mScratch4f_1[1];
-      v_z = mScratch4f_1[2];
+      v_x = mScratch4f_2[0];
+      v_y = mScratch4f_2[1];
+      v_z = mScratch4f_2[2];
     }
     if (debug) {
-      Log.d(TAG, "向かいたい方向"
+      Log.d(TAG, "Direction "
        + " x:[" + v_x + "]:"
        + " y:[" + v_y + "]:"
        + " z:[" + v_z + "]:");
     }
 
-    /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
     float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
-    /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
     float angle_y = (float)coordUtil.convertDegreeXZ((double)v_x * -1d, (double)v_z);
     if (angle_x > 180f) {
       angle_x = angle_x - 360f;
@@ -542,12 +519,6 @@ public class Iwashi implements Model {
     if ((angle_x < 0.0f && v_y > 0.0f) || (angle_x > 0.0f && v_y < 0.0f)) {
       angle_x *= -1f;
     }
-    if (debug) {
-      Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
-      Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
-    }
-
-
     coordUtil.setMatrixRotateZ(angle_x);
     synchronized (mScratch4f_1) {
       synchronized (mScratch4f_2) {
@@ -555,10 +526,10 @@ public class Iwashi implements Model {
         coordUtil.setMatrixRotateY(angle_y);
         coordUtil.affine(mScratch4f_1[0],mScratch4f_1[1], mScratch4f_1[2], mScratch4f_2);
         CoordUtil.normalize3fv(mScratch4f_2);
-        nextDirection[0] += mScratch4f_2[0];
-        nextDirection[1] += mScratch4f_2[1];
-        nextDirection[2] += mScratch4f_2[2];
-        nextDirectionCount++;
+        nextDirection[0] += (mScratch4f_2[0] * SEPARATION_WEIGHT);
+        nextDirection[1] += (mScratch4f_2[1] * SEPARATION_WEIGHT);
+        nextDirection[2] += (mScratch4f_2[2] * SEPARATION_WEIGHT);
+        nextDirectionCount += SEPARATION_WEIGHT;
       }
     }
   }
@@ -609,9 +580,7 @@ public class Iwashi implements Model {
       v_y = mScratch4f_1[1];
       v_z = mScratch4f_1[2];
     }
-    /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
     float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
-    /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
     float angle_y = (float)coordUtil.convertDegreeXZ((double)v_x * -1d, (double)v_z);
     if (angle_x > 180f) {
       angle_x = angle_x - 360f;
@@ -647,12 +616,6 @@ public class Iwashi implements Model {
 
 
   public void turn() {
-    // 方向転換
-    // 45 >= x >= -45
-    // 360 >= y >= 0
-    // 一回の方向転換のMAX
-    // 45 >= x >= -45
-    // 45 >= y >= -45
     float old_angle_x = x_angle;
     float old_angle_y = y_angle;
     x_angle = old_angle_x;
@@ -840,103 +803,6 @@ public class Iwashi implements Model {
     }
   }
 
-  public void aimSchoolCenter() {
-    if (debug) {
-      Log.d(TAG, "start aimSchoolCenter ");
-    }
-
-    float v_x = 0f;
-    float v_y = 0f;
-    float v_z = 0f;
-    synchronized (mScratch4f_1) {
-      /*=======================================================================*/
-      /* 向かいたいschoolの方向取得                                            */
-      /*=======================================================================*/
-      mScratch4f_1[0] = schoolDir[0];
-      mScratch4f_1[1] = schoolDir[1];
-      mScratch4f_1[2] = schoolDir[2];
-      CoordUtil.normalize3fv(mScratch4f_1);
-      synchronized (mScratch4f_2) {
-        /*=====================================================================*/
-        /* 自分から見て、ターゲットの方向を算出                                */
-        /*=====================================================================*/
-        mScratch4f_2[0] = schoolCenter[0] - getX();
-        mScratch4f_2[1] = schoolCenter[1] - getY();
-        mScratch4f_2[2] = schoolCenter[2] - getZ();
-        CoordUtil.normalize3fv(mScratch4f_2);
-        /*=====================================================================*/
-        /* ややターゲットに近づきたいので x2                                   */
-        /*=====================================================================*/
-        mScratch4f_2[0] *= 2f;
-        mScratch4f_2[1] *= 2f;
-        mScratch4f_2[2] *= 2f;
-        /*=====================================================================*/
-        /* 足し込む                                                            */
-        /*=====================================================================*/
-        mScratch4f_1[0] += mScratch4f_2[0];
-        mScratch4f_1[1] += mScratch4f_2[1];
-        mScratch4f_1[2] += mScratch4f_2[2];
-      }
-      /*=====================================================================*/
-      /* 平均算出                                                            */
-      /*=====================================================================*/
-      mScratch4f_1[0] /= 3f;
-      mScratch4f_1[1] /= 3f;
-      mScratch4f_1[2] /= 3f;
-
-      v_x = mScratch4f_1[0];
-      v_y = mScratch4f_1[1];
-      v_z = mScratch4f_1[2];
-    }
-    //float v_x = (schoolCenter[0] - getX());
-    //float v_y = (schoolCenter[1] - getY());
-    //float v_z = (schoolCenter[2] - getZ());
-
-    /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-    float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
-    /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
-    float angle_y = (float)coordUtil.convertDegreeXZ((double)v_x * -1d, (double)v_z);
-    if (angle_x > 180f) {
-      angle_x = angle_x - 360f;
-    }
-    if ((angle_x < 0.0f && v_y > 0.0f) || (angle_x > 0.0f && v_y < 0.0f)) {
-      angle_x *= -1f;
-    }
-    if (debug) {
-      Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
-      Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
-    }
-
-    if (angle_y < 0.0f) {
-      angle_y = 360f + angle_y;
-    }
-    angle_y = angle_y % 360f;
-
-    /* その角度へ近づける */
-    aimTargetDegree(angle_x, angle_y);
-    if (debug) {
-      Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
-      Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
-    }
-
-    coordUtil.setMatrixRotateZ(x_angle);
-    synchronized (mScratch4f_1) {
-      synchronized (mScratch4f_2) {
-        coordUtil.affine(-1.0f,0.0f, 0.0f, mScratch4f_1);
-        coordUtil.setMatrixRotateY(y_angle);
-        coordUtil.affine(mScratch4f_1[0],mScratch4f_1[1], mScratch4f_1[2], mScratch4f_2);
-        direction[0] = mScratch4f_2[0];
-        direction[1] = mScratch4f_2[1];
-        direction[2] = mScratch4f_2[2];
-      }
-    }
-    if (debug) {
-      Log.d(TAG, "end aimSchoolCenter "
-        + "x:[" + direction[0] + "]:"
-        + "y:[" + direction[1] + "]:"
-        + "z:[" + direction[2] + "]:");
-    }
-  }
   public boolean aimBait(Bait bait) {
     if (debug) {
       Log.d(TAG, "start aimBait ");
