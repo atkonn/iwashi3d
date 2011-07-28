@@ -66,9 +66,9 @@ public class Iwashi implements Model {
    * same kind list
    */
   private Iwashi[] species;
-  private double separate_dist  = 5.0d * scale * (double)GL_IWASHI_SCALE;
-  private double alignment_dist = 40.0d * scale * (double)GL_IWASHI_SCALE;
-  private double cohesion_dist  = 100.0d * scale * (double)GL_IWASHI_SCALE;
+  private double separate_dist  = 10.0d * scale * (double)GL_IWASHI_SCALE;
+  private double alignment_dist = 30.0d * scale * (double)GL_IWASHI_SCALE;
+  private double cohesion_dist  = 110.0d * scale * (double)GL_IWASHI_SCALE;
   private float[] schoolCenter = {0f,0f,0f};
   private float[] schoolDir = {0f,0f,0f};
   private int schoolCount = 0;
@@ -97,26 +97,20 @@ public class Iwashi implements Model {
 
 
   /*=========================================================================*/
-  /* 現在位置                                                                */
+  /* current position of sardine                                             */
   /*=========================================================================*/
-  // メモ 1.0f >= z >= -50.0fまで
-  // zが0.0fのときy=1.0fが限界
-  // zが0.0fのときy=-1.0fは半分土に埋まっている
-  // zが-20.0fのとき、x=-5.0f, x=5.0fで半分切れる
-  //
-  // 水槽の大きさ（案）
-  // 10.0f >= x  >= -10.0f
-  // 8.0f >= y >= 0.0f
-  // -50.0f > z >= 0.0f
   private float[] position = { 0.0f, 1.0f, 0.0f };
   /*=========================================================================*/
   /* Direction of sardine                                                    */
   /*=========================================================================*/
   private float[] direction = { -1.0f, 0.0f, 0.0f};
-
-  /* up or down */
+  /*=========================================================================*/
+  /* up or down                                                              */
+  /*=========================================================================*/
   private float x_angle = 0;
-  /* left and right */
+  /*=========================================================================*/
+  /* left or right                                                          */
+  /*=========================================================================*/
   private float y_angle = 0;
   /*=========================================================================*/
   /* Speed of sardine                                                        */
@@ -144,7 +138,6 @@ public class Iwashi implements Model {
     mTextureBuffer = tbb.asFloatBuffer();
     mTextureBuffer.put(IwashiData.texCoords);
     mTextureBuffer.position(0);
-
 
     /*=======================================================================*/
     /* calculate initial position of sardine                                 */
@@ -195,7 +188,7 @@ public class Iwashi implements Model {
   }
 
   public static void deleteTexture(GL10 gl10) {
-    if (textureIds != null) {
+    if (textureIds != null && gl10 != null) {
       gl10.glDeleteTextures(1, textureIds, 0);
     }
   }
@@ -212,6 +205,10 @@ public class Iwashi implements Model {
   }
 
   public void draw(GL10 gl10) {
+    if (gl10 == null) {
+      return;
+    }
+
     gl10.glPushMatrix();
 
 
@@ -262,7 +259,7 @@ public class Iwashi implements Model {
       if (divi == 0) {
         divi = 1;
       }
-      gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, IwashiData.mVertexBuffer[Math.abs(finTick++ / divi / 3) % 40]);
+      gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, IwashiData.mVertexBuffer[Math.abs(finTick++ / divi / 3) % 36]);
     }
     gl10.glNormalPointer(GL10.GL_FLOAT, 0, mNormalBuffer);
     gl10.glEnable(GL10.GL_TEXTURE_2D);
@@ -273,8 +270,6 @@ public class Iwashi implements Model {
     gl10.glPopMatrix();
     gl10.glPopMatrix();
   }
-
-
 
   public void update_speed() {
     sv_speed = speed;
@@ -300,7 +295,7 @@ public class Iwashi implements Model {
 
   /**
    * It is a part of A.I.
-   * どの方向に進むか考える
+   * I think about which direction I advance to.
    */
   public void think() {
     long nowTime = System.nanoTime();
@@ -312,9 +307,10 @@ public class Iwashi implements Model {
       ||  (Aquarium.min_y.floatValue() >= position[1] || Aquarium.max_y.floatValue() <= position[1])
       ||  (Aquarium.min_z.floatValue() >= position[2] || Aquarium.max_z.floatValue() <= position[2])) {
       /*=====================================================================*/
-      /* 水槽からはみ出てる                                                  */
+      /* It is the processing that does not protrude from an aquarium.       */
       /*=====================================================================*/
       if (getStatus() == STATUS.TO_BAIT) {
+        /* reset speed */
         speed = sv_speed;
       }
       setStatus(STATUS.TO_CENTER);
@@ -323,15 +319,16 @@ public class Iwashi implements Model {
       update_speed();
       return;
     }
-    /**
-     * 餌ロジック
-     */
+    /*=======================================================================*/
+    /* If bait is given, I sit at the bait.                                  */
+    /*=======================================================================*/
     Bait bait = baitManager.getBait();
     if (bait != null) {
       if (this.rand.nextInt(10000) <= 5500) {
         if (aimBait(bait)) {
           if (traceBOIDS && iwashiNo == 0) Log.d(TAG, "to Bait");
           if (getStatus() == STATUS.TO_BAIT) {
+            /* reset speed */
             speed = sv_speed;
           }
           setStatus(STATUS.TO_BAIT);
@@ -342,7 +339,7 @@ public class Iwashi implements Model {
     }
 
     if (getStatus() == STATUS.TO_BAIT) {
-      /* 元に戻す */
+      /* reset speed */
       speed = sv_speed;
     }
 
@@ -358,7 +355,7 @@ public class Iwashi implements Model {
 
     if (this.rand.nextInt(10000) <= 9500) {
       if (traceBOIDS && iwashiNo == 0) Log.d(TAG, "Nop");
-      // 変更なし
+      // no change
       return;
     }
     setStatus(STATUS.NORMAL);
@@ -423,23 +420,10 @@ public class Iwashi implements Model {
       }
 
       if (dist < cohesion_dist) {
-        synchronized (mScratch4f_1) {
-          synchronized (mScratch4f_2) {
-            mScratch4f_1[0] = getDirectionX();
-            mScratch4f_1[1] = getDirectionY();
-            mScratch4f_1[2] = getDirectionZ();
-            mScratch4f_2[0] = species[ii].getX() - getX();
-            mScratch4f_2[1] = species[ii].getY() - getY();
-            mScratch4f_2[2] = species[ii].getZ() - getZ();
-            float degree = CoordUtil.includedAngle(mScratch4f_1, mScratch4f_2, 3);
-            if (degree <= 150f && degree >= 0f) {
-              schoolCenter[0] += species[ii].getX();
-              schoolCenter[1] += species[ii].getY();
-              schoolCenter[2] += species[ii].getZ();
-              schoolCount++;
-            }
-          }
-        }
+        schoolCenter[0] += species[ii].getX();
+        schoolCenter[1] += species[ii].getY();
+        schoolCenter[2] += species[ii].getZ();
+        schoolCount++;
       }
     }
 
@@ -625,10 +609,6 @@ public class Iwashi implements Model {
       v_y = mScratch4f_1[1];
       v_z = mScratch4f_1[2];
     }
-    //float v_x = (schoolCenter[0] - getX());
-    //float v_y = (schoolCenter[1] - getY());
-    //float v_z = (schoolCenter[2] - getZ());
-
     /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
     float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
     /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
