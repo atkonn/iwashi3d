@@ -1,3 +1,13 @@
+iwashi3d (1.0.12) stable; urgency=low
+
+  * Improved a part of the BOIDS algorithm
+    Because there was concern at transaction speed,
+    I made processing short in a BOIDS part.
+    However, there was not the need by the improvement
+    of the drawing part. thus I did a BOIDS part properly.
+
+ -- Atsushi Konno <konno@qsdn.co.jp>  Fri, 29 Jul 2011 09:25:43 +0900
+
 iwashi3d (1.0.11) stable; urgency=low
 
   * Changed default language

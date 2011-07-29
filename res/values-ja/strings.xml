@@ -59,6 +59,16 @@ Boidsアルゴリズムを使った鰯の群れをシミュレートする3Dラ�
 ※頂点データ・テクスチャをメモリ上に読み込むため、メモリを大量消費します。\n
 \n
 ★変更履歴:\n
+iwashi3d (1.0.12) stable; urgency=low\n
+\n
+\t* Improved a part of the BOIDS algorithm\n
+\tBecause there was concern at transaction speed,\n
+\tI made processing short in a BOIDS part.\n
+\tHowever, there was not the need by the improvement\n
+\tof the drawing part. thus I did a BOIDS part properly.\n
+\n
+ -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Fri, 29 Jul 2011 09:25:43 +0900\n
+\n
 iwashi3d (1.0.11) stable; urgency=low\n
 \n
   * Changed default language\n
