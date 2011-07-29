@@ -66,7 +66,7 @@ public class Iwashi implements Model {
    * same kind list
    */
   private Iwashi[] species;
-  private double separate_dist  = 10.0d * scale * (double)GL_IWASHI_SCALE;
+  private double separate_dist  = 7.0d * scale * (double)GL_IWASHI_SCALE;
   private double alignment_dist = 30.0d * scale * (double)GL_IWASHI_SCALE;
   private double cohesion_dist  = 50.0d * scale * (double)GL_IWASHI_SCALE;
   private float[] schoolCenter = {0f,0f,0f};
@@ -74,10 +74,11 @@ public class Iwashi implements Model {
   private int schoolCount = 0;
   private int alignmentCount = 0;
 
+  /** enum current status */
   private enum STATUS {
-    TO_CENTER, /* 画面の真ん中へ向かい中 */
-    TO_BAIT,   /* 餌へ向かっている最中   */
-    NORMAL,    /* ランダム */
+    TO_CENTER,
+    TO_BAIT,
+    NORMAL,
   };
 
   /** current status */
@@ -218,7 +219,7 @@ public class Iwashi implements Model {
     gl10.glPushMatrix();
     {
       /*=======================================================================*/
-      /* 環境光の材質色設定                                                    */
+      /* ambient                                                               */
       /*=======================================================================*/
       synchronized (mScratch4f) {
         mScratch4f[0] = 0.07f;
@@ -228,7 +229,7 @@ public class Iwashi implements Model {
         gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, mScratch4f, 0);
       }
       /*=======================================================================*/
-      /* 拡散反射光の色設定                                                    */
+      /* Diffuese                                                              */
       /*=======================================================================*/
       synchronized (mScratch4f) {
         mScratch4f[0] = 0.24f;
@@ -238,7 +239,7 @@ public class Iwashi implements Model {
         gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, mScratch4f, 0);
       }
       /*=======================================================================*/
-      /* 鏡面反射光の質感色設定                                                */
+      /* Specular                                                              */
       /*=======================================================================*/
       synchronized (mScratch4f) {
         mScratch4f[0] = 1.0f;
@@ -455,8 +456,8 @@ public class Iwashi implements Model {
 
     aimTargetDegree(angle_x, angle_y);
     if (debug) {
-      Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
-      Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
+      Log.d(TAG, "now y_angle:[" + y_angle + "]");
+      Log.d(TAG, "now x_angle:[" + x_angle + "]");
     }
 
     coordUtil.setMatrixRotateZ(x_angle);
@@ -539,11 +540,11 @@ public class Iwashi implements Model {
     float angle_x = target.getX_angle();
     float angle_y = target.getY_angle();
     if (debug) {
-      Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
-      Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
+      Log.d(TAG, "candidate angle_y:[" + angle_y + "]");
+      Log.d(TAG, "candidate angle_x:[" + angle_x + "]");
     }
 
-    /* direction設定 */
+    /** calc next direction of "alignment" */
     coordUtil.setMatrixRotateZ(angle_x);
     synchronized (mScratch4f_1) {
       synchronized (mScratch4f_2) {
@@ -568,9 +569,7 @@ public class Iwashi implements Model {
     float v_z = 0f;
     synchronized (mScratch4f_1) {
       synchronized (mScratch4f_2) {
-        /*=====================================================================*/
-        /* 自分から見て、ターゲットの方向を算出                                */
-        /*=====================================================================*/
+        /* direction from me to school center */
         mScratch4f_2[0] = schoolCenter[0] - getX();
         mScratch4f_2[1] = schoolCenter[1] - getY();
         mScratch4f_2[2] = schoolCenter[2] - getZ();
@@ -589,8 +588,8 @@ public class Iwashi implements Model {
       angle_x *= -1f;
     }
     if (debug) {
-      Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
-      Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
+      Log.d(TAG, "candidate angle_y:[" + angle_y + "]");
+      Log.d(TAG, "candidate angle_x:[" + angle_x + "]");
     }
 
     if (angle_y < 0.0f) {
@@ -703,22 +702,11 @@ public class Iwashi implements Model {
   }
   public void aimTargetSpeed(float t_speed) {
     if (t_speed <= speed) {
-      /* 自分のスピードよりも相手の方が遅い場合 */
-      if (false) {
-        speed -= (this.rand.nextFloat() * speed_unit);
-        if (speed <= speed_min) {
-          speed = speed_unit;
-        }
-      }
-      else {
-       update_speed();
-      }
+     update_speed();
     }
     else {
-      /* 相手の方が早い場合 */
       speed += (this.rand.nextFloat() * speed_unit);
       if (t_speed < speed) {
-        /* 越えちゃったらちょっとだけ遅く*/
         speed = t_speed - (this.rand.nextFloat() * speed_unit);
       }
       if (speed > speed_max) {
@@ -728,7 +716,7 @@ public class Iwashi implements Model {
   }
 
   /**
-   * 強制的に水槽の中心へ徐々に向ける
+   * The disposal of to the center aquarium
    */
   public void aimAquariumCenter() {
     if (debug) {
@@ -739,27 +727,25 @@ public class Iwashi implements Model {
     float v_z = (Aquarium.center[2] - getZ());
     if (Aquarium.min_x.floatValue() < getX() && Aquarium.max_x.floatValue() > getX()
     &&  Aquarium.min_y.floatValue() < getY() && Aquarium.max_y.floatValue() > getY()) {
-      /* Zだけはみ出た */
+      /* over only Z */
       v_x = 0.0f;
       v_y = 0.0f;
     }
     else 
     if (Aquarium.min_x.floatValue() < getX() && Aquarium.max_x.floatValue() > getX()
     &&  Aquarium.min_z.floatValue() < getZ() && Aquarium.max_z.floatValue() > getZ()) {
-      /* Yだけはみ出た */
+      /* over only Y */
       v_x = 0.0f;
       v_z = 0.0f;
     }
     else 
     if (Aquarium.min_y.floatValue() < getY() && Aquarium.max_y.floatValue() > getY()
     &&  Aquarium.min_z.floatValue() < getZ() && Aquarium.max_z.floatValue() > getZ()) {
-      /* Xだけはみ出た */
+      /* over only X */
       v_y = 0.0f;
       v_z = 0.0f;
     }
-    /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
     float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
-    /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
     float angle_y = (float)coordUtil.convertDegreeXZ((double)v_x * -1d, (double)v_z);
     if (angle_x > 180f) {
       angle_x = angle_x - 360f;
@@ -768,8 +754,8 @@ public class Iwashi implements Model {
       angle_x *= -1f;
     }
     if (debug) {
-      Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
-      Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
+      Log.d(TAG, "candidate angle_y:[" + angle_y + "]");
+      Log.d(TAG, "candidate angle_x:[" + angle_x + "]");
     }
 
     if (angle_y < 0.0f) {
@@ -777,11 +763,11 @@ public class Iwashi implements Model {
     }
     angle_y = angle_y % 360f;
 
-    /* その角度へ近づける */
+    /* aim degree of target */
     aimTargetDegree(angle_x, angle_y);
     if (debug) {
-      Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
-      Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
+      Log.d(TAG, "now y_angle:[" + y_angle + "]");
+      Log.d(TAG, "now x_angle:[" + x_angle + "]");
     }
 
     coordUtil.setMatrixRotateZ(x_angle);
@@ -819,15 +805,13 @@ public class Iwashi implements Model {
     float v_y = (bait.getY() - getY());
     float v_z = (bait.getZ() - getZ());
     if (debug) {
-      Log.d(TAG, "向かいたい方向"
+      Log.d(TAG, "candidate direction"
        + " x:[" + v_x + "]:"
        + " y:[" + v_y + "]:"
        + " z:[" + v_z + "]:");
     }
 
-    /* 上下角度算出 (-1dを乗算しているのは0度の向きが違うため) */
     float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
-    /* 左右角度算出 (-1dを乗算しているのは0度の向きが違うため) */
     float angle_y = (float)coordUtil.convertDegreeXZ((double)v_x * -1d, (double)v_z);
     if (angle_x > 180f) {
       angle_x = angle_x - 360f;
@@ -836,15 +820,15 @@ public class Iwashi implements Model {
       angle_x *= -1f;
     }
     if (debug) {
-      Log.d(TAG, "向かいたい方向のangle_y:[" + angle_y + "]");
-      Log.d(TAG, "向かいたい方向のangle_x:[" + angle_x + "]");
+      Log.d(TAG, "candidate angle_y:[" + angle_y + "]");
+      Log.d(TAG, "candidate angle_x:[" + angle_x + "]");
     }
 
-    /* その角度へ近づける */
+    /* aim degree of target */
     aimTargetDegree(angle_x, angle_y);
     if (debug) {
-      Log.d(TAG, "実際に向かう方向のy_angle:[" + y_angle + "]");
-      Log.d(TAG, "実際に向かう方向のx_angle:[" + x_angle + "]");
+      Log.d(TAG, "now y_angle:[" + y_angle + "]");
+      Log.d(TAG, "now x_angle:[" + x_angle + "]");
     }
 
     coordUtil.setMatrixRotateZ(x_angle);
@@ -867,9 +851,6 @@ public class Iwashi implements Model {
     return true;
   }
   public void move() {
-    /*=======================================================================*/
-    /* 処理速度を考慮した増分                                                */
-    /*=======================================================================*/
     float moveWidth = getSpeed() * (float)(tick / BASE_TICK);
 
     if (getX() + getDirectionX() * moveWidth >= Aquarium.max_x) {
