@@ -5,7 +5,7 @@
   <string name="service_name">鰯の群れ</string>
   <string name="description">Boidsアルゴリズムを使った鰯の群れ3Dライブ壁紙</string>
   <string name="author">株式会社QSDN</string>
-  <string name="version">version 1.0.12</string>
+  <string name="version">version 1.0.13</string>
   <string name="copyright">Copyright © 2011 QSDN,Inc. All rights reserved.</string>
 
   <string name="setting_title">設定</string>
