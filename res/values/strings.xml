@@ -44,8 +44,9 @@ This is 3D live Wallpaper simulating a school of sardines which used BOIDS algor
 \n
 Features:\n
 1) This simulates "a school of sardines".
-2) You can increase the number of sardine to 100 of them.\n
-\tHowever, this becomes very slow when you increased them
+2) You can increase the number of sardine to 200 of them.\n
+\tHowever, this becomes very slow and choppy when you increased them.\n
+\tPlease adjust number of sardines by yourself.\n
 3) You can change the speed that the sardine swims.\n
 4) Sardine comes there when you touched screen.\n
 5) You can enable "a school of sardine" function.\n
