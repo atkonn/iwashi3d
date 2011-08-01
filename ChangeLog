@@ -1,3 +1,9 @@
+iwashi3d (1.0.13) stable; urgency=low
+
+  * You can increase the number of sardine to greatest 200 of them.
+
+ -- Atsushi Konno <konno@qsdn.co.jp>  Mon, 01 Aug 2011 11:20:23 +0900
+
 iwashi3d (1.0.12) stable; urgency=low
 
   * Improved a part of the BOIDS algorithm
