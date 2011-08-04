@@ -40,7 +40,11 @@
   <string name="about_title">この壁紙について</string>
   <string name="text_about_ok_button">戻る</string>
   <string name="about_description">★説明:\n
-Boidsアルゴリズムを使った鰯の群れをシミュレートする3Dライブ壁紙です。 \n
+これはオープンソースの3Dライブ壁紙です。\n
+BOIDSアルゴリズムを使った鰯の群れをシミュレートします。\n
+それぞれの鰯はそれぞれがBOIDSアルゴリズムに従って進む方向を決定します。\n
+残念ながらグラフィックスはいまいちです。\n
+\n
 \n
 ★特徴:\n
 1) 「群れ」をシミュレートします。\n
@@ -53,11 +57,13 @@ Boidsアルゴリズムを使った鰯の群れをシミュレートする3Dラ�
 6) 視点から水槽の中心までの距離を変更可。\n
 7) イワシの視点モードをONにすることによって、イワシになった気になれるかも！？\n
 \n
+\n
 ★要件:\n
 1) ライブ壁紙が設定できるAndroid2.1以降のスマートフォン。\n
 2) OpenGL ES 1.0が使用できること。\n
 3) Heep領域を約3MB確保できること。\n
 ※頂点データ・テクスチャをメモリ上に読み込むため、メモリを大量消費します。\n
+\n
 \n
 ★最新の変更履歴:\n
 iwashi3d (1.0.13) stable; urgency=low\n
@@ -69,34 +75,35 @@ iwashi3d (1.0.13) stable; urgency=low\n
 iwashi3d (1.0.12) stable; urgency=low\n
 \n
 \t* Improved a part of the BOIDS algorithm\n
-\tBecause there was concern at transaction speed,\n
-\tI made processing short in a BOIDS part.\n
-\tHowever, there was not the need by the improvement\n
-\tof the drawing part. thus I did a BOIDS part properly.\n
+\t\tBecause there was concern at transaction speed,\n
+\t\tI made processing short in a BOIDS part.\n
+\t\tHowever, there was not the need by the improvement\n
+\t\tof the drawing part. thus I did a BOIDS part properly.\n
 \n
  -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Fri, 29 Jul 2011 09:25:43 +0900\n
 \n
 iwashi3d (1.0.11) stable; urgency=low\n
 \n
-  * Changed default language\n
-    - Japanese to English\n
+\t* Changed default language\n
+\t\t- Japanese to English\n
 \n
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Thu, 21 Jul 2011 23:40:04 +0900\n
+\t-- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Thu, 21 Jul 2011 23:40:04 +0900\n
 \n
 iwashi3d (1.0.10) stable; urgency=low\n
 \n
-  * Fixed bug\n
-      - changed slightly when changing the number of\n
-        sardine movement.\n
-  * Changed ADS.\n
-      - To prevent them from pressing the wrong.\n
+\t* Fixed bug\n
+\t\t- changed slightly when changing the number of\n
+\t\tsardine movement.\n
+\t* Changed ADS.\n
+\t\t- To prevent them from pressing the wrong.\n
 \n
- -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Thu, 21 Jul 2011 01:28:17 +0900\n
+\t-- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Thu, 21 Jul 2011 01:28:17 +0900\n
 \n
 \n
 ★著作権表示:\n
   * Copyright (c) 2011 株式会社QSDN All right reserved.\n
   * Copyright (c) 2011 Atsushi Konno All right reserved.\n
+\n
 \n
 ★ライセンス:\n
   * ソースコードはApache Software License 2.0に基づいて公開しています。\n
@@ -105,6 +112,14 @@ iwashi3d (1.0.10) stable; urgency=low\n
     または\n
     https://gitorious.org/iwashi3d\n
     を参照してください。\n
+\n
+\n
+★バグ\n
+もしバグ／改善点を見つけたら\n
+https://github.com/atkonn/iwashi3d/issues\n
+までご連絡いただけたら幸いです。（もちろん日本語で）\n
+\n
+\n
 </string>
   <string name="key_preference_camera_mode">camera_mode</string>
   <string name="title_preference_camera_mode">鰯視点モード</string>

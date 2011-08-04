@@ -27,6 +27,6 @@ Requirement
 
 Copyright
 ---------
-  * Copyright (c) 2011 QSDN,Inc. All right reserved.
-  * Copyright (c) 2011 Atsushi Konno All right reserved.
+  * Copyright &copy; 2011 QSDN,Inc. All right reserved.
+  * Copyright &copy; 2011 Atsushi Konno All right reserved.
 
