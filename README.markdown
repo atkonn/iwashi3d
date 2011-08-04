@@ -3,7 +3,7 @@ School of Sardines 3D Live Wallpaper for Android Device.
 
 https://market.android.com/details?id=jp.co.qsdn.android.iwashi3d
 
-This is open-source(Apache Software License 2.0)  3D Live Wallpaper for Android Device.
+This is an open-source(Apache Software License 2.0)  3D Live Wallpaper for Android Device.
 This is simulating a school of sardines which used BOIDS algorithm.Sardines each determines the direction of movement according to BOIDS algorithm.
 You can download on the [Android Market](https://market.android.com/details?id=jp.co.qsdn.android.iwashi3d) completely free.
 Unfortunately, This is the lowest graphics you have ever seen.
