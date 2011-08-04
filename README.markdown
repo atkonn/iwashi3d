@@ -1,5 +1,5 @@
-School of Sardines 3D Live Wallpaper for Android.
-=================================================
+School of Sardines 3D Live Wallpaper for Android Device.
+========================================================
 
 https://market.android.com/details?id=jp.co.qsdn.android.iwashi3d
 
