@@ -11,7 +11,7 @@ Unfortunately, This is the lowest graphics you have ever seen.
 Features
 --------
 1. This simulates "a school of sardines".
-2. You can increase the number of sardine to 150 of them. if your device becomes very slowly and choppy when you increased them, please adjust number of sardines by yourself.
+2. You can increase the number of sardine to 200 of them. if your device becomes very slowly and choppy when you increased them, please adjust number of sardines by yourself.
 3. You can change the speed that the sardine swims.
 4. Sardine comes there when you touched screen.
 5. You can enable "a school of sardine" function.You can disable "a school of sardine" function.
