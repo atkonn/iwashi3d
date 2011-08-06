@@ -151,29 +151,25 @@ public class CoordUtil {
   }
 
   /**
-   * AndroidのOpenGL ESではglGetIntやglGetFloatでMATRIXが取得できないので
-   * 自前で計算する
+   * Because MATRIX cannot be acquired in glGetInt and glGetFloat in OpenGL ES of Android, 
+   * it calculates at one's own expense. 
    */
   public static float[] calcProjectionMatrix(float fov, float aspect, float znear, float zfar) {
     float xymax = znear * (float)Math.tan((double)(fov * 0.00872664626f));
     float ymin = -xymax;
     float xmin = -xymax;
   
-    //スクリーンの横、縦を計算
     float width = xymax - xmin;
     float height = xymax - ymin;
   
-    //奥行き値関係
     float depth = zfar - znear;
     float q = -(zfar + znear) / depth;
     float qn = -2 * (zfar * znear) / depth;
   
-    //アスペクト比関係
     float w = 2 * znear / width;
     w = w / aspect;
     float h = 2 * znear / height;
   
-    //行列に値を設定
     float[] ret = new float[16];
     ret[0]  = w;
     ret[1]  = 0;
@@ -199,7 +195,6 @@ public class CoordUtil {
   }
 
   /**
-   * 正規化
    */
   public static void normalize3fv(float[] v) {
     float l;
@@ -214,7 +209,6 @@ public class CoordUtil {
   }
 
   /**
-   * 外積
    */
   public static void cross(float[] v1, float[] v2, float[] result) {
     result[0] = v1[1] * v2[2] - v1[2] * v2[1];
@@ -223,7 +217,6 @@ public class CoordUtil {
   }
 
   /**
-   * 内積
    */
   public static float dot(float[] v1, float[] v2, int n) {
     float ret = 0f;
@@ -313,24 +306,9 @@ public class CoordUtil {
       viewMatrix[15] = mScratch4x4f[3][3];
     };
     
-    /* 
-    GLU.gluLookAt(gl10,
-                  camera[0],camera[1],camera[2],
-                  camera[0],camera[1],-100f,
-                  0,1,0);
-    */
     gl10.glMultMatrixf(viewMatrix, 0);
     gl10.glTranslatef(-eyex, -eyey, -eyez);
 
-/*
-    float[] eye = {eyex, eyey, eyez};
-    float[] xaxis = { viewMatrix[0], viewMatrix[4], viewMatrix[8], };
-    float[] yaxis = { viewMatrix[1], viewMatrix[5], viewMatrix[9], };
-    float[] zaxis = { viewMatrix[2], viewMatrix[6], viewMatrix[10], };
-    viewMatrix[12] = -dot(xaxis,eye);
-    viewMatrix[13] = -dot(yaxis,eye);
-    viewMatrix[14] = -dot(zaxis,eye);
-*/
     ((GL11)gl10).glGetFloatv(GL10.GL_MODELVIEW, viewMatrix, 0);
   } 
 
@@ -359,18 +337,18 @@ public class CoordUtil {
   }
 
   /**
-   * ベクトル間の角度を求める 
-   * @param v1 ベクトル1
-   * @param v2 ベクトル2
-   * @param n 次元数
-   * @return 角度
+   * This calculates the angle between vectors. 
+   * @param v1 vector1
+   * @param v2 vector2
+   * @param n Number of dimension
+   * @return angle
    */
   public static float includedAngle(float[] v1, float[] v2, int n) {
     return (float)convertToDegree(Math.acos((double)(dot(v1, v2, n) / (norm(v1, n) * norm(v2, n)))));
   }
 
   /**
-   * ノルム
+   * Norm
    */
   public static float norm(float[] v1, int n) {
     return (float)Math.sqrt((double)dot(v1, v1, n));

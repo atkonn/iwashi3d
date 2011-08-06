@@ -51,10 +51,10 @@ public class Ground {
     float oneW = Aquarium.max_x + 0.5f;
     float oneH = Aquarium.max_y + 0.5f;
     float vertices[] = {
-      -oneW, -oneH,  oneW,   // 左下
-       oneW, -oneH,  oneW,   // 右下
-      -oneW, -oneH, -oneW,   // 左上
-       oneW, -oneH, -oneW,   // 右上
+      -oneW, -oneH,  oneW,
+       oneW, -oneH,  oneW,
+      -oneW, -oneH, -oneW,
+       oneW, -oneH, -oneW,
     };
 
     float texCoords[] = {
@@ -107,14 +107,12 @@ public class Ground {
   float[] mScratch4f = new float[4];
   public void draw(GL10 gl10, Model[] model) {
     /*-----------------------------------------------------------------------*/
-    /* 背景描画                                                              */
     /*-----------------------------------------------------------------------*/
     gl10.glMatrixMode(GL10.GL_MODELVIEW);  // ModelView行列をクリア
     gl10.glPushMatrix();
 
 
     /*=======================================================================*/
-    /* 環境光の材質色設定                                                    */
     /*=======================================================================*/
     synchronized (mScratch4f) {
       mScratch4f[0] = 1.0f;
@@ -124,7 +122,6 @@ public class Ground {
       gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, mScratch4f, 0);
     }
     /*=======================================================================*/
-    /* 拡散反射光の色設定                                                    */
     /*=======================================================================*/
     synchronized (mScratch4f) {
       mScratch4f[0] = 1.0f;
@@ -134,7 +131,6 @@ public class Ground {
       gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, mScratch4f, 0);
     }
     /*=======================================================================*/
-    /* 鏡面反射光の質感色設定                                                */
     /*=======================================================================*/
     synchronized (mScratch4f) {
       mScratch4f[0] = 0.0f;
@@ -146,7 +142,6 @@ public class Ground {
 
     gl10.glMaterialf(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, 100f);
 
-    /* mBitmapがnullの場合がある・・・ */
     if (BitmapContext.instance().getBitmap() != null) {
       Bitmap bmp = BitmapContext.instance().getBitmap().copy(Bitmap.Config.ARGB_8888,true);
       if (bmp != null) {
@@ -176,7 +171,6 @@ public class Ground {
 
 
     /*-----------------------------------------------------------------------*/
-    /* 頂点座標バッファを読み込む                                            */
     /*-----------------------------------------------------------------------*/
     gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, mVertexBuffer);
     if (BitmapContext.instance().getBitmap() != null) {
@@ -186,7 +180,6 @@ public class Ground {
     }
 
     /*-----------------------------------------------------------------------*/
-    /* 頂点描画                                                              */
     /*-----------------------------------------------------------------------*/
     gl10.glColor4f(1,1,1,1);
     gl10.glNormal3f(0,1,0);

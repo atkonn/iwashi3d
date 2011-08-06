@@ -17,7 +17,6 @@
 package jp.co.qsdn.android.iwashi3d;
 
 /**
- * 餌だよーん
  */
 public class Bait {
   private float[] pos = {0f,0f,0f};

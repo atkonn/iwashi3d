@@ -26,7 +26,6 @@ import android.content.Intent;
 import jp.co.qsdn.android.iwashi3d.setting.SettingActivity;
 
 /**
- * ステータスバーの実行中領域にアイコンを表示
  */
 public class AtlantisNotification {
 
@@ -51,8 +50,6 @@ public class AtlantisNotification {
         pi
     );
     /**
-     * Notification.FLAG_NO_CLEAR ==> クリアボタンを表示しない
-     * Notification.FLAG_ONGOING_EVENT ==> 実行中領域に表示
      */
     notification.flags = notification.flags | Notification.FLAG_NO_CLEAR  | Notification.FLAG_ONGOING_EVENT; 
     notification.number = 0;

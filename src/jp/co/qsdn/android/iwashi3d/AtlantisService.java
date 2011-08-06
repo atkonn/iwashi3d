@@ -60,7 +60,6 @@ public class AtlantisService extends WallpaperService {
     private boolean mInitialized = false;
     private long BASE_TICK = 45410157L;
 
-    /* EGL関連は毎回再作成？？ */
     private MatrixTrackingGL gl10 = null;
     private EGL10 egl10 = null;
     private EGLContext eglContext = null;
@@ -82,12 +81,6 @@ public class AtlantisService extends WallpaperService {
     public void onCreate(final SurfaceHolder holder) {
       if (_debug) Log.d(TAG, "start onCreate() [" + this + "]");
       super.onCreate(holder);
-      /*=====================================================================*/
-      /* 携帯電話として機能しなくなるので                                    */
-      /* タッチイベントは無効にしておく.                                     */
-      /* 画面の空いたところのタッチにだけ反応したいので                      */
-      /* Engine.onCommandで対応する                                          */
-      /*=====================================================================*/
       setTouchEventsEnabled(false);
 
       if (! isPreview()) {
@@ -227,13 +220,7 @@ public class AtlantisService extends WallpaperService {
             EGLConfig[] configs = new EGLConfig[1];
             int[] numConfig = new int[1];
 
-            /*-----------------------------------------------------------------*/
-            /* 条件に見合うEGLConfigを取得                                     */
-            /*-----------------------------------------------------------------*/
             egl10.eglChooseConfig(eglDisplay, configSpec[specCounter++], configs, 1, numConfig);
-            /*-----------------------------------------------------------------*/
-            /* もしEGLConfigが取得できなければ                                 */
-            /*-----------------------------------------------------------------*/
             if (numConfig[0] == 0) {
               if (_debug) Log.d(TAG, "numConfig[0]=" + numConfig[0] + "");
               String errStr = AtlantisService.getErrorString(egl10.eglGetError());
@@ -252,9 +239,6 @@ public class AtlantisService extends WallpaperService {
 
             EGLConfig config = configs[0];
 
-            /*-----------------------------------------------------------------*/
-            /* 取得したEGLDisplayとEGLConfigでEGLContext作成                   */
-            /*-----------------------------------------------------------------*/
             eglContext = egl10.eglCreateContext(eglDisplay, config, EGL10.EGL_NO_CONTEXT, null); 
             if (eglContext == null || EGL10.EGL_NO_CONTEXT.equals(eglContext)) {
               String errStr = AtlantisService.getErrorString(egl10.eglGetError());
@@ -272,9 +256,6 @@ public class AtlantisService extends WallpaperService {
               continue;
             }
             if (_debug) Log.d(TAG, "eglCreateContext done.");
-            /*-----------------------------------------------------------------*/
-            /* 取得したEGLDisplayとEGLConfigでEGLSurface作成                   */
-            /*-----------------------------------------------------------------*/
             eglSurface = egl10.eglCreateWindowSurface(eglDisplay, config, holder, null);
             if (eglSurface == null || EGL10.EGL_NO_SURFACE.equals(eglSurface)) {
               String errStr = AtlantisService.getErrorString(egl10.eglGetError());
@@ -292,9 +273,6 @@ public class AtlantisService extends WallpaperService {
               continue;
             }
             if (_debug) Log.d(TAG, "eglCreateWindowSurface done.");
-            /*-----------------------------------------------------------------*/
-            /* EGLContextとEGLSurfaceを関連付ける(アタッチ)                    */
-            /*-----------------------------------------------------------------*/
             if (! egl10.eglMakeCurrent(eglDisplay, eglSurface, eglSurface, eglContext)) {
               String errStr = AtlantisService.getErrorString(egl10.eglGetError());
               if (_debug) Log.d(TAG, "egl10.eglMakeCurrent == false [" + errStr + "]");
@@ -316,9 +294,6 @@ public class AtlantisService extends WallpaperService {
   
             gl10 = new MatrixTrackingGL((GL10) (eglContext.getGL()));
    
-            /*-----------------------------------------------------------------*/
-            /* Rendererの初期化                                                */
-            /*-----------------------------------------------------------------*/
             glRenderer = GLRenderer.getInstance(getApplicationContext());
             synchronized (glRenderer) {
               glRenderer.onSurfaceCreated(gl10, config, getApplicationContext());
@@ -426,9 +401,7 @@ public class AtlantisService extends WallpaperService {
     public void onVisibilityChanged(final boolean visible) {
       if (_debug) Log.d(TAG, "start onVisibilityChanged()");
       super.onVisibilityChanged(visible);
-      /* サーフェスが見えるようになったよ！ */
       if (visible && drawCommand != null && mInitialized) {
-        /* 設定変更のタイミング */
         if (glRenderer != null) {
           synchronized (glRenderer) {
             glRenderer.updateSetting(getApplicationContext());
@@ -477,10 +450,6 @@ public class AtlantisService extends WallpaperService {
           + "resultRequested:[" + resultRequested + "]:"
         );
       }
-      /*=====================================================================*/
-      /* 画面の何もないところへのタッチにだけ反応するため                    */
-      /* actionがandroid.wallpaper.tapのときだけ処理する                     */
-      /*=====================================================================*/
       if (action.equals("android.wallpaper.tap")) {
          Runnable onCommandCommand = new Runnable() {
            public void run() {

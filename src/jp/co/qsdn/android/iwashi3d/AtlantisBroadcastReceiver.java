@@ -34,8 +34,7 @@ public class AtlantisBroadcastReceiver extends BroadcastReceiver {
     String action = intent.getAction();
 
     if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
-      if (_debug) Log.d(TAG,"ACTION_BOOT_COMPLETED受信");
-      // 端末ブート完了時にアプリアイコンを置く
+      if (_debug) Log.d(TAG,"receive ACTION_BOOT_COMPLETED");
       if (isRunning(context)) {
         AtlantisNotification.putNotice(context);
       }

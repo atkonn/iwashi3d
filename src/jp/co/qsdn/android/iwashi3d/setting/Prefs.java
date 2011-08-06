@@ -24,7 +24,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
 /**
- * Preference管理クラス
+ * Preference Manager
  */
 public class Prefs {
   private static final String TAG = Prefs.class.getName();

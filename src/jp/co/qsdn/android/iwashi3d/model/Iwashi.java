@@ -536,7 +536,6 @@ public class Iwashi implements Model {
   }
 
   public void calcAlignment(Iwashi target) {
-    /* ターゲットの角度 */
     float angle_x = target.getX_angle();
     float angle_y = target.getY_angle();
     if (debug) {

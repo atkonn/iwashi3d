@@ -97,7 +97,7 @@ public class IwashiSpeedDialog
     if (_debug) Log.d(TAG, "start onDialogClosed(" + positiveResult + ")");
     if (positiveResult) {
       if (seekBar != null) {
-        if (_debug) Log.d(TAG, "スピード:[" + (seekBar.getProgress() + MIN) + "]");
+        if (_debug) Log.d(TAG, "the speed of sardines:[" + (seekBar.getProgress() + MIN) + "]");
         Prefs.getInstance(getContext()).setIwashiSpeed((seekBar.getProgress() + MIN));
         seekBar = null;
       }

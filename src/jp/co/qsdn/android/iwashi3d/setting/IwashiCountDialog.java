@@ -80,7 +80,7 @@ public class IwashiCountDialog
     if (_debug) Log.d(TAG, "start onDialogClosed(" + positiveResult + ")");
     if (positiveResult) {
       if (seekBar != null) {
-        if (_debug) Log.d(TAG, "鰯数:[" + (seekBar.getProgress() + MIN) + "]");
+        if (_debug) Log.d(TAG, "the number of sardines:[" + (seekBar.getProgress() + MIN) + "]");
         Prefs.getInstance(getContext()).setIwashiCount((seekBar.getProgress() + MIN));
         seekBar = null;
       }

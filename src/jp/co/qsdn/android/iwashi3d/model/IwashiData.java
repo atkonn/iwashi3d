@@ -60,7 +60,6 @@ public class IwashiData {
   }
   private static float getMoveWidth(float x) {
     /*=======================================================================*/
-    /* z = 1/3 * x^2 の2次関数から算出                                       */
     /*=======================================================================*/
     float xt = x / Iwashi.scale + Iwashi.center_xyz[0];
     return xt * xt / 20.0f - 0.4f;

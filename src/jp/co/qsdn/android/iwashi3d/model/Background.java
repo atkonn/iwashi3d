@@ -41,28 +41,25 @@ public class Background {
     float oneW = Aquarium.max_x + 0.5f;
     float oneH = Aquarium.max_y + 0.5f;
     float vertices[] = {
-      -oneW, -oneH, -oneW,   // 左下
-       oneW, -oneH, -oneW,   // 右下
-      -oneW,  oneH, -oneW,   // 左上
-       oneW,  oneH, -oneW,   // 右上
+      -oneW, -oneH, -oneW,
+       oneW, -oneH, -oneW,
+      -oneW,  oneH, -oneW,
+       oneW,  oneH, -oneW,
 
-       // 右面
-       oneW, -oneH, -oneW,    // 左下
-       oneW, -oneH,  oneW,    // 右下
-       oneW,  oneH, -oneW,    // 左上
-       oneW,  oneH,  oneW,    // 右上
+       oneW, -oneH, -oneW,
+       oneW, -oneH,  oneW,
+       oneW,  oneH, -oneW,
+       oneW,  oneH,  oneW,
 
-       // 左面
-       -oneW, -oneH,  oneW,    // 左下
-       -oneW, -oneH, -oneW,    // 右下
-       -oneW,  oneH,  oneW,    // 左上
-       -oneW,  oneH, -oneW,    // 右上
+       -oneW, -oneH,  oneW,
+       -oneW, -oneH, -oneW,
+       -oneW,  oneH,  oneW,
+       -oneW,  oneH, -oneW,
 
-       // 前面
-       oneW, -oneH,  oneW,   // 左下
-      -oneW, -oneH,  oneW,   // 右下
-       oneW,  oneH,  oneW,   // 左上
-      -oneW,  oneH,  oneW,   // 右上
+       oneW, -oneH,  oneW,
+      -oneW, -oneH,  oneW,
+       oneW,  oneH,  oneW,
+      -oneW,  oneH,  oneW,
     };
 
     float texCoords[] = {
@@ -122,13 +119,11 @@ public class Background {
 
   public void draw(GL10 gl10) {
     /*-----------------------------------------------------------------------*/
-    /* 背景描画                                                              */
     /*-----------------------------------------------------------------------*/
-    gl10.glMatrixMode(GL10.GL_MODELVIEW);  // ModelView行列をクリア
+    gl10.glMatrixMode(GL10.GL_MODELVIEW);
     gl10.glPushMatrix();
 
     /*=======================================================================*/
-    /* 環境光の材質色設定                                                    */
     /*=======================================================================*/
     synchronized(mScratch4f) {
       mScratch4f[0] = 0.07f;
@@ -138,7 +133,6 @@ public class Background {
       gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, mScratch4f, 0);
     }
     /*=======================================================================*/
-    /* 拡散反射光の色設定                                                    */
     /*=======================================================================*/
     synchronized (mScratch4f) {
       mScratch4f[0] = 0.07f;
@@ -148,7 +142,6 @@ public class Background {
       gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, mScratch4f, 0);
     }
     /*=======================================================================*/
-    /* 鏡面反射光の質感色設定                                                */
     /*=======================================================================*/
     synchronized (mScratch4f) {
       mScratch4f[0] = 0.07f;
@@ -160,7 +153,6 @@ public class Background {
     gl10.glMaterialf(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, 100f);
 
     /*-----------------------------------------------------------------------*/
-    /* 頂点座標バッファを読み込む                                            */
     /*-----------------------------------------------------------------------*/
     gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, mVertexBuffer);
     gl10.glEnable(GL10.GL_TEXTURE_2D);
@@ -168,7 +160,6 @@ public class Background {
     gl10.glTexCoordPointer(2, GL10.GL_FLOAT, 0, mTextureBuffer);
 
     /*-----------------------------------------------------------------------*/
-    /* 頂点描画                                                              */
     /*-----------------------------------------------------------------------*/
     gl10.glColor4f(1,1,1,1);
     gl10.glNormal3f(0,0,1);

@@ -21,7 +21,6 @@ import java.util.Stack;
 import android.util.Log;
 
 /**
- * 餌
  */
 public class BaitManager {
   private static final String TAG = BaitManager.class.getName();
@@ -32,7 +31,7 @@ public class BaitManager {
   public void addBait(float x, float y, float z) {
     synchronized (this) {
       if (nowCount < max_count) {
-        if (_debug) Log.d(TAG,"("+x+","+y+","+z+")に餌を追加します");
+        if (_debug) Log.d(TAG,"Add bait to ("+x+","+y+","+z+")");
         stack.push(new Bait(x,y,z));
         nowCount++;
       }
@@ -50,11 +49,9 @@ public class BaitManager {
 
   public void eat(Bait bait) {
     synchronized (this) {
-      // 要素が無かった場合は無視
       if (stack.remove(bait)) {
-        // 消せた
         nowCount--;
-        if (_debug) Log.d(TAG,"("+bait.getX()+","+bait.getY()+","+bait.getZ()+")の餌を食べました");
+        if (_debug) Log.d(TAG,"eaten bait ("+bait.getX()+","+bait.getY()+","+bait.getZ()+")");
       }
     }
   }

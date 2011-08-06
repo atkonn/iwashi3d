@@ -56,11 +56,10 @@ public class GLRenderer {
   private int iwashi_count = 1;
   private boolean enableIwashiBoids = true;
   private float iwashi_speed = 0.03f;
-  /* カメラの位置 */
   private float[] camera = {0f,0f,0f};
   private float[] org_camera = {0f,0f,0f};
-  private boolean cameraMode = false; /* false:通常モード true:鰯視点モード */
-  private float cameraDistance = 10f; /* 群れまでの距離 */
+  private boolean cameraMode = false;
+  private float cameraDistance = 10f;
   private float zFar = 50.0f;
   private float zNear = 1.0f;
   private float perspectiveAngle = 45.0f;
@@ -71,7 +70,6 @@ public class GLRenderer {
   private float[] mScratch32 = new float[32];
   private float[] mScratch4f = new float[4];
   public static GLRenderer glRenderer = null;
-  /* 群れの中心 */
   float[] schoolCenter = {0f,0f,0f};
   private CoordUtil coordUtil = new CoordUtil();
 
@@ -116,23 +114,11 @@ public class GLRenderer {
     gl10.glEnableClientState(GL10.GL_VERTEX_ARRAY);
     gl10.glEnableClientState(GL10.GL_NORMAL_ARRAY);
     gl10.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
-    /*=======================================================================*/
-    /* カリングの有効化                                                      */
-    /*=======================================================================*/
     gl10.glEnable(GL10.GL_CULL_FACE);
-    /*=======================================================================*/
-    /* ティザーを無効に                                                      */
-    /*=======================================================================*/
     gl10.glDisable(GL10.GL_DITHER);  
 
-    /*=======================================================================*/
-    /* OpenGLにスムージングを設定                                            */
-    /*=======================================================================*/
     gl10.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);  
 
-    /*=======================================================================*/
-    /* テクスチャ                                                            */
-    /*=======================================================================*/
     gl10.glEnable(GL10.GL_TEXTURE_2D);
     Background.loadTexture(gl10, context, R.drawable.background);
     Ground.loadTexture(gl10, context, R.drawable.sand);
@@ -144,15 +130,11 @@ public class GLRenderer {
     org_camera[1] = camera[1] = 0f;
     org_camera[2] = camera[2] = Aquarium.max_z + zNear;
 
-    /*=======================================================================*/
-    /* フォグのセットアップ                                                  */
-    /*=======================================================================*/
     setupFog(gl10);
 
     gl10.glEnable(GL10.GL_NORMALIZE) ;
     gl10.glEnable(GL10.GL_RESCALE_NORMAL);
     gl10.glShadeModel(GL10.GL_SMOOTH);
-    //背景のクリア
     gl10.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     gl10.glClearDepthf(1.0f);
 
@@ -167,7 +149,6 @@ public class GLRenderer {
   }
 
   /**
-   * 光のセットアップ
    */
   public void setupLighting1(GL10 gl10) {
     gl10.glEnable(GL10.GL_LIGHTING);
@@ -177,7 +158,6 @@ public class GLRenderer {
   public void setupLighting2(GL10 gl10) {
     {
       /*=======================================================================*/
-      /* 環境光の色設定                                                        */
       /*=======================================================================*/
       synchronized(mScratch4f) {
         mScratch4f[0] = 1.0f;
@@ -187,7 +167,6 @@ public class GLRenderer {
         gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_AMBIENT, mScratch4f, 0);
       }
       /*=======================================================================*/
-      /* 拡散反射光の色設定                                                    */
       /*=======================================================================*/
       synchronized(mScratch4f) {
         mScratch4f[0] = 1.0f;
@@ -197,7 +176,6 @@ public class GLRenderer {
         gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_DIFFUSE, mScratch4f, 0);
       }
       /*=======================================================================*/
-      /* 鏡面反射光の色設定                                                    */
       /*=======================================================================*/
       synchronized(mScratch4f){
         mScratch4f[0] = 1.0f;
@@ -207,7 +185,6 @@ public class GLRenderer {
         gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_SPECULAR, mScratch4f, 0);
       }
       /*=======================================================================*/
-      /* そもそもの光の位置設定                                                */
       /*=======================================================================*/
       synchronized(mScratch4f){
         mScratch4f[0] = 0.0f;
@@ -217,7 +194,6 @@ public class GLRenderer {
         gl10.glLightfv(GL10.GL_LIGHT0, GL10.GL_POSITION, mScratch4f, 0);
       }
       /*=======================================================================*/
-      /* そもそもの光の向き設定                                                */
       /*=======================================================================*/
       synchronized(mScratch4f) {
         mScratch4f[0] = 0.0f;
@@ -229,7 +205,6 @@ public class GLRenderer {
       gl10.glLightf(GL10.GL_LIGHT0, GL10.GL_SPOT_CUTOFF, 90);
       gl10.glLightf(GL10.GL_LIGHT0, GL10.GL_SPOT_EXPONENT, 0);
       /*=======================================================================*/
-      /* 減衰ほとんどなしに設定                                                */
       /*=======================================================================*/
       gl10.glLightf(GL10.GL_LIGHT0, GL10.GL_CONSTANT_ATTENUATION, 0.2f);
       gl10.glLightf(GL10.GL_LIGHT0, GL10.GL_LINEAR_ATTENUATION, 0.002f);
@@ -237,7 +212,6 @@ public class GLRenderer {
     }
     {
       /*=======================================================================*/
-      /* 環境光の色設定                                                        */
       /*=======================================================================*/
       synchronized(mScratch4f) {
         mScratch4f[0] = 0.019f * 0.6f;
@@ -246,11 +220,9 @@ public class GLRenderer {
         mScratch4f[3] = 1.0f;
         gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_AMBIENT, mScratch4f, 0);
       /*=======================================================================*/
-      /* 拡散反射光の色設定                                                    */
       /*=======================================================================*/
         gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_DIFFUSE, mScratch4f, 0);
       /*=======================================================================*/
-      /* 鏡面反射光の色設定                                                    */
       /*=======================================================================*/
         mScratch4f[0] *= 0.5f;
         mScratch4f[1] *= 0.5f;
@@ -258,7 +230,6 @@ public class GLRenderer {
         gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_SPECULAR, mScratch4f, 0);
       }
       /*=======================================================================*/
-      /* そもそもの光の位置設定                                                */
       /*=======================================================================*/
       synchronized (mScratch4f) {
         mScratch4f[0] = 0.0f;
@@ -268,7 +239,6 @@ public class GLRenderer {
         gl10.glLightfv(GL10.GL_LIGHT1, GL10.GL_POSITION, mScratch4f, 0);
       }
       /*=======================================================================*/
-      /* そもそもの光の向き設定                                                */
       /*=======================================================================*/
       synchronized (mScratch4f) {
         mScratch4f[0] = 0.0f;
@@ -280,7 +250,6 @@ public class GLRenderer {
       gl10.glLightf(GL10.GL_LIGHT1, GL10.GL_SPOT_CUTOFF, 90);
       gl10.glLightf(GL10.GL_LIGHT1, GL10.GL_SPOT_EXPONENT, 0);
       /*=======================================================================*/
-      /* 減衰ほとんどなしに設定                                                */
       /*=======================================================================*/
       gl10.glLightf(GL10.GL_LIGHT1, GL10.GL_CONSTANT_ATTENUATION, 0.2f);
       gl10.glLightf(GL10.GL_LIGHT1, GL10.GL_LINEAR_ATTENUATION, 0.002f);
@@ -290,7 +259,6 @@ public class GLRenderer {
   }
 
   /**
-   * フォグのセットアップ
    */
   public void setupFog(GL10 gl10) {
     gl10.glEnable(GL10.GL_FOG);
@@ -331,9 +299,9 @@ public class GLRenderer {
     boolean _camera_mode = Prefs.getInstance(context).getCameraMode();
     float _camera_distance = (float)Prefs.getInstance(context).getCameraDistance();
 
-    if (_debug) Log.d(TAG, "現在のスピード:[" + _iwashi_speed + "]");
+    if (_debug) Log.d(TAG, "Now Speed:[" + _iwashi_speed + "]");
 
-    if (_debug) Log.d(TAG,"現在のBOIDS:[" + _iwashi_boids + "]");
+    if (_debug) Log.d(TAG,"Now BOIDS:[" + _iwashi_boids + "]");
 
     if (_iwashi_count != iwashi_count) {
       synchronized (this) {
@@ -420,12 +388,8 @@ public class GLRenderer {
       return ;
     }
     /*=======================================================================*/
-    /* タッチされたら寄ってくる                                              */
-    /* 餌はiwashi_count分                                                    */
     /*=======================================================================*/
-
     /*=======================================================================*/
-    /* スクリーン座標ー＞ワールド座標変換                                    */
     /*=======================================================================*/
     float[] modelview = new float[16];
     ((GL11)gl10).glGetFloatv(GL10.GL_MODELVIEW, modelview, 0);
@@ -441,7 +405,6 @@ public class GLRenderer {
     float nz = 0f;
     {
       float[] ret = new float[4];
-      /* カメラから水槽までの距離を算出 */
       float dist_from_camera = 0.0f;
       dist_from_camera = cameraDistance;
       if (dist_from_camera < 0.0f) {
@@ -455,7 +418,7 @@ public class GLRenderer {
       }
       
       GLU.gluUnProject((float)x, (float)y, dist_from_camera, view, 0, projection, 0, new int[]{0, 0, screen_width, screen_height}, 0, ret, 0);
-      if (_debug) Log.d(TAG,"変換結果(UnProject):[" + ret[0] + "][" + ret[1] + "][" + ret[2] + "][" + ret[3] + "]");
+      if (_debug) Log.d(TAG,"result (UnProject):[" + ret[0] + "][" + ret[1] + "][" + ret[2] + "][" + ret[3] + "]");
       {
         float bb = (cameraDistance == 0.0f) ? 0.1f : cameraDistance;
         nx = ret[0] * bb / ret[3];
@@ -463,7 +426,7 @@ public class GLRenderer {
         nz = ret[2] / ret[3];
       }
       if (_debug) {
-        Log.d(TAG,"変換結果"
+        Log.d(TAG,"result"
          + "dist:[" + dist_from_camera + "] "
          + "x:[" + nx + "] "
          + "y:[" + ny + "] "
@@ -532,18 +495,13 @@ public class GLRenderer {
     gl10.glMatrixMode(GL10.GL_MODELVIEW);
     gl10.glPushMatrix(); 
 
-    // 画面をクリアする
-    //gl10.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT | GL10.GL_STENCIL_BUFFER_BIT);
     gl10.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 
-    // モデルの位置を決める
     gl10.glMatrixMode(GL10.GL_MODELVIEW);
     gl10.glLoadIdentity();
 
 
-    // カメラ
     if (cameraMode) {
-      /* 鰯視点モード */
       float c_x = iwashi[0].getX();
       float c_y = iwashi[0].getY();
       float c_z = iwashi[0].getZ();
@@ -567,7 +525,6 @@ public class GLRenderer {
 
 
     /*=======================================================================*/
-    /* 光のセットアップ                                                      */
     /*=======================================================================*/
     setupLighting2(gl10);
     setupLighting1(gl10);
@@ -580,7 +537,6 @@ public class GLRenderer {
       }
     }
 
-    // 背景描画
     background.draw(gl10);
     ground.draw(gl10, iwashi);
     wave.calc();

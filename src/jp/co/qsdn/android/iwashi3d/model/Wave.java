@@ -47,17 +47,17 @@ public class Wave {
   float oneH = Aquarium.max_y + 0.3f;
   private float scale = 0.05f;
   float vertices[] = {
-     oneW, oneH,  oneW,   // 左下
-    -oneW, oneH,  oneW,   // 右下
-     oneW, oneH, -oneW,   // 左上
-    -oneW, oneH, -oneW,   // 右上
+     oneW, oneH,  oneW,
+    -oneW, oneH,  oneW,
+     oneW, oneH, -oneW,
+    -oneW, oneH, -oneW,
   };
   float org_vertices[];
   float vertices_for_stencil[] = {
-     oneW * 2.0f, oneH,  oneW * 2.0f,   // 左下
-    -oneW * 2.0f, oneH,  oneW * 2.0f,   // 右下
-     oneW * 2.0f, oneH,  oneW * 2.0f / 4.0f,   // 左上
-    -oneW * 2.0f, oneH,  oneW * 2.0f / 4.0f,   // 右上
+     oneW * 2.0f, oneH,  oneW * 2.0f,
+    -oneW * 2.0f, oneH,  oneW * 2.0f,
+     oneW * 2.0f, oneH,  oneW * 2.0f / 4.0f,
+    -oneW * 2.0f, oneH,  oneW * 2.0f / 4.0f,
   };
 
   private float[] mScratch4f = new float[4];
@@ -140,16 +140,13 @@ public class Wave {
   public void _draw(GL10 gl10, FloatBuffer vertexBuffer) {
 
     /*-----------------------------------------------------------------------*/
-    /* 背景描画                                                              */
     /*-----------------------------------------------------------------------*/
-    gl10.glMatrixMode(GL10.GL_MODELVIEW);  // ModelView行列をクリア
+    gl10.glMatrixMode(GL10.GL_MODELVIEW);
     gl10.glPushMatrix();
-    /* シースルーモード */
     gl10.glEnable(GL10.GL_BLEND);
     gl10.glBlendFunc(GL10.GL_ONE, GL10.GL_SRC_ALPHA);
 
     /*=======================================================================*/
-    /* 環境光の材質色設定                                                    */
     /*=======================================================================*/
     synchronized (mScratch4f) {
       mScratch4f[0] = 1.0f;
@@ -159,7 +156,6 @@ public class Wave {
       gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_AMBIENT, mScratch4f, 0);
     }
     /*=======================================================================*/
-    /* 拡散反射光の色設定                                                    */
     /*=======================================================================*/
     synchronized (mScratch4f) {
       mScratch4f[0] = 1.0f;
@@ -169,7 +165,6 @@ public class Wave {
       gl10.glMaterialfv(GL10.GL_FRONT_AND_BACK, GL10.GL_DIFFUSE, mScratch4f, 0);
     }
     /*=======================================================================*/
-    /* 鏡面反射光の質感色設定                                                */
     /*=======================================================================*/
     synchronized (mScratch4f) {
       mScratch4f[0] = 1.0f;
@@ -182,7 +177,6 @@ public class Wave {
 
         
     /*-----------------------------------------------------------------------*/
-    /* 頂点座標バッファを読み込む                                            */
     /*-----------------------------------------------------------------------*/
     gl10.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
     gl10.glEnable(GL10.GL_TEXTURE_2D);
@@ -192,7 +186,6 @@ public class Wave {
 
 
     /*-----------------------------------------------------------------------*/
-    /* 頂点描画                                                              */
     /*-----------------------------------------------------------------------*/
     gl10.glColor4f(1,1,1,1);
     gl10.glNormal3f(0,-1,0);
