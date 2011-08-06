@@ -115,7 +115,7 @@ public class GLRenderer {
     gl10.glEnableClientState(GL10.GL_NORMAL_ARRAY);
     gl10.glEnableClientState(GL10.GL_TEXTURE_COORD_ARRAY);
     gl10.glEnable(GL10.GL_CULL_FACE);
-    gl10.glDisable(GL10.GL_DITHER);  
+    gl10.glEnable(GL10.GL_DITHER);  
 
     gl10.glHint(GL10.GL_PERSPECTIVE_CORRECTION_HINT, GL10.GL_FASTEST);  
 
