@@ -23,7 +23,9 @@
     <activity
       android:name="jp.co.qsdn.android.iwashi3d.setting.SettingActivity"
       android:label="@string/setting_title"
-      android:launchMode="singleTask">
+      android:launchMode="singleTask"
+      android:theme="@style/Theme.PrefsBackground"
+      >
       <intent-filter>
         <action
           android:name="android.intent.action.MAIN" />
@@ -33,7 +35,9 @@
     <activity
       android:name="jp.co.qsdn.android.iwashi3d.setting.AboutActivity"
       android:label="@string/about_title"
-      android:launchMode="singleTask">
+      android:launchMode="singleTask"
+      android:theme="@style/Theme.AboutBackground"
+      >
       <intent-filter>
         <action
           android:name="android.intent.action.MAIN" />
