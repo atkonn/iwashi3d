@@ -8,6 +8,7 @@ This is simulating a school of sardines which used BOIDS algorithm.Sardines each
 You can download on the [Android Market](https://market.android.com/details?id=jp.co.qsdn.android.iwashi3d) completely free.
 Unfortunately, This is the lowest graphics you have ever seen.
 
+
 Features
 --------
 1. This simulates "a school of sardines".
@@ -24,6 +25,22 @@ Requirement
 1. Android2.1 or later.
 2. OpenGL ES 1.0.
 3. Over 3MB Heep memory area.
+
+
+Source Code
+-----------
+The source code is freely available.
+
+[https://github.com/atkonn/jinbei3d](https://github.com/atkonn/jinbei3d)
+[https://gitorious.org/jinbei3d](https://github.com/atkonn/jinbei3d)
+
+
+Bugs
+----
+If you find a bug, please leave a helpful bug report here
+
+[https://github.com/atkonn/iwashi3d/issues](https://github.com/atkonn/iwashi3d/issues)
+
 
 Copyright
 ---------
