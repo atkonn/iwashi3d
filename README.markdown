@@ -31,8 +31,8 @@ Source Code
 -----------
 The source code is freely available.
 
-[https://github.com/atkonn/jinbei3d](https://github.com/atkonn/jinbei3d)
-[https://gitorious.org/jinbei3d](https://github.com/atkonn/jinbei3d)
+[https://github.com/atkonn/iwashi3d](https://github.com/atkonn/iwashi3d)
+[https://gitorious.org/iwashi3d](https://github.com/atkonn/iwashi3d)
 
 
 Bugs
