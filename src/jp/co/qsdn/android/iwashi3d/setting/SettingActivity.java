@@ -128,6 +128,7 @@ public class SettingActivity extends PreferenceActivity {
     Prefs.getInstance(this).setIwashiBoids(b);
     b = getPreferenceManager().getSharedPreferences().getBoolean(Prefs.KEY_CAMERA_MODE, Prefs.DEFAULT_CAMERA_MODE);
     Prefs.getInstance(this).setCameraMode(b);
+    Prefs.getInstance(this).setUpdateSetting(true);
     super.onDestroy();
     if (debug) Log.d(TAG, "end onDestroy");
   }

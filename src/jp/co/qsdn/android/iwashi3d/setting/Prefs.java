@@ -47,6 +47,9 @@ public class Prefs {
   public static final String KEY_CAMERA_DISTANCE = "camera_distance";
   public static final int DEFAULT_CAMERA_DISTANCE = 10;
 
+  public static final String KEY_UPDATE_SETTING = "update_setting";
+  public static final boolean DEFAULT_UPDATE_SETTING = false;
+
   public static Prefs getInstance(Context context) {
     if (mPrefs == null) {
       mPrefs = new Prefs(context);
@@ -151,5 +154,17 @@ public class Prefs {
       }
     }
     return distance;
+  }
+
+  public void setUpdateSetting(boolean updateSetting) {
+    SharedPreferences sharedPreferences = mContext.getSharedPreferences(PACKAGE_NAME,Context.MODE_PRIVATE);  
+    sharedPreferences
+      .edit()
+      .putBoolean(KEY_UPDATE_SETTING, updateSetting)
+      .commit();  
+  }
+  public boolean getUpdateSetting() {
+    SharedPreferences sharedPreferences = mContext.getSharedPreferences(PACKAGE_NAME, Context.MODE_PRIVATE);  
+    return  sharedPreferences.getBoolean(KEY_UPDATE_SETTING, DEFAULT_UPDATE_SETTING);
   }
 }

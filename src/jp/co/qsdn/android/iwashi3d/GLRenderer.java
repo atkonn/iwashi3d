@@ -293,6 +293,9 @@ public class GLRenderer {
     if (iwashi == null) {
       return;
     }
+    if (Prefs.getInstance(context).getUpdateSetting() == false) {
+      return;
+    }
     int _iwashi_count = Prefs.getInstance(context).getIwashiCount();
     float _iwashi_speed = ((float)Prefs.getInstance(context).getIwashiSpeed() / 50f) * Iwashi.DEFAULT_SPEED;
     boolean _iwashi_boids = Prefs.getInstance(context).getIwashiBoids();
@@ -339,6 +342,7 @@ public class GLRenderer {
     if (_camera_distance != cameraDistance) {
       cameraDistance = _camera_distance;
     }
+    Prefs.getInstance(context).setUpdateSetting(false);
   }
 
 
