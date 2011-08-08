@@ -1,6 +1,6 @@
 NOT RELEASED YET iwashi3d (1.0.14) stable; urgency=low
 
-  * Changed color of setting activities.
+  * Enable DITHER
 
  -- Atsushi Konno <konno@qsdn.co.jp>  Thu, 04 Aug 2011 16:40:24 +0900
 
