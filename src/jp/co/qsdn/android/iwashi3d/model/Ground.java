@@ -143,7 +143,7 @@ public class Ground {
     gl10.glMaterialf(GL10.GL_FRONT_AND_BACK, GL10.GL_SHININESS, 100f);
 
     if (BitmapContext.instance().getBitmap() != null) {
-      Bitmap bmp = BitmapContext.instance().getBitmap().copy(Bitmap.Config.ARGB_8888,true);
+      Bitmap bmp = BitmapContext.instance().getBitmap().copy(Bitmap.Config.RGB_565,true);
       if (bmp != null) {
         Canvas canvas = new Canvas(bmp);
         
