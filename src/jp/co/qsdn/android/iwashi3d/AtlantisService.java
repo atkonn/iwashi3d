@@ -315,7 +315,6 @@ public class AtlantisService extends WallpaperService {
                         } catch (InterruptedException e) {
                         }
                       }
-                      glRenderer.updateSetting(getApplicationContext());
                       glRenderer.onDrawFrame(gl10);
                       glRenderer.prevTick = nowTime;
                     }
