@@ -63,6 +63,13 @@ Requirement:\n
 \n
 \n
 Newly ChangeLog:\n
+iwashi3d (1.0.14) stable; urgency=low\n
+\n
+\t* Enable DITHER\n
+\t* Deleted extra processing.\n
+\n
+ -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Wed, 10 Aug 2011 01:20:31 +0900\n
+\n
 iwashi3d (1.0.13) stable; urgency=low\n
 \n
 \t* You can increase the number of sardine to greatest 200 of them.\n
