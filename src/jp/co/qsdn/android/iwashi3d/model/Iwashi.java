@@ -98,6 +98,8 @@ public class Iwashi implements Model {
 
   /** Weight of separation process */
   private static final int SEPARATION_WEIGHT = 10;
+  /** Weight of cohesion process */
+  private static final int COHESION_WEIGHT = 1;
 
 
   /*=========================================================================*/
@@ -566,48 +568,16 @@ public class Iwashi implements Model {
     float v_x = 0f;
     float v_y = 0f;
     float v_z = 0f;
-    synchronized (mScratch4f_1) {
-      synchronized (mScratch4f_2) {
-        /* direction from me to school center */
-        mScratch4f_2[0] = schoolCenter[0] - getX();
-        mScratch4f_2[1] = schoolCenter[1] - getY();
-        mScratch4f_2[2] = schoolCenter[2] - getZ();
-        CoordUtil.normalize3fv(mScratch4f_2);
-      }
-      v_x = mScratch4f_1[0];
-      v_y = mScratch4f_1[1];
-      v_z = mScratch4f_1[2];
-    }
-    float angle_x = (float)coordUtil.convertDegreeXY((double)v_x, (double)v_y);
-    float angle_y = (float)coordUtil.convertDegreeXZ((double)v_x * -1d, (double)v_z);
-    if (angle_x > 180f) {
-      angle_x = angle_x - 360f;
-    }
-    if ((angle_x < 0.0f && v_y > 0.0f) || (angle_x > 0.0f && v_y < 0.0f)) {
-      angle_x *= -1f;
-    }
-    if (debug) {
-      Log.d(TAG, "candidate angle_y:[" + angle_y + "]");
-      Log.d(TAG, "candidate angle_x:[" + angle_x + "]");
-    }
-
-    if (angle_y < 0.0f) {
-      angle_y = 360f + angle_y;
-    }
-    angle_y = angle_y % 360f;
-
-    coordUtil.setMatrixRotateZ(angle_x);
-    synchronized (mScratch4f_1) {
-      synchronized (mScratch4f_2) {
-        coordUtil.affine(-1.0f,0.0f, 0.0f, mScratch4f_1);
-        coordUtil.setMatrixRotateY(angle_y);
-        coordUtil.affine(mScratch4f_1[0],mScratch4f_1[1], mScratch4f_1[2], mScratch4f_2);
-        CoordUtil.normalize3fv(mScratch4f_2);
-        nextDirection[0] += mScratch4f_2[0];
-        nextDirection[1] += mScratch4f_2[1];
-        nextDirection[2] += mScratch4f_2[2];
-        nextDirectionCount++;
-      }
+    synchronized (mScratch4f_2) {
+      /* direction from me to school center */
+      mScratch4f_2[0] = schoolCenter[0] - getX();
+      mScratch4f_2[1] = schoolCenter[1] - getY();
+      mScratch4f_2[2] = schoolCenter[2] - getZ();
+      CoordUtil.normalize3fv(mScratch4f_2);
+      nextDirection[0] += (mScratch4f_2[0] * (float)COHESION_WEIGHT);
+      nextDirection[1] += (mScratch4f_2[1] * (float)COHESION_WEIGHT);
+      nextDirection[2] += (mScratch4f_2[2] * (float)COHESION_WEIGHT);
+      nextDirectionCount += COHESION_WEIGHT;
     }
   }
 
