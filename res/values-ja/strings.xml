@@ -5,7 +5,7 @@
   <string name="service_name">鰯の群れ</string>
   <string name="description">Boidsアルゴリズムを使った鰯の群れ3Dライブ壁紙</string>
   <string name="author">株式会社QSDN</string>
-  <string name="version">version 1.0.14</string>
+  <string name="version">version 1.0.15</string>
   <string name="copyright">Copyright © 2011 QSDN,Inc. All rights reserved.</string>
 
   <string name="setting_title">設定</string>
@@ -66,6 +66,13 @@ BOIDSアルゴリズムを使った鰯の群れをシミュレートします。
 \n
 \n
 ★最新の変更履歴:\n
+iwashi3d (1.0.15) stable; urgency=high\n
+\n
+\t* Fixed BUG\n
+\t\t- Crash on Galaxy NEXUS (Android4.0)\n
+\n
+ -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Tue, 28 Feb 2012 10:04:15 +0900\n
+\n
 iwashi3d (1.0.14) stable; urgency=low\n
 \n
 \t* Enable DITHER\n

@@ -5,7 +5,7 @@
   <string name="service_name">School of Sardines</string>
   <string name="description">3D live wallpaper of sardines that used BOIDS algorithm</string>
   <string name="author">QSDN,Inc.</string>
-  <string name="version">version 1.0.14</string>
+  <string name="version">version 1.0.15</string>
   <string name="copyright">Copyright (c) 2011 QSDN,Inc. All rights reserved.</string>
 
   <string name="setting_title">Settings</string>
@@ -63,6 +63,13 @@ Requirement:\n
 \n
 \n
 Newly ChangeLog:\n
+iwashi3d (1.0.15) stable; urgency=high\n
+\n
+\t* Fixed BUG\n
+\t\t- Crash on Galaxy NEXUS (Android4.0)\n
+\n
+ -- Atsushi Konno &lt;konno@qsdn.co.jp&gt;  Tue, 28 Feb 2012 10:04:15 +0900\n
+\n
 iwashi3d (1.0.14) stable; urgency=low\n
 \n
 \t* Enable DITHER\n

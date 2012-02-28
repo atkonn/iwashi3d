@@ -1,3 +1,10 @@
+iwashi3d (1.0.15) stable; urgency=high
+
+  * Fixed BUG
+    - Crash on Galaxy NEXUS (Android4.0)
+
+ -- Atsushi Konno <konno@qsdn.co.jp>  Tue, 28 Feb 2012 10:04:15 +0900
+
 iwashi3d (1.0.14) stable; urgency=low
 
   * Enable DITHER
