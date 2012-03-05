@@ -1,3 +1,11 @@
+iwashi3d (1.0.16) stable; urgency=low
+
+  * Fixed BUG.
+    Texture failure.
+    on Galaxy NEXUS SC-04D.
+
+ -- Atsushi Konno <konno@qsdn.co.jp>  Tue, 06 Mar 2012 03:18:19 +0900
+
 iwashi3d (1.0.15) stable; urgency=high
 
   * Fixed BUG
