@@ -235,6 +235,10 @@ public class AtlantisService extends WallpaperService {
                   + errStr + " :"
                 );
               }
+              if (_debug) Log.d(TAG,"RETRY");
+              System.gc();
+              waitNano();
+              continue;
             }
 
             EGLConfig config = configs[0];
